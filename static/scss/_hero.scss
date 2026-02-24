@@ -1,0 +1,297 @@
+// ═══════════════════════════════════════════════════════
+//  Hero Section (index page)
+// ═══════════════════════════════════════════════════════
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.hero {
+  height: 100vh;
+  position: relative;
+  @include flex-center;
+  overflow: hidden;
+  background-color: $color-bg-hero;
+
+  // Desktop radial glow on left side
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    width: 50%; height: 100%;
+    background: radial-gradient(
+      ellipse at left center,
+      rgba($color-sky-500, 0.15) 0%,
+      rgba($color-sky-500, 0.08) 30%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+// ── Logo Watermark ──────────────────────────────────
+.hero-logo-watermark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 1vh 0 0 4vw;
+  pointer-events: none;
+  z-index: 0;
+
+  img {
+    width: min(120vw, 80rem);
+    max-width: none;
+    height: auto;
+    opacity: 0.15;
+    transform: translateX(0);
+    filter: drop-shadow(0 0 30px rgba($color-sky-500, 0.25));
+  }
+}
+
+// ── Content Wrapper ─────────────────────────────────
+.hero-content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem 10rem;
+
+  @include respond(md) { padding: 0 5rem 10rem; }
+  @include respond(lg) { padding: 0 10rem 10rem; }
+}
+
+.hero__left {
+  width: 100%;
+  @include flex-col;
+  justify-content: center;
+  text-align: left;
+  gap: 2.5rem;
+
+  @include respond(lg) { width: 75%; }
+}
+
+// ── Label (date / location pill) ────────────────────
+.hero__label-wrap {
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.hero-label {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: $radius-full;
+  background: rgba($color-sky-500, 0.1);
+  border: 1px solid rgba($color-sky-500, 0.2);
+  color: $color-sky-400;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+
+  // GSAP initial state
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+// ── Title ───────────────────────────────────────────
+.hero-title {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+  line-height: 0.85;
+  overflow: hidden;
+  white-space: nowrap;
+
+  @include mobile-only { white-space: normal; }
+}
+
+.hero-title__main {
+  font-size: 4.5rem;
+  display: inline-block;
+  transform: translateY(100%);
+  @include gradient-text;
+
+  @include respond(md) { font-size: 8rem; }
+  @include respond(lg) { font-size: clamp(3rem, 6vw + 1rem, 12rem); }
+  @include respond(xl) { font-size: 13rem; }
+
+  @include mobile-only {
+    font-size: clamp(2.6rem, 11vw, 4.6rem);
+    line-height: 0.9;
+  }
+}
+
+.hero-title__sub {
+  font-size: 2.25rem;
+  display: inline-block;
+  color: $color-white;
+  transform: translateY(100%);
+  margin-top: 1rem;
+
+  @include respond(md) { font-size: 3.75rem; }
+  @include respond(lg) { font-size: clamp(1.4rem, 2.6vw + 0.4rem, 5rem);}
+
+  @include mobile-only {
+    font-size: clamp(1.2rem, 5.2vw, 2.2rem);
+  }
+}
+
+// ── Description ─────────────────────────────────────
+.hero-text {
+  color: $color-slate-400;
+  font-size: clamp(1.25rem, 2.8vw, 2rem);
+  max-width: 64rem;
+  opacity: 0;
+  transform: translateY(1rem);
+  line-height: 1.625;
+  font-weight: 500;
+
+  @include respond(lg) {
+    font-size: clamp(1rem, 1.2vw + 0.35rem, 2.4rem);
+    max-width: 52rem;
+  }
+  @include mobile-only {
+    font-size: clamp(0.875rem, 2.5vw, 1rem);
+    line-height: 1.6;
+  }
+}
+
+// ── Actions Row (CTA + Counter) ─────────────────────
+.hero-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4rem;
+  opacity: 0;
+  transform: translateY(1rem);
+  padding-top: 1rem;
+
+  @include respond(md) {
+    flex-direction: row;
+    align-items: center;
+  }
+  @include mobile-only {
+    gap: 1.25rem;
+    width: 100%;
+  }
+}
+
+// ── Slots Counter ───────────────────────────────────
+.hero-counter {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-left: 4px solid $color-sky-500;
+  padding-left: 1.5rem;
+
+  @include mobile-only { border-left: none; padding-left: 0; }
+}
+
+.hero-counter__value {
+  font-size: 3.75rem;
+  font-weight: 900;
+  color: $color-white;
+  margin-bottom: 0.25rem;
+  line-height: 1;
+  @include mobile-only { font-size: clamp(1.5rem, 6vw, 2.5rem); }
+}
+
+.hero-counter__total {
+  color: $color-slate-600;
+  font-size: 1.875rem;
+  @include mobile-only { font-size: clamp(0.9rem, 3vw, 1.25rem); }
+}
+
+.hero-counter__label {
+  font-size: 0.875rem;
+  color: $color-slate-500;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  @include mobile-only { letter-spacing: 0.2em; }
+}
+
+// ── Player Image (Desktop) ──────────────────────────
+.hero-player-container {
+  display: none;
+
+  @include respond(lg) {
+    display: block;
+    width: 40%;
+    height: 100%;
+    position: absolute;
+    top: 0; right: 0;
+    z-index: 20;
+    pointer-events: auto;
+  }
+}
+
+.hero-player {
+  position: absolute;
+  bottom: -20%;
+  right: -5%;
+  height: 135vh;
+  max-width: none;
+  object-fit: contain;
+  object-position: bottom;
+  opacity: 0;
+  transform: translateX(5rem);
+  transition: transform 100ms ease-out;
+  will-change: transform;
+}
+
+// ── Scroll Indicator ────────────────────────────────
+.scroll-indicator {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: bounce 1s infinite;
+  opacity: 0.5;
+  color: $color-white;
+
+  svg { width: 1.5rem; height: 1.5rem; }
+
+  @include mobile-only { display: none; }
+}
+
+// ── Mobile Hero Overrides ───────────────────────────
+@include mobile-only {
+  .hero {
+    height: 100vh;
+    min-height: 100vh;
+
+    &::before { display: none; }
+  }
+
+  .hero-content {
+    padding: 2rem 1.25rem 6rem;
+    align-items: flex-start;
+    z-index: 10;
+  }
+
+  .hero-logo-watermark { display: none !important; }
+
+  // Player as faded background on mobile
+  .hero-player-container {
+    display: block !important;
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important; left: 0 !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .hero-player {
+    display: none !important;
+  }
+
+  .hero-label {
+    font-size: clamp(0.55rem, 2vw, 0.7rem);
+    letter-spacing: 0.12em;
+  }
+}

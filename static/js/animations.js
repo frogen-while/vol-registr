@@ -37,12 +37,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }, "-=0.8");
 
     // 5. Player Image Slide-in (Big Reveal)
-    tl.to('.hero-player', {
-        x: 0,
-        opacity: 1,
-        duration: 1.5,
-        ease: 'power3.out'
-    }, "-=1.5");
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // На мобильных сбрасываем начальное смещение
+        gsap.set('.hero-player', { x: 0 });
+        // Игрок появляется с прозрачностью
+        tl.to('.hero-player', {
+            opacity: 0.3,
+            duration: 1.2,
+            ease: 'power3.out'
+        }, "-=1.5");
+    } else {
+        // На десктопе слайд справа
+        tl.to('.hero-player', {
+            x: 0,
+            opacity: 1,
+            duration: 1.5,
+            ease: 'power3.out'
+        }, "-=1.5");
+    }
 
     // 6. Scroll Indicator
     tl.from('.scroll-indicator', {

@@ -1,100 +1,66 @@
+"""Thin view layer — delegates logic to forms and services."""
+
 import json
-from django.shortcuts import render
+import logging
+
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
-from .models import Team, Player
+from django.views.decorators.http import require_POST
+
+from .constants import MAX_TOURNAMENT_SLOTS
+from .forms import TeamRegistrationForm
+from .services import get_available_slots, register_team
+
+logger = logging.getLogger(__name__)
+
 
 def index(request):
-    max_slots = 12
-    # Count teams with status 'Accepted' (1)
-    approved_teams = Team.objects.filter(payment_status=1).count()
-    available_slots = max_slots - approved_teams
-    
-    if available_slots < 0:
-        available_slots = 0
-    
+    """Landing page with live slot counter."""
     context = {
-        'available_slots': available_slots
+        "available_slots": get_available_slots(),
+        "max_slots": MAX_TOURNAMENT_SLOTS,
     }
-    return render(request, 'tournament/index.html', context)
+    return render(request, "tournament/index.html", context)
+
 
 @ensure_csrf_cookie
 def register(request):
-    return render(request, 'tournament/register.html')
+    """Registration form page (renders the empty form + CSRF cookie)."""
+    return render(request, "tournament/register.html")
 
+
+@require_POST
 def api_register_team(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            
-            # Extract data
-            team_name = data.get('teamName')
-            division = data.get('division')
-            city = data.get('city')
-            
-            # Captain Info
-            full_name = data.get('capName', '').strip()
-            # Simple split for First/Last name
-            name_parts = full_name.split(' ', 1)
-            cap_first = name_parts[0]
-            cap_last = name_parts[1] if len(name_parts) > 1 else ''
-            
-            phone = data.get('phone')
-            email = data.get('email')
-            roster_text = data.get('roster', '')
+    """
+    JSON endpoint: validate and create a team.
 
-            # Basic Validation
-            if Team.objects.filter(name=team_name).exists():
-                return JsonResponse({'success': False, 'error': 'Team name already taken.'}, status=400)
-            
-            if Team.objects.filter(cap_email=email).exists():
-                return JsonResponse({'success': False, 'error': 'This email is already registered.'}, status=400)
+    Returns
+    -------
+    JsonResponse  {success: bool, team_id?: int, error?: str}
+    """
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {"success": False, "error": "Invalid JSON payload."}, status=400
+        )
 
-            # Create Team
-            team = Team.objects.create(
-                name=team_name,
-                division=division,
-                city=city,
-                cap_name=cap_first,
-                cap_surname=cap_last,
-                cap_phone=phone,
-                cap_email=email,
-                payment_status=0 # Waiting
-            )
-            
-            # Process Roster (Comma separated)
-            # Format expected: "John Doe 10, Jane Smith 12"
-            if roster_text:
-                players = [p.strip() for p in roster_text.split(',') if p.strip()]
-                for p_raw in players:
-                    # Try to extract number if at the end
-                    parts = p_raw.split()
-                    number = None
-                    last_name = ''
-                    first_name = ''
-                    
-                    if parts:
-                        # Check if last part is a number
-                        if parts[-1].isdigit():
-                            number = int(parts[-1])
-                            name_parts = parts[:-1]
-                        else:
-                            name_parts = parts
-                        
-                        if name_parts:
-                            first_name = name_parts[0]
-                            last_name = ' '.join(name_parts[1:]) if len(name_parts) > 1 else ''
-                            
-                            Player.objects.create(
-                                team=team,
-                                first_name=first_name,
-                                last_name=last_name,
-                                jersey_number=number
-                            )
+    form = TeamRegistrationForm(data)
+    if not form.is_valid():
+        # Return the first validation error
+        first_error = next(iter(form.errors.values()))[0]
+        return JsonResponse({"success": False, "error": first_error}, status=400)
 
-            return JsonResponse({'success': True, 'team_id': team.id})
+    try:
+        team = register_team(form.cleaned_data)
+        return JsonResponse({"success": True, "team_id": team.id})
 
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=500)
-    
-    return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
+    except ValueError as exc:
+        return JsonResponse({"success": False, "error": str(exc)}, status=400)
+
+    except Exception:
+        logger.exception("Unexpected error during team registration")
+        return JsonResponse(
+            {"success": False, "error": "Internal server error."}, status=500
+        )

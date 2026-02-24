@@ -4,32 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Pocket Aces Invitational{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                    },
-                    keyframes: {
-                        shimmer: {
-                            '100%': { transform: 'translateX(100%)' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/darkroomengineering/lenis@latest/bundled/lenis.min.js"></script>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-slate-950 text-white">
+<body>
     {% block content %}{% endblock %}
-    
+
+    <!-- Global config & utils (loaded before page-specific scripts) -->
+    <script src="{% static 'js/lenis-init.js' %}"></script>
+    <script src="{% static 'js/config.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

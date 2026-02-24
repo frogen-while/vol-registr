@@ -1,0 +1,238 @@
+// ═══════════════════════════════════════════════════════
+//  Flip Cards Section
+// ═══════════════════════════════════════════════════════
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// ── Perspective Section ─────────────────────────────
+.perspective-section {
+  perspective: 1500px;
+  position: relative;
+  background-color: $color-bg-hero;
+  overflow: hidden;
+  padding: 8rem 0;
+  background: rgba($color-slate-900, 0.5);
+
+  &::before { content: none; }
+
+  > .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1500px;
+  }
+
+  // Desktop background image
+  @media (min-width: calc($bp-md + 1px)) {
+    &::after {
+      content: '';
+      @include absolute-fill;
+      background-image:
+        linear-gradient(rgba($color-bg-hero, 0.3), rgba($color-bg-hero, 0.3)),
+        url('/static/assets/cards-bg.png');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      filter: blur(5px);
+      z-index: 0;
+      pointer-events: none;
+      background-color: rgba($color-bg-hero, 0.5);
+    }
+  }
+}
+
+// ── Cards Grid ──────────────────────────────────────
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4.5rem;
+  justify-items: center;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  @include respond(lg) {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3rem;
+    padding: 0;
+  }
+
+  @include mobile-only {
+    gap: 1.2rem;
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+// ── Card Wrapper ────────────────────────────────────
+.flip-card-wrapper {
+  width: 100%;
+  min-width: 180px;
+  aspect-ratio: 1 / 1.58;
+  transition: transform $transition-base;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.05);
+    z-index: 10;
+  }
+
+  @include mobile-only {
+    aspect-ratio: 1 / 1.6;
+  }
+}
+
+// ── Card 3D Container ───────────────────────────────
+.flip-card {
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+// ── Shared Face Styles ──────────────────────────────
+.flip-card-back,
+.flip-card-front {
+  @include absolute-fill;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 20px;
+  overflow: hidden;
+  @include flex-col;
+  align-items: center;
+  justify-content: center;
+  background-color: $color-bg-card;
+  background-image:
+    radial-gradient(circle at 30% 20%, rgba($color-sky-400, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 80% 120%, rgba($color-indigo-500, 0.12) 0%, transparent 45%);
+  border: 1px solid rgba($color-sky-400, 0.2);
+  box-shadow: 0 20px 50px rgba($color-bg-body, 0.6), inset 0 0 30px rgba($color-sky-400, 0.08);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border: 1px solid rgba($color-slate-400, 0.18);
+    border-radius: 12px;
+    pointer-events: none;
+  }
+
+  @include mobile-only { padding: 1rem; }
+}
+
+// ── Back Face (Shirt / Logo) ────────────────────────
+.flip-card-back {
+  transform: rotateY(0deg) translateZ(1px);
+  z-index: 2;
+  background-color: $color-bg-card-back;
+  background-image:
+    radial-gradient(circle at 40% 35%, rgba($color-sky-400, 0.18) 0%, transparent 55%),
+    radial-gradient(circle at 70% 80%, rgba($color-indigo-500, 0.12) 0%, transparent 50%),
+    repeating-linear-gradient(135deg,
+      rgba($color-sky-400, 0.08) 0px, rgba($color-sky-400, 0.08) 1px,
+      transparent 1px, transparent 12px);
+
+  img {
+    filter: drop-shadow(0 0 18px rgba($color-sky-400, 0.5));
+    opacity: 0.9;
+    transition: transform $transition-slow;
+  }
+
+  .flip-card-wrapper:hover & img { transform: scale(1.1); }
+}
+
+// ── Front Face (Content) ────────────────────────────
+.flip-card-front {
+  transform: rotateY(180deg) translateZ(1px);
+  z-index: 1;
+  padding: 2rem;
+  background-color: #4e90f4;
+  background-image:
+    linear-gradient(135deg,
+      rgba($color-bg-body, 0.95) 0%,
+      rgba($color-slate-900, 0.9) 55%,
+      rgba($color-bg-body, 0.98) 100%),
+    radial-gradient(circle at 20% 15%, rgba($color-sky-400, 0.18) 0%, transparent 45%);
+}
+
+// ── Hover Glow ──────────────────────────────────────
+.flip-card-wrapper:hover .flip-card-back,
+.flip-card-wrapper:hover .flip-card-front {
+  border-color: rgba($color-sky-400, 0.4);
+  box-shadow: 0 25px 70px rgba($color-bg-body, 0.75), inset 0 0 35px rgba($color-sky-400, 0.15);
+}
+
+// ── Card Back Decorative Corners ────────────────────
+.card-back__corner {
+  position: absolute;
+  color: rgba($color-sky-500, 0.3);
+  font-size: 1.25rem;
+
+  &--tl { top: 1.5rem; left: 1.5rem; }
+  &--tr { top: 1.5rem; right: 1.5rem; }
+  &--bl { bottom: 1.5rem; left: 1.5rem;  transform: rotate(180deg); }
+  &--br { bottom: 1.5rem; right: 1.5rem; transform: rotate(180deg); }
+}
+
+.card-back__logo {
+  position: relative;
+  z-index: 10;
+
+  img { width: 12rem; height: auto; }
+}
+
+// ── Card Corner (Rank / Suit) ───────────────────────
+.card-corner {
+  position: absolute;
+  @include flex-col;
+  align-items: center;
+  gap: 2px;
+  font-weight: 900;
+  font-size: clamp(0.8rem, 2.5vw, 1.25rem);
+  line-height: 1;
+}
+.card-top-left     { top: 1.25rem;    left: 1.25rem; }
+.card-bottom-right { bottom: 1.25rem; right: 1.25rem; transform: rotate(180deg); }
+.card-rank { font-size: clamp(1rem, 3vw, 1.6rem); }
+.card-suit { font-size: clamp(0.9rem, 2.8vw, 1.4rem); }
+.card-red  { color: $color-red; }
+
+// ── Card Front Content ──────────────────────────────
+.card-front__title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  color: $color-white;
+
+  @include mobile-only { font-size: clamp(0.8rem, 2.5vw, 1rem); }
+}
+
+.card-front__text {
+  color: $color-slate-400;
+  font-size: 0.875rem;
+  line-height: 1.625;
+
+  @include mobile-only { font-size: clamp(0.55rem, 1.5vw, 0.7rem); }
+}
+
+.card-front__highlight {
+  color: $color-sky-400;
+  font-weight: 700;
+  display: block;
+  margin-top: 1rem;
+  font-size: 1.125rem;
+}
+
+// ── Touch-device: no hover ──────────────────────────
+@media (hover: none) {
+  .flip-card-wrapper:hover { transform: none; }
+}
+
+// ── Mobile Cards ────────────────────────────────────
+@include mobile-only {
+  .perspective-section {
+    padding: 0 0 4rem 0 !important;
+    background-image: none !important;
+    background-color: $color-bg-hero !important;
+  }
+}

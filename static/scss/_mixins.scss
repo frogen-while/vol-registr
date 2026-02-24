@@ -1,0 +1,44 @@
+// ═══════════════════════════════════════════════════════
+//  Reusable Mixins
+// ═══════════════════════════════════════════════════════
+@use 'variables' as *;
+
+@mixin gradient-text {
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-image: $gradient-brand;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin absolute-fill {
+  position: absolute;
+  inset: 0;
+}
+
+@mixin absolute-center-x {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/// Media-query shorthand: respond(md), respond(lg), respond(xl)
+@mixin respond($bp) {
+  @if $bp == md { @media (min-width: $bp-md) { @content; } }
+  @else if $bp == lg { @media (min-width: $bp-lg) { @content; } }
+  @else if $bp == xl { @media (min-width: $bp-xl) { @content; } }
+}
+
+@mixin mobile-only {
+  @media (max-width: $bp-md) { @content; }
+}

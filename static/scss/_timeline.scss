@@ -1,0 +1,145 @@
+// ═══════════════════════════════════════════════════════
+//  Timeline Section & Footer
+// ═══════════════════════════════════════════════════════
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// ── Timeline Container ──────────────────────────────
+.timeline-container {
+  position: relative;
+  max-width: 56rem;
+  margin: 0 auto;
+
+  @include mobile-only {
+    padding-left: 1.75rem;
+    border-left: 2px solid $color-slate-800;
+  }
+}
+
+// ── Vertical Lines ──────────────────────────────────
+.timeline__line {
+  @include absolute-center-x;
+  height: 100%;
+  width: 0.25rem;
+  background: $color-slate-800;
+  border-radius: $radius-full;
+
+  &--glow {
+    height: 50%;
+    background: linear-gradient(to bottom, $color-sky-500, transparent);
+    opacity: 0.5;
+  }
+
+  @include mobile-only { display: none; }
+}
+
+// ── Timeline Item ───────────────────────────────────
+.timeline-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6rem;
+
+  &:last-child { margin-bottom: 0; }
+
+  @include mobile-only {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-left: 1.5rem;
+    margin-bottom: 3rem;
+  }
+}
+
+// ── Columns (Left / Right) ──────────────────────────
+.timeline-item__col {
+  width: 41.666%;
+
+  &--left  { text-align: right; padding-right: 3rem; }
+  &--right { padding-left: 3rem; }
+
+  @include mobile-only {
+    width: 100%;
+    padding: 0 !important;
+    text-align: left !important;
+  }
+}
+
+.timeline-item__title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: $color-white;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+}
+
+.timeline-item__date {
+  color: $color-sky-400;
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+}
+
+.timeline-item__text {
+  color: $color-slate-400;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.625;
+}
+
+// ── Dot (center marker) ────────────────────────────
+.timeline-item__dot-wrap {
+  @include absolute-center-x;
+  @include flex-center;
+
+  @include mobile-only {
+    left: -1.05rem;
+    top: 0.2rem;
+    transform: none;
+  }
+}
+
+.timeline-dot {
+  width: 1.5rem;
+  height: 1.5rem;
+  background: $color-slate-700;
+  border-radius: $radius-full;
+  border: 4px solid $color-slate-900;
+  z-index: 10;
+
+  &--active {
+    width: 2rem;
+    height: 2rem;
+    background: $color-sky-500;
+    box-shadow: 0 0 20px rgba($color-sky-500, 0.6);
+  }
+
+  &--final {
+    width: 2rem;
+    height: 2rem;
+    background: $color-slate-800;
+    box-shadow: 0 0 0 2px rgba($color-sky-500, 0.2);
+    @include flex-center;
+
+    &::after {
+      content: '';
+      width: 0.75rem;
+      height: 0.75rem;
+      background: $color-white;
+      border-radius: $radius-full;
+    }
+  }
+}
+
+// ── Footer ──────────────────────────────────────────
+.footer {
+  padding: 3rem 0;
+  border-top: 1px solid $color-slate-800;
+  text-align: center;
+}
+
+.footer__text {
+  color: $color-slate-500;
+  font-size: 0.875rem;
+}

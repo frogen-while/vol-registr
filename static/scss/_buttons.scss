@@ -1,0 +1,87 @@
+// ═══════════════════════════════════════════════════════
+//  Buttons — CTA & Submit
+// ═══════════════════════════════════════════════════════
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// ── CTA Button (Hero / Landing) ─────────────────────
+.btn-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 3rem;
+  font-size: 1.125rem;
+  font-weight: 900;
+  color: $color-white;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background-color: $color-sky-600;
+  overflow: hidden;
+  border-radius: $radius-2xl;
+  border: none;
+  cursor: pointer;
+  transition: all $transition-base;
+  box-shadow: 0 20px 25px -5px rgba($color-sky-500, 0.3);
+
+  &:hover {
+    background-color: $color-sky-500;
+    transform: scale(1.05);
+  }
+
+  @include mobile-only {
+    width: 100%;
+    justify-content: center;
+    padding: 1rem 1.5rem;
+    font-size: clamp(0.75rem, 2.2vw, 0.9rem);
+    opacity: 1 !important;
+    background-color: $color-sky-600 !important;
+  }
+
+  &__text { position: relative; z-index: 10; }
+
+  &__shimmer {
+    @include absolute-fill;
+    transform: translateX(-100%);
+    background: linear-gradient(to right, transparent, rgba($color-white, 0.2), transparent);
+    z-index: 0;
+
+    .btn-cta:hover & { animation: shimmer 1.5s infinite; }
+  }
+}
+
+// ── Submit Button (Registration) ────────────────────
+.btn-submit {
+  width: 100%;
+  background: $gradient-btn;
+  color: $color-white;
+  font-weight: 900;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  padding: 1.25rem 0;
+  border-radius: $radius-xl;
+  transition: all $transition-base;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba($color-sky-500, 0.25);
+
+  &:hover {
+    background: $gradient-btn-hover;
+    transform: scale(1.02);
+  }
+  &:active { transform: scale(0.98); }
+
+  &__text { position: relative; z-index: 10; }
+
+  &__shimmer {
+    @include absolute-fill;
+    transform: translateX(-100%);
+    background: linear-gradient(to right, transparent, rgba($color-white, 0.2), transparent);
+    z-index: 0;
+
+    .btn-submit:hover & { animation: shimmer 1.5s infinite; }
+  }
+}

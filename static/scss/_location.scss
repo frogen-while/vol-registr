@@ -1,0 +1,113 @@
+// ═══════════════════════════════════════════════════════
+//  Location Section
+// ═══════════════════════════════════════════════════════
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.location-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: grid;
+  gap: 3rem;
+  align-items: center;
+
+  @include respond(md) { grid-template-columns: 1fr 1fr; }
+}
+
+// Text side (order-2 on mobile, order-1 on desktop)
+.location-content {
+  order: 2;
+  @include respond(md) { order: 1; }
+}
+
+.location__title {
+  font-size: 2.25rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+
+  @include respond(md) { font-size: 3rem; }
+}
+
+.location__text {
+  color: $color-slate-300;
+  margin-bottom: 1.5rem;
+  line-height: 1.625;
+}
+
+.location__info {
+  @include flex-col;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.location__info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.location__info-icon {
+  background: $color-slate-800;
+  padding: 0.75rem;
+  border-radius: $radius-lg;
+  color: $color-sky-400;
+  flex-shrink: 0;
+}
+
+.location__info-label {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.location__info-value {
+  color: $color-slate-400;
+  font-size: 0.875rem;
+}
+
+.location__link {
+  color: $color-sky-400;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color $transition-base;
+
+  &:hover { color: $color-white; }
+}
+
+// Map side (order-1 on mobile, order-2 on desktop)
+.location-map {
+  height: 400px;
+  width: 100%;
+  border-radius: $radius-2xl;
+  overflow: hidden;
+  border: 1px solid $color-slate-700;
+  position: relative;
+  order: 1;
+
+  @include respond(md) { order: 2; }
+  @include mobile-only { height: 260px; }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    filter: invert(90%) hue-rotate(180deg);
+  }
+}
+
+.location-map__overlay {
+  @include absolute-fill;
+  background: rgba($color-sky-500, 0.1);
+  transition: background-color $transition-base;
+  pointer-events: none;
+
+  .location-map:hover & { background: transparent; }
+}

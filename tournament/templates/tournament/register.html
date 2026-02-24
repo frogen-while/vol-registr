@@ -2,165 +2,160 @@
 {% load static %}
 
 {% block content %}
-<div class="relative flex flex-col lg:flex-row min-h-screen">
-    <!-- Фонові елементи -->
+<div class="reg-layout">
+    <!-- Background decorations -->
     <div class="grid-bg"></div>
     <div class="glow-orb glow-1"></div>
     <div class="glow-orb glow-2"></div>
-    
-    <!-- Ліва колонка: Брендинг та 3D Картка -->
-    <div class="w-full lg:w-5/12 p-8 lg:p-16 flex flex-col justify-center relative z-10 border-r border-white/5">
-        
-        <div class="gsap-hero-text mb-12 lg:mb-20">
-            <h2 class="text-sky-400 font-bold text-sm uppercase tracking-[0.4em] mb-4">Official Registration</h2>
-            <h1 class="text-5xl lg:text-7xl font-black uppercase italic tracking-tighter leading-[0.85] text-white">
-                Pocket<br>Aces<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500">Invitational</span>
+
+    <!-- Left Column: Branding & 3D Pass -->
+    <div class="reg-brand">
+        <div class="reg-brand__hero gsap-hero-text">
+            <h2 class="reg-brand__subtitle">Official Registration</h2>
+            <h1 class="reg-brand__title">
+                Pocket<br>Aces<br><span class="gradient-text">Invitational</span>
             </h1>
-            <p class="mt-6 text-slate-400 text-sm leading-relaxed max-w-sm">
+            <p class="reg-brand__desc">
                 Secure your team's spot in the most prestigious volleyball tournament of 2026. Only 16 slots available.
             </p>
         </div>
 
-        <!-- Левітуюча 3D перепустка -->
-        <div class="pass-container hidden md:block mx-auto lg:mx-0 gsap-pass">
+        <!-- Levitating 3D VIP Pass -->
+        <div class="pass-container gsap-pass">
             <div class="pass-element" id="vipPass">
-                
-                <!-- Лицьова сторона (Front) -->
-                <div class="pass-face pass-front p-6 relative">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl"></div>
-                    
-                    <div class="flex justify-between items-start mb-12">
-                        <div class="text-3xl">♠</div>
-                        <div class="text-[9px] font-black tracking-widest text-slate-400 uppercase text-right">
+
+                <!-- Front Face -->
+                <div class="pass-face pass-front">
+                    <div class="pass-front__glow"></div>
+                    <div class="pass-front__header">
+                        <div class="pass-front__suit">♠</div>
+                        <div class="pass-front__meta">
                             Season 2026<br>Access Pass
                         </div>
                     </div>
-
-                    <div class="mt-auto">
-                        <div class="text-xs text-sky-400 font-bold tracking-[0.3em] uppercase mb-1">Entry Status</div>
-                        <div class="text-3xl font-black text-white uppercase tracking-tighter">Team Roster</div>
-                        <div class="w-full h-1 bg-gradient-to-r from-ffd700 to-sky-500 mt-4 mb-2"></div>
-                        <div class="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                    <div class="pass-front__body">
+                        <div class="pass-front__status-label">Entry Status</div>
+                        <div class="pass-front__status-value">Team Roster</div>
+                        <div class="pass-front__stripe"></div>
+                        <div class="pass-front__footer">
                             <span>ID: #PA-26-REQ</span>
                             <span>Awaiting Auth</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Зворотна сторона (Back) -->
-                <div class="pass-face pass-back p-6 text-center">
-                    <div class="text-6xl mb-4">🏆</div>
-                    <h3 class="text-2xl font-black uppercase tracking-tighter mb-2">The Ultimate<br>Showdown</h3>
-                    <p class="text-xs font-bold text-slate-800 uppercase tracking-widest">Win the Crown</p>
+                <!-- Back Face -->
+                <div class="pass-face pass-back">
+                    <div class="pass-back__icon">🏆</div>
+                    <h3 class="pass-back__title">The Ultimate<br>Showdown</h3>
+                    <p class="pass-back__text">Win the Crown</p>
                 </div>
 
             </div>
         </div>
     </div>
 
-    <!-- Права колонка: Форма реєстрації -->
-    <div class="w-full lg:w-7/12 p-6 lg:p-12 flex items-center justify-center relative z-10">
-        
-        <div class="glass-panel rounded-[2rem] p-8 lg:p-12 w-full max-w-3xl gsap-form-panel">
-            
-            <div class="mb-10 text-center lg:text-left">
-                <h2 class="text-3xl font-black text-white uppercase tracking-tight">Team Application</h2>
-                <p class="text-slate-400 text-sm mt-2">Fill out the details below to request tournament entry.</p>
+    <!-- Right Column: Registration Form -->
+    <div class="reg-form-col">
+        <div class="glass-panel gsap-form-panel">
+
+            <div class="form-panel__header">
+                <h2 class="form-panel__title">Team Application</h2>
+                <p class="form-panel__subtitle">Fill out the details below to request tournament entry.</p>
             </div>
 
-            <form id="registrationForm" class="space-y-8">
+            <form id="registrationForm" class="reg-form">
                 {% csrf_token %}
-                
+
                 <!-- Section 1: Team Info -->
                 <div class="gsap-form-field">
-                    <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-2">
-                        <span class="bg-sky-500 text-white text-xs font-black px-2 py-1 rounded">01</span>
-                        <h3 class="text-sm font-bold text-white uppercase tracking-widest">Team Identity</h3>
+                    <div class="form-section__header">
+                        <span class="form-section__badge">01</span>
+                        <h3 class="form-section__title">Team Identity</h3>
                     </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-grid">
                         <div>
                             <label class="form-label" for="teamName">Team Name *</label>
-                            <input type="text" id="teamName" required class="form-input w-full rounded-xl px-4 py-3 text-sm placeholder-slate-600" placeholder="e.g. Neon Spikers">
+                            <input type="text" id="teamName" required class="form-control" placeholder="e.g. Neon Spikers">
                         </div>
                         <div>
                             <label class="form-label" for="division">Tournament Division *</label>
-                            <select id="division" required class="form-input w-full rounded-xl px-4 py-3 text-sm appearance-none">
-                                <option value="" disabled selected class="text-slate-500">Select Division...</option>
+                            <select id="division" required class="form-control form-control--select">
+                                <option value="" disabled selected>Select Division...</option>
                                 <option value="pro_men">Pro Men's</option>
                                 <option value="pro_women">Pro Women's</option>
                                 <option value="amateur">Amateur / Mixed</option>
                             </select>
                         </div>
-                        <div class="md:col-span-2">
+                        <div class="form-grid__full">
                             <label class="form-label" for="city">Representing City / Club</label>
-                            <input type="text" id="city" class="form-input w-full rounded-xl px-4 py-3 text-sm placeholder-slate-600" placeholder="City or Club affiliation">
+                            <input type="text" id="city" class="form-control" placeholder="City or Club affiliation">
                         </div>
                     </div>
                 </div>
 
                 <!-- Section 2: Contact Info -->
                 <div class="gsap-form-field">
-                    <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-2 mt-8">
-                        <span class="bg-sky-500 text-white text-xs font-black px-2 py-1 rounded">02</span>
-                        <h3 class="text-sm font-bold text-white uppercase tracking-widest">Captain Contact</h3>
+                    <div class="form-section__header form-section__header--spaced">
+                        <span class="form-section__badge">02</span>
+                        <h3 class="form-section__title">Captain Contact</h3>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-grid">
                         <div>
                             <label class="form-label" for="capName">Full Name *</label>
-                            <input type="text" id="capName" required class="form-input w-full rounded-xl px-4 py-3 text-sm placeholder-slate-600" placeholder="Captain's Name">
+                            <input type="text" id="capName" required class="form-control" placeholder="Captain's Name">
                         </div>
                         <div>
                             <label class="form-label" for="phone">Phone Number *</label>
-                            <input type="tel" id="phone" required class="form-input w-full rounded-xl px-4 py-3 text-sm placeholder-slate-600" placeholder="+1 (555) 000-0000">
+                            <input type="tel" id="phone" required class="form-control" placeholder="+1 (555) 000-0000">
                         </div>
-                        <div class="md:col-span-2">
+                        <div class="form-grid__full">
                             <label class="form-label" for="email">Email Address *</label>
-                            <input type="email" id="email" required class="form-input w-full rounded-xl px-4 py-3 text-sm placeholder-slate-600" placeholder="captain@team.com">
+                            <input type="email" id="email" required class="form-control" placeholder="captain@team.com">
                         </div>
                     </div>
                 </div>
 
                 <!-- Section 3: Roster -->
                 <div class="gsap-form-field">
-                    <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-2 mt-8">
-                        <span class="bg-sky-500 text-white text-xs font-black px-2 py-1 rounded">03</span>
-                        <h3 class="text-sm font-bold text-white uppercase tracking-widest">Initial Roster</h3>
+                    <div class="form-section__header form-section__header--spaced">
+                        <span class="form-section__badge">03</span>
+                        <h3 class="form-section__title">Initial Roster</h3>
                     </div>
-                    
                     <div>
                         <label class="form-label" for="roster">Players List (Optional at this stage)</label>
-                        <textarea id="roster" rows="4" class="form-input w-full rounded-xl px-4 py-3 text-sm placeholder-slate-600 resize-none" placeholder="Enter player names and numbers, separated by commas..."></textarea>
-                        <p class="text-[10px] text-slate-500 mt-2 font-medium">You can finalize your 14-player roster up to 7 days before the tournament starts.</p>
+                        <textarea id="roster" rows="4" class="form-control form-control--textarea" placeholder="Enter player names and numbers, separated by commas..."></textarea>
+                        <p class="form-hint">You can finalize your 14-player roster up to 7 days before the tournament starts.</p>
                     </div>
                 </div>
 
                 <!-- Submit Area -->
-                <div class="gsap-form-field pt-6">
-                    <label class="flex items-start gap-3 cursor-pointer mb-8 group">
-                        <div class="relative flex items-center justify-center mt-0.5">
-                            <input type="checkbox" required class="peer appearance-none w-5 h-5 border-2 border-slate-600 rounded bg-transparent checked:bg-sky-500 checked:border-sky-500 transition-colors">
-                            <svg class="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                <div class="gsap-form-field">
+                    <label class="form-checkbox">
+                        <div class="form-checkbox__box">
+                            <input type="checkbox" required class="form-checkbox__input">
+                            <svg class="form-checkbox__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                            </svg>
                         </div>
-                        <span class="text-xs text-slate-400 leading-relaxed group-hover:text-slate-300 transition-colors">
-                            I confirm that I am authorized to register this team and agree to the <a href="#" class="text-sky-400 hover:text-sky-300 underline underline-offset-2">Tournament Rules & Regulations</a>.
+                        <span class="form-checkbox__label">
+                            I confirm that I am authorized to register this team and agree to the
+                            <a href="#">Tournament Rules &amp; Regulations</a>.
                         </span>
                     </label>
 
-                    <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-black text-sm uppercase tracking-[0.2em] py-5 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-sky-500/25 relative overflow-hidden group">
-                        <span class="relative z-10">Submit Application</span>
-                        <!-- Ефект блиску на кнопці -->
-                        <div class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-0"></div>
+                    <button type="submit" id="submitBtn" class="btn-submit">
+                        <span class="btn-submit__text">Submit Application</span>
+                        <div class="btn-submit__shimmer"></div>
                     </button>
                 </div>
-                
-                <!-- Повідомлення про успіх (Приховане) -->
-                <div id="successMessage" class="hidden text-center py-10">
-                    <div class="text-5xl mb-4">✅</div>
-                    <h3 class="text-2xl font-black text-white uppercase tracking-tight mb-2">Application Received</h3>
-                    <p class="text-slate-400 text-sm">We've sent a confirmation email to the captain. Our team will review your application shortly.</p>
-                    <button type="button" onclick="location.reload()" class="mt-8 text-sky-400 text-xs font-bold uppercase tracking-widest hover:text-sky-300">Submit Another Team</button>
+
+                <!-- Success Message (Hidden) -->
+                <div id="successMessage" class="success-message hidden">
+                    <div class="success-message__icon">✅</div>
+                    <h3 class="success-message__title">Application Received</h3>
+                    <p class="success-message__text">We've sent a confirmation email to the captain. Our team will review your application shortly.</p>
+                    <button type="button" onclick="location.reload()" class="success-message__link">Submit Another Team</button>
                 </div>
 
             </form>
@@ -170,5 +165,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{% static 'js/registration.js' %}"></script>
+    <script src="{% static 'js/register-page.js' %}"></script>
 {% endblock %}

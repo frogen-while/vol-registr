@@ -1,0 +1,454 @@
+// ═══════════════════════════════════════════════════════
+//  Registration Page — Layout, Form, Glass Panel, Pass
+// ═══════════════════════════════════════════════════════
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// ── Decorative Background ───────────────────────────
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  opacity: 0.04;
+  pointer-events: none;
+  background-image:
+    linear-gradient($color-sky-400 1px, transparent 1px),
+    linear-gradient(90deg, $color-sky-400 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 0;
+}
+
+.glow-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 0;
+  pointer-events: none;
+}
+.glow-1 { top: -10%; left: -10%;   width: 50vw; height: 50vw; background: rgba($color-sky-500, 0.15); }
+.glow-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: rgba($color-gold, 0.1); }
+
+// ── Two-Column Layout ───────────────────────────────
+.reg-layout {
+  position: relative;
+  @include flex-col;
+  min-height: 100vh;
+
+  @include respond(lg) { flex-direction: row; }
+}
+
+// ── Left Brand Column ───────────────────────────────
+.reg-brand {
+  width: 100%;
+  padding: 2rem;
+  @include flex-col;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+  border-right: 1px solid rgba($color-white, 0.05);
+
+  @include respond(lg) {
+    width: 41.666%;
+    padding: 4rem;
+  }
+}
+
+.reg-brand__hero {
+  margin-bottom: 3rem;
+  @include respond(lg) { margin-bottom: 5rem; }
+}
+
+.reg-brand__subtitle {
+  color: $color-sky-400;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  margin-bottom: 1rem;
+}
+
+.reg-brand__title {
+  font-size: 3rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-style: italic;
+  letter-spacing: -0.05em;
+  line-height: 0.85;
+  color: $color-white;
+
+  @include respond(lg) { font-size: 4.5rem; }
+}
+
+.reg-brand__desc {
+  margin-top: 1.5rem;
+  color: $color-slate-400;
+  font-size: 0.875rem;
+  line-height: 1.625;
+  max-width: 24rem;
+}
+
+// ── Right Form Column ───────────────────────────────
+.reg-form-col {
+  width: 100%;
+  padding: 1.5rem;
+  @include flex-center;
+  position: relative;
+  z-index: 10;
+
+  @include respond(lg) {
+    width: 58.333%;
+    padding: 3rem;
+  }
+}
+
+// ── Glass Panel ─────────────────────────────────────
+.glass-panel {
+  background: rgba($color-slate-900, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba($color-white, 0.08);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border-radius: 2rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 48rem;
+
+  @include respond(lg) { padding: 3rem; }
+}
+
+.form-panel__header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+  @include respond(lg) { text-align: left; }
+}
+
+.form-panel__title {
+  font-size: 1.875rem;
+  font-weight: 900;
+  color: $color-white;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+}
+
+.form-panel__subtitle {
+  color: $color-slate-400;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+// ── Form Structure ──────────────────────────────────
+.reg-form {
+  @include flex-col;
+  gap: 2rem;
+}
+
+.form-section__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba($color-slate-700, 0.5);
+  padding-bottom: 0.5rem;
+
+  &--spaced { margin-top: 2rem; }
+}
+
+.form-section__badge {
+  background: $color-sky-500;
+  color: $color-white;
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 0.25rem 0.5rem;
+  border-radius: $radius-sm;
+}
+
+.form-section__title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: $color-white;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+
+  @include respond(md) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.form-grid__full {
+  @include respond(md) { grid-column: span 2; }
+}
+
+// ── Form Controls ───────────────────────────────────
+.form-label {
+  color: $color-slate-400;
+  font-size: clamp(0.6rem, 1.5vw, 0.75rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.form-control {
+  width: 100%;
+  border-radius: $radius-xl;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  background: rgba($color-bg-body, 0.5);
+  border: 1px solid rgba($color-white, 0.1);
+  color: $color-white;
+  transition: all $transition-base;
+
+  &::placeholder { color: $color-slate-600; }
+  &:focus {
+    outline: none;
+    border-color: $color-sky-400;
+    box-shadow: 0 0 0 3px rgba($color-sky-400, 0.2);
+    background: rgba($color-bg-body, 0.8);
+  }
+
+  &--select  { appearance: none; -webkit-appearance: none; }
+  &--textarea { resize: none; }
+}
+
+.form-hint {
+  font-size: 0.625rem;
+  color: $color-slate-500;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+// ── Custom Checkbox ─────────────────────────────────
+.form-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  margin-bottom: 2rem;
+
+  &:hover .form-checkbox__label { color: $color-slate-300; }
+}
+
+.form-checkbox__box {
+  position: relative;
+  @include flex-center;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.form-checkbox__input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid $color-slate-600;
+  border-radius: $radius-sm;
+  background: transparent;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:checked {
+    background: $color-sky-500;
+    border-color: $color-sky-500;
+  }
+}
+
+.form-checkbox__icon {
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  color: $color-white;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity $transition-base;
+
+  .form-checkbox__input:checked ~ & { opacity: 1; }
+}
+
+.form-checkbox__label {
+  font-size: 0.75rem;
+  color: $color-slate-400;
+  line-height: 1.625;
+  transition: color $transition-base;
+
+  a {
+    color: $color-sky-400;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover { color: $color-sky-300; }
+  }
+}
+
+// ── Success Message ─────────────────────────────────
+.success-message {
+  text-align: center;
+  padding: 2.5rem 0;
+}
+
+.success-message__icon  { font-size: 3rem;  margin-bottom: 1rem; }
+
+.success-message__title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: $color-white;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.5rem;
+}
+
+.success-message__text {
+  color: $color-slate-400;
+  font-size: 0.875rem;
+}
+
+.success-message__link {
+  display: inline-block;
+  margin-top: 2rem;
+  color: $color-sky-400;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:hover { color: $color-sky-300; }
+}
+
+// ── VIP Pass ────────────────────────────────────────
+.pass-container {
+  width: 280px;
+  height: 420px;
+  perspective: 2000px;
+  z-index: 10;
+  display: none;
+  margin: 0 auto;
+
+  @include respond(md) { display: block; }
+  @include respond(lg) { margin-left: 0; }
+}
+
+.pass-element {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.pass-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+  @include flex-col;
+  overflow: hidden;
+  border: 4px solid rgba($color-white, 0.1);
+}
+
+.pass-front {
+  background: linear-gradient(135deg, #001d3d 0%, #000814 100%);
+  border-color: $color-gold;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.pass-back {
+  background: $color-sky-500;
+  transform: rotateY(180deg);
+  border-color: $color-white;
+  justify-content: center;
+  align-items: center;
+  color: $color-bg-body;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+// Pass-front inner layout
+.pass-front__glow {
+  position: absolute;
+  top: 0; right: 0;
+  width: 8rem; height: 8rem;
+  background: rgba($color-sky-500, 0.1);
+  border-radius: 50%;
+  filter: blur(40px);
+}
+
+.pass-front__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 3rem;
+}
+
+.pass-front__suit { font-size: 1.875rem; }
+
+.pass-front__meta {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: $color-slate-400;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.pass-front__body { margin-top: auto; }
+
+.pass-front__status-label {
+  font-size: 0.75rem;
+  color: $color-sky-400;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.pass-front__status-value {
+  font-size: 1.875rem;
+  font-weight: 900;
+  color: $color-white;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+}
+
+.pass-front__stripe {
+  width: 100%;
+  height: 0.25rem;
+  background: linear-gradient(to right, $color-gold, $color-sky-500);
+  margin: 1rem 0 0.5rem;
+}
+
+.pass-front__footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: $color-slate-500;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+// Pass-back inner layout
+.pass-back__icon  { font-size: 3.75rem; margin-bottom: 1rem; }
+
+.pass-back__title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.pass-back__text {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $color-slate-800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
