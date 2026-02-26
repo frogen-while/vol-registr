@@ -10,6 +10,7 @@
   @include flex-center;
   overflow: hidden;
   background-color: $color-bg-hero;
+  contain: paint;
 
   // Desktop radial glow on left side
   &::before {
@@ -57,10 +58,7 @@
   z-index: 10;
   display: flex;
   align-items: center;
-  padding: 0 2rem 10rem;
-
-  @include respond(md) { padding: 0 5rem 10rem; }
-  @include respond(lg) { padding: 0 10rem 10rem; }
+  padding: 0 clamp(1.25rem, 5vw, 10rem) 10rem;
 }
 
 .hero__left {
@@ -103,46 +101,30 @@
   letter-spacing: -0.05em;
   line-height: 0.85;
   overflow: hidden;
-  white-space: nowrap;
-
-  @include mobile-only { white-space: normal; }
 }
 
 .hero-title__main {
-  font-size: 4.5rem;
-  display: inline-block;
+  font-size: clamp(4.2rem, 8vw, 13rem);
+  display: block;
+  line-height: 0.9;
   transform: translateY(100%);
   @include gradient-text;
-
-  @include respond(md) { font-size: 8rem; }
-  @include respond(lg) { font-size: clamp(3rem, 6vw + 1rem, 12rem); }
-  @include respond(xl) { font-size: 13rem; }
-
-  @include mobile-only {
-    font-size: clamp(2.6rem, 11vw, 4.6rem);
-    line-height: 0.9;
-  }
 }
 
 .hero-title__sub {
-  font-size: 2.25rem;
-  display: inline-block;
+  font-size: clamp(1.2rem, 2.4vw, 5rem);
+  display: block;
   color: $color-white;
   transform: translateY(100%);
   margin-top: 1rem;
 
-  @include respond(md) { font-size: 3.75rem; }
-  @include respond(lg) { font-size: clamp(1.4rem, 2.6vw + 0.4rem, 5rem);}
-
-  @include mobile-only {
-    font-size: clamp(1.2rem, 5.2vw, 2.2rem);
-  }
+  @include respond(2xl) { font-size: clamp(1.6rem, 3.2vw, 5rem); }
 }
 
 // ── Description ─────────────────────────────────────
 .hero-text {
   color: $color-slate-400;
-  font-size: clamp(1.25rem, 2.8vw, 2rem);
+  font-size: clamp(0.875rem, 1.5vw, 1.75rem);
   max-width: 64rem;
   opacity: 0;
   transform: translateY(1rem);
@@ -150,13 +132,35 @@
   font-weight: 500;
 
   @include respond(lg) {
-    font-size: clamp(1rem, 1.2vw + 0.35rem, 2.4rem);
     max-width: 52rem;
   }
-  @include mobile-only {
-    font-size: clamp(0.875rem, 2.5vw, 1rem);
-    line-height: 1.6;
+  @include respond(2xl) {
+    font-size: clamp(1.1rem, 2vw, 2.8rem);
   }
+}
+
+// ── Price Badge ─────────────────────────────────────
+.hero-price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translateY(1rem);
+}
+
+.hero-price__value {
+  font-size: clamp(1.8rem, 2.5vw, 3rem);
+  font-weight: 900;
+  color: $color-sky-400;
+  letter-spacing: -0.02em;
+}
+
+.hero-price__label {
+  font-size: clamp(0.75rem, 1vw, 1rem);
+  font-weight: 700;
+  color: $color-slate-400;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 // ── Actions Row (CTA + Counter) ─────────────────────
@@ -172,6 +176,7 @@
   @include respond(md) {
     flex-direction: row;
     align-items: center;
+    flex-wrap: wrap;
   }
   @include mobile-only {
     gap: 1.25rem;
@@ -191,18 +196,16 @@
 }
 
 .hero-counter__value {
-  font-size: 3.75rem;
+  font-size: clamp(1.5rem, 3vw, 3.75rem);
   font-weight: 900;
   color: $color-white;
   margin-bottom: 0.25rem;
   line-height: 1;
-  @include mobile-only { font-size: clamp(1.5rem, 6vw, 2.5rem); }
 }
 
 .hero-counter__total {
   color: $color-slate-600;
-  font-size: 1.875rem;
-  @include mobile-only { font-size: clamp(0.9rem, 3vw, 1.25rem); }
+  font-size: clamp(0.9rem, 1.5vw, 1.875rem);
 }
 
 .hero-counter__label {
@@ -253,7 +256,7 @@
   opacity: 0.5;
   color: $color-white;
 
-  svg { width: 1.5rem; height: 1.5rem; }
+  svg { width: 2.75rem; height: 2.75rem; }
 
   @include mobile-only { display: none; }
 }
@@ -273,9 +276,26 @@
     z-index: 10;
   }
 
-  .hero-logo-watermark { display: none !important; }
+  // Logo as faded background on mobile
+  .hero-logo-watermark {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
 
-  // Player as faded background on mobile
+    img {
+      width: 110vw !important;
+      max-width: none !important;
+      opacity: 0.07 !important;
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      filter: none !important;
+    }
+  }
+
+  // Player hidden on mobile
   .hero-player-container {
     display: block !important;
     position: absolute !important;

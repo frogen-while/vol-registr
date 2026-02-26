@@ -7,27 +7,45 @@ before data reaches the service layer.
 
 from django import forms
 
-from .constants import DIVISION_CHOICES
+from .constants import LEAGUE_LEVEL_CHOICES
+
+
+class PlayerForm(forms.Form):
+    """Validates a single player entry in the roster."""
+
+    firstName    = forms.CharField(max_length=50, strip=True)
+    lastName     = forms.CharField(max_length=50, strip=True)
+    jerseyNumber = forms.IntegerField(required=False, min_value=0, max_value=99)
+    dob          = forms.DateField(
+        required=False,
+        input_formats=["%Y-%m-%d", "%d.%m.%Y", "%d/%m/%Y"],
+    )
 
 
 class TeamRegistrationForm(forms.Form):
-    """Validates the JSON payload sent from the registration page."""
+    """Validates the JSON payload sent from the 3-step registration page."""
 
-    teamName = forms.CharField(max_length=100, strip=True)
-    division = forms.ChoiceField(choices=DIVISION_CHOICES)
-    city = forms.CharField(max_length=100, required=False, strip=True)
+    # ── Step 1: Team Identity ───────────────────────────────
+    teamName    = forms.CharField(max_length=100, strip=True)
+    leagueLevel = forms.ChoiceField(choices=LEAGUE_LEVEL_CHOICES)
+    city        = forms.CharField(max_length=100, required=False, strip=True)
+    instagram   = forms.CharField(max_length=255, required=False, strip=True)
 
-    capName = forms.CharField(max_length=100, strip=True)
-    phone = forms.CharField(max_length=20, required=False, strip=True)
-    email = forms.EmailField(max_length=100)
-
-    roster = forms.CharField(required=False, strip=True)
+    # ── Step 2: Captain ─────────────────────────────────────
+    capName   = forms.CharField(max_length=100, strip=True)
+    capDob    = forms.DateField(
+        required=False,
+        input_formats=["%Y-%m-%d", "%d.%m.%Y", "%d/%m/%Y"],
+    )
+    capJersey = forms.IntegerField(required=False, min_value=0, max_value=99)
+    phone     = forms.CharField(max_length=20, required=False, strip=True)
+    email     = forms.EmailField(max_length=100)
 
     def clean_capName(self):
-        """Split full name into (first, last) tuple stored in cleaned_data."""
+        """Split full name into (first, last) dict stored in cleaned_data."""
         full_name = self.cleaned_data["capName"]
         parts = full_name.split(" ", 1)
-        first_name = parts[0]
-        last_name = parts[1] if len(parts) > 1 else ""
-        # Store both pieces; the original key is replaced with a dict
-        return {"first": first_name, "last": last_name}
+        return {
+            "first": parts[0],
+            "last": parts[1] if len(parts) > 1 else "",
+        }

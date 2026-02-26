@@ -6,18 +6,57 @@
     <title>{% block title %}Pocket Aces Invitational{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/darkroomengineering/lenis@latest/bundled/lenis.min.js"></script>
     {% block extra_head %}{% endblock %}
 </head>
 <body>
+    <!-- Site Navigation -->
+    <nav class="site-nav" id="siteNav">
+      <div class="site-nav__inner">
+        <a href="{% url 'index' %}" class="site-nav__logo">
+          <img src="{% static 'assets/logo.png' %}" alt="Pocket Aces">
+          <span class="site-nav__logo-text">Pocket Aces</span>
+        </a>
+
+        <div class="site-nav__menu" id="navMenu">
+          <a href="{% url 'index' %}" class="site-nav__link" data-i18n="nav_home">Home</a>
+
+          <div class="site-nav__item">
+            <span class="site-nav__link site-nav__link--disabled" data-i18n="nav_match">Match</span>
+            <div class="site-nav__tooltip" data-i18n="nav_match_tip">Available during the tournament</div>
+          </div>
+
+          <span class="site-nav__link site-nav__link--disabled" data-i18n="nav_faq">FAQ</span>
+          <span class="site-nav__link site-nav__link--disabled" data-i18n="nav_about">About Us</span>
+
+          <a href="{% url 'register' %}" class="site-nav__cta" data-i18n="nav_register">Register Team</a>
+        </div>
+
+        <div class="site-nav__controls">
+          <button class="site-nav__lang" id="langToggle" aria-label="Switch language">
+            <span class="site-nav__lang-opt active" data-lang="en">EN</span>
+            <span class="site-nav__lang-sep">|</span>
+            <span class="site-nav__lang-opt" data-lang="pl">PL</span>
+          </button>
+          <button class="site-nav__burger" id="navBurger" aria-label="Menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
     {% block content %}{% endblock %}
 
     <!-- Global config & utils (loaded before page-specific scripts) -->
     <script src="{% static 'js/lenis-init.js' %}"></script>
     <script src="{% static 'js/config.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
-    {% block scripts %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    {% block scripts %}
+    {% endblock %}
+    <script src="{% static 'js/navbar.js' %}"></script>
 </body>
 </html>

@@ -28,19 +28,24 @@
                 Elite competition. Premium atmosphere. Unmatched glory.
             </p>
 
+            <div class="hero-price">
+                <span class="hero-price__value">400 PLN</span>
+                <span class="hero-price__label">per team</span>
+            </div>
+
             <div class="hero-btn-container">
+                <div class="hero-counter">
+                    <div class="hero-counter__value">
+                        <span id="registeredCount">{{ registered_teams }}</span>
+                        <span class="hero-counter__total">/ {{ max_slots }}</span>
+                    </div>
+                    <div class="hero-counter__label">Teams Registered</div>
+                </div>
+
                 <a href="{% url 'register' %}" class="btn-cta">
                     <span class="btn-cta__text">Secure Your Spot</span>
                     <div class="btn-cta__shimmer"></div>
                 </a>
-
-                <div class="hero-counter">
-                    <div class="hero-counter__value">
-                        <span id="slotsCount">{{ available_slots }}</span>
-                        <span class="hero-counter__total">/ {{ max_slots }}</span>
-                    </div>
-                    <div class="hero-counter__label">Slots Available</div>
-                </div>
             </div>
         </div>
 
@@ -61,10 +66,11 @@
     <div class="container">
         <h2 class="section-heading">The Deal</h2>
 
-        <div class="cards-grid">
+        <div class="cards-grid swiper cards-swiper">
+            <div class="swiper-wrapper">
 
             <!-- Card 1: Grand Prize -->
-            <div class="flip-card-wrapper">
+            <div class="swiper-slide flip-card-wrapper">
                 <div class="flip-card">
                     <div class="flip-card-back">
                         <div class="card-back__corner card-back__corner--tl">♠</div>
@@ -87,15 +93,20 @@
                         <h3 class="card-front__title">Grand Prize</h3>
                         <div class="divider"></div>
                         <p class="card-front__text">
-                            Winner takes the glory and the exclusive Pocket Aces trophy. <br>
-                            <span class="card-front__highlight">$5,000 Pool</span>
+                            Top 3 teams receive official Pocket Aces trophies and medals, with individual MVP awards presented to the best players of the tournament.
                         </p>
+                        <ul class="card-front__list">
+                            <li>Championship Trophy</li>
+                            <li>Medals for Top 3 Teams</li>
+                            <li>6 MVP Awards</li>
+                            <li>Official Social Media Feature</li>
+                        </ul>
                     </div>
                 </div>
             </div>
 
             <!-- Card 2: Format -->
-            <div class="flip-card-wrapper">
+            <div class="swiper-slide flip-card-wrapper">
                 <div class="flip-card">
                     <div class="flip-card-back">
                         <div class="card-back__corner card-back__corner--tl">♠</div>
@@ -115,18 +126,18 @@
                             <span class="card-rank">A</span>
                             <span class="card-suit">♥</span>
                         </div>
-                        <h3 class="card-front__title">Double Elimination</h3>
+                        <h3 class="card-front__title">Competitive Format</h3>
                         <div class="divider"></div>
                         <p class="card-front__text">
-                            Every team is guaranteed at least two matches. <br>
-                            Lose once? Fight your way back through the lower bracket.
+                            Group stage followed by playoffs, matches played to two winning sets, with a minimum of two games guaranteed for every team.
                         </p>
+                        <span class="card-front__highlight">Minimum of Two Games</span>
                     </div>
                 </div>
             </div>
 
             <!-- Card 3: Pro Level -->
-            <div class="flip-card-wrapper">
+            <div class="swiper-slide flip-card-wrapper">
                 <div class="flip-card">
                     <div class="flip-card-back">
                         <div class="card-back__corner card-back__corner--tl">♠</div>
@@ -146,18 +157,18 @@
                             <span class="card-rank">A</span>
                             <span class="card-suit">♣</span>
                         </div>
-                        <h3 class="card-front__title">Pro Level</h3>
+                        <h3 class="card-front__title">High Level Organization</h3>
                         <div class="divider"></div>
                         <p class="card-front__text">
-                            High-level competition. Professional referees. <br>
-                            Full Livestream coverage with commentary.
+                            Simultaneous play on three courts, dual officiating, fixed match schedule, controlled tournament flow.
                         </p>
+                        <span class="card-front__highlight">Up to 20 Organizers</span>
                     </div>
                 </div>
             </div>
 
             <!-- Card 4: Four Aces -->
-            <div class="flip-card-wrapper">
+            <div class="swiper-slide flip-card-wrapper">
                 <div class="flip-card">
                     <div class="flip-card-back">
                         <div class="card-back__corner card-back__corner--tl">♠</div>
@@ -177,19 +188,26 @@
                             <span class="card-rank">A</span>
                             <span class="card-suit">♦</span>
                         </div>
-                        <h3 class="card-front__title">Four Aces</h3>
+                        <h3 class="card-front__title">Full Day Experience</h3>
                         <div class="divider"></div>
                         <p class="card-front__text">
-                            Four suits. One legend. <br>
-                            A full house of talent on every court.
+                            One day of competition, energy and real tournament atmosphere.
                         </p>
+                        <span class="card-front__highlight">Entry Fee – 400 PLN per team</span>
                     </div>
                 </div>
             </div>
 
+            </div>
+            <div class="swiper-pagination cards-pagination"></div>
         </div>
     </div>
 </section>
+
+<!-- Card Modal Overlay -->
+<div class="card-modal-overlay" id="cardModalOverlay">
+    <div class="card-modal__card" id="cardModalCard"></div>
+</div>
 
 <!-- Location Section -->
 <section class="section section--location">
@@ -227,6 +245,24 @@
             <iframe src="https://www.google.com/maps?q=51.659816690792844,19.496919908035625&z=16&output=embed"
                     allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             <div class="location-map__overlay"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Arena Gallery -->
+<section class="section section--arena">
+    <div class="container">
+        <h2 class="section-heading">The Venue</h2>
+        <div class="arena-gallery">
+            <div class="arena-gallery__item arena-gallery__item--main">
+                <img src="{% static 'assets/arena/1.jpg' %}" alt="Arena main court" loading="lazy">
+            </div>
+            <div class="arena-gallery__item">
+                <img src="{% static 'assets/arena/2.jpg' %}" alt="Arena interior" loading="lazy">
+            </div>
+            <div class="arena-gallery__item">
+                <img src="{% static 'assets/arena/3.jpg' %}" alt="Arena facilities" loading="lazy">
+            </div>
         </div>
     </div>
 </section>
@@ -306,5 +342,6 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="{% static 'js/index-page.js' %}"></script>
+<script src="{% static 'js/cards-swiper.js' %}"></script>
+<script src="{% static 'js/index-page.js' %}"></script>
 {% endblock %}

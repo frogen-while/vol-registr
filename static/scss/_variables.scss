@@ -34,9 +34,11 @@ $gradient-btn:       linear-gradient(to right, $color-sky-500, $color-indigo-600
 $gradient-btn-hover: linear-gradient(to right, $color-sky-400, $color-indigo-500);
 
 // ── Breakpoints ─────────────────────────────────────
-$bp-md: 768px;
-$bp-lg: 1024px;
-$bp-xl: 1280px;
+$bp-sm:  480px;
+$bp-md:  768px;
+$bp-lg:  1024px;
+$bp-xl:  1280px;
+$bp-2xl: 1440px;
 
 // ── Border Radius ───────────────────────────────────
 $radius-sm:   0.25rem;

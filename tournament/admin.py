@@ -7,8 +7,8 @@ class PlayerInline(admin.TabularInline):
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'division', 'city', 'cap_name', 'payment_status', 'created_at')
-    list_filter = ('division', 'payment_status', 'created_at')
+    list_display = ('name', 'league_level', 'city', 'cap_name', 'payment_status', 'created_at')
+    list_filter = ('league_level', 'payment_status', 'created_at')
     search_fields = ('name', 'cap_name', 'cap_email', 'city')
     inlines = [PlayerInline]
     actions = ['mark_as_accepted', 'mark_as_waiting']
@@ -25,4 +25,4 @@ class TeamAdmin(admin.ModelAdmin):
 class PlayerAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'team', 'jersey_number')
     search_fields = ('first_name', 'last_name', 'team__name')
-    list_filter = ('team__division',)
+    list_filter = ('team__league_level',)

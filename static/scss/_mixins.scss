@@ -32,13 +32,16 @@
   transform: translateX(-50%);
 }
 
-/// Media-query shorthand: respond(md), respond(lg), respond(xl)
+/// Media-query shorthand: respond(sm), respond(md), respond(lg), respond(xl), respond(2xl)
 @mixin respond($bp) {
-  @if $bp == md { @media (min-width: $bp-md) { @content; } }
-  @else if $bp == lg { @media (min-width: $bp-lg) { @content; } }
-  @else if $bp == xl { @media (min-width: $bp-xl) { @content; } }
+  @if $bp == sm  { @media (min-width: $bp-sm)  { @content; } }
+  @else if $bp == md  { @media (min-width: $bp-md)  { @content; } }
+  @else if $bp == lg  { @media (min-width: $bp-lg)  { @content; } }
+  @else if $bp == xl  { @media (min-width: $bp-xl)  { @content; } }
+  @else if $bp == 2xl { @media (min-width: $bp-2xl) { @content; } }
 }
 
+/// Mobile-only (max-width: 767.98px) — avoids 1px overlap with respond(md)
 @mixin mobile-only {
-  @media (max-width: $bp-md) { @content; }
+  @media (max-width: #{$bp-md - 0.02px}) { @content; }
 }

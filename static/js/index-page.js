@@ -11,16 +11,26 @@ document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
     const CFG = window.APP_CONFIG;
+    const isMobileView = window.matchMedia('(max-width: 768px)').matches;
 
     // ─── Hero Intro Timeline ────────────────────────
     initHeroIntro(CFG.hero);
 
+    // ─── Card Modal (desktop only) ────────────────────
+    if (!isMobileView) {
+        initCardModal();
+    }
+
     // ─── Scroll-triggered Sections ──────────────────
     if (typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
-        initCardsFlyIn(CFG.cards);
-        initLocationScrollAnim(CFG.scroll);
-        initTimelineScrollAnim(CFG.scroll);
+
+        // Skip scroll animations on mobile
+        if (!isMobileView) {
+            initCardsFlyIn(CFG.cards);
+            initLocationScrollAnim(CFG.scroll);
+            initTimelineScrollAnim(CFG.scroll);
+        }
     }
 });
 
@@ -58,8 +68,8 @@ function initHeroIntro(cfg) {
         ease: cfg.label.ease,
     }, '-=1');
 
-    // Subtitle, counter, CTA
-    tl.to(['.hero-text', '.hero-counter', '.hero-btn-container'], {
+    // Subtitle, price, counter, CTA
+    tl.to(['.hero-text', '.hero-price', '.hero-counter', '.hero-btn-container'], {
         y: 0, opacity: 1,
         duration: cfg.text.duration,
         stagger: cfg.text.stagger,
@@ -225,4 +235,51 @@ function initTimelineScrollAnim(cfg) {
             y: item.y, opacity: 0, duration: item.duration,
         });
     });
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  Card Modal (Desktop)
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Click a card → show its front face enlarged in a centered modal
+ * with a blurred backdrop. Click overlay or press Escape to close.
+ */
+function initCardModal() {
+    const overlay  = document.getElementById('cardModalOverlay');
+    const modalBox = document.getElementById('cardModalCard');
+    if (!overlay || !modalBox) return;
+
+    // Click on any card wrapper → open modal
+    document.querySelectorAll('.flip-card-wrapper').forEach(wrapper => {
+        wrapper.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const front = wrapper.querySelector('.flip-card-front');
+            if (!front) return;
+
+            // Clone front face into modal
+            const clone = front.cloneNode(true);
+            modalBox.innerHTML = '';
+            modalBox.appendChild(clone);
+
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    });
+
+    // Close on overlay click
+    overlay.addEventListener('click', () => closeCardModal(overlay));
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) {
+            closeCardModal(overlay);
+        }
+    });
+}
+
+function closeCardModal(overlay) {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
 }

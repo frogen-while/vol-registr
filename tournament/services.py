@@ -22,14 +22,16 @@ def get_available_slots() -> int:
 
 
 @transaction.atomic
-def register_team(cleaned: dict) -> Team:
+def register_team(cleaned: dict, players_data: list[dict] | None = None) -> Team:
     """
-    Create a Team (+ optional Players) from validated form data.
+    Create a Team (+ Players) from validated form data.
 
     Parameters
     ----------
     cleaned : dict
         Output of ``TeamRegistrationForm.cleaned_data``.
+    players_data : list[dict] | None
+        List of player dicts from the request (validated outside the form).
 
     Returns
     -------
@@ -51,72 +53,62 @@ def register_team(cleaned: dict) -> Team:
     if Team.objects.filter(cap_email=email).exists():
         raise ValueError("This email is already registered.")
 
+    phone = cleaned.get("phone") or None
+    if phone and Team.objects.filter(cap_phone=phone).exists():
+        raise ValueError("This phone number is already registered.")
+
     team = Team.objects.create(
         name=team_name,
-        division=cleaned["division"],
+        league_level=cleaned["leagueLevel"],
         city=cleaned.get("city", ""),
+        instagram=cleaned.get("instagram", ""),
         cap_name=cap["first"],
         cap_surname=cap["last"],
-        cap_phone=cleaned.get("phone", ""),
+        cap_dob=cleaned.get("capDob"),
+        cap_jersey=cleaned.get("capJersey"),
+        cap_phone=phone,
         cap_email=email,
         payment_status=PAYMENT_WAITING,
     )
 
-    roster_text = cleaned.get("roster", "")
-    if roster_text:
-        _create_players_from_roster(team, roster_text)
+    if players_data:
+        _create_players(team, players_data)
 
     return team
 
 
 # ── Private Helpers ──────────────────────────────────────
 
-def _create_players_from_roster(team: Team, roster_text: str) -> None:
+def _create_players(team: Team, players_data: list[dict]) -> None:
     """
-    Parse a comma-separated roster string and bulk-create Player rows.
+    Bulk-create Player rows from a list of validated player dicts.
 
-    Expected format: ``"John Doe 10, Jane Smith 12"``
-    The trailing number (jersey) is optional.
+    Each dict is expected to have keys: firstName, lastName,
+    jerseyNumber (optional), dob (optional date string / date).
     """
-    raw_entries = [entry.strip() for entry in roster_text.split(",") if entry.strip()]
+    from .forms import PlayerForm
+
     players_to_create: list[Player] = []
+    for entry in players_data:
+        form = PlayerForm(entry)
+        if not form.is_valid():
+            continue  # skip malformed entries rather than hard-fail
 
-    for entry in raw_entries:
-        first_name, last_name, jersey_number = _parse_player_entry(entry)
-        if first_name:
-            players_to_create.append(
-                Player(
-                    team=team,
-                    first_name=first_name,
-                    last_name=last_name,
-                    jersey_number=jersey_number,
-                )
+        cd = form.cleaned_data
+        first = cd.get("firstName", "").strip()
+        if not first:
+            continue
+
+        players_to_create.append(
+            Player(
+                team=team,
+                first_name=first,
+                last_name=cd.get("lastName", "").strip(),
+                jersey_number=cd.get("jerseyNumber"),
+                date_of_birth=cd.get("dob"),
             )
+        )
 
     if players_to_create:
         Player.objects.bulk_create(players_to_create)
 
-
-def _parse_player_entry(entry: str) -> tuple[str, str, int | None]:
-    """
-    Extract (first_name, last_name, jersey_number) from a single roster entry.
-
-    Returns
-    -------
-    tuple[str, str, int | None]
-        A 3-tuple; jersey_number is ``None`` when not present.
-    """
-    parts = entry.split()
-    if not parts:
-        return ("", "", None)
-
-    jersey_number = None
-    if parts[-1].isdigit():
-        jersey_number = int(parts[-1])
-        name_parts = parts[:-1]
-    else:
-        name_parts = parts
-
-    first_name = name_parts[0] if name_parts else ""
-    last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
-    return (first_name, last_name, jersey_number)

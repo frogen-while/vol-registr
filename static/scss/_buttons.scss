@@ -32,7 +32,7 @@
   @include mobile-only {
     width: 100%;
     justify-content: center;
-    padding: 1rem 1.5rem;
+    padding: 1.1rem 1.5rem;
     font-size: clamp(0.75rem, 2.2vw, 0.9rem);
     opacity: 1 !important;
     background-color: $color-sky-600 !important;

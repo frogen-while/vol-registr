@@ -16,7 +16,7 @@
 
 // ── Minimal Reset (replaces Tailwind preflight) ─────
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { line-height: 1.5; -webkit-text-size-adjust: 100%; }
+html { line-height: 1.5; -webkit-text-size-adjust: 100%; overflow-x: hidden; }
 img, svg, video { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; color: inherit; }
@@ -41,10 +41,11 @@ body {
 .container {
   width: 100%;
   margin: 0 auto;
-  padding: 0 1.5rem;
-  @include respond(md) { max-width: 768px; }
-  @include respond(lg) { max-width: 1024px; }
-  @include respond(xl) { max-width: 1280px; }
+  padding: 0 clamp(1rem, 3vw, 3rem);
+  @include respond(md)  { max-width: 768px; }
+  @include respond(lg)  { max-width: 1024px; }
+  @include respond(xl)  { max-width: 1280px; }
+  @include respond(2xl) { max-width: 1440px; }
 }
 
 // ── Utilities ───────────────────────────────────────
@@ -54,20 +55,20 @@ body {
 .gradient-text { @include gradient-text; }
 
 .section           { position: relative; overflow: hidden; }
-.section--location { padding: 6rem 0; }
-.section--timeline { padding: 8rem 0; background: rgba($color-slate-900, 0.3); }
+.section--location { padding: clamp(3rem, 6vw, 6rem) 0; }
+.section--timeline { padding: clamp(4rem, 8vw, 8rem) 0; background: linear-gradient(to bottom, $color-bg-body, rgba($color-slate-900, 0.35) 18%, rgba($color-slate-900, 0.35) 82%, $color-bg-body); }
 
 // ── Section Heading ─────────────────────────────────
 .section-heading {
   text-align: center;
-  font-size: 2.25rem;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
   font-weight: 900;
   text-transform: uppercase;
-  margin-bottom: 5rem;
+  margin-bottom: clamp(2.5rem, 5vw, 5rem);
   letter-spacing: 0.1em;
   @include gradient-text;
 
-  &--lg { margin-bottom: 6rem; }
+  &--lg { margin-bottom: clamp(3rem, 6vw, 6rem); }
 }
 
 // ── Dividers ────────────────────────────────────────

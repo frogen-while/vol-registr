@@ -17,8 +17,10 @@ logger = logging.getLogger(__name__)
 
 def index(request):
     """Landing page with live slot counter."""
+    available = get_available_slots()
     context = {
-        "available_slots": get_available_slots(),
+        "available_slots": available,
+        "registered_teams": MAX_TOURNAMENT_SLOTS - available,
         "max_slots": MAX_TOURNAMENT_SLOTS,
     }
     return render(request, "tournament/index.html", context)
@@ -53,7 +55,8 @@ def api_register_team(request):
         return JsonResponse({"success": False, "error": first_error}, status=400)
 
     try:
-        team = register_team(form.cleaned_data)
+        players_data = data.get("players", [])
+        team = register_team(form.cleaned_data, players_data=players_data)
         return JsonResponse({"success": True, "team_id": team.id})
 
     except ValueError as exc:

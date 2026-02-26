@@ -2,10 +2,10 @@ from django.db import models
 
 from .constants import (
     CITY_MAX_LENGTH,
-    DIVISION_CHOICES,
-    DIVISION_PRO_MEN,
     EMAIL_MAX_LENGTH,
     GROUP_NAME_MAX_LENGTH,
+    LEAGUE_LEVEL_CHOICES,
+    LEAGUE_LEVEL_INDEPENDENT,
     LOGO_PATH_MAX_LENGTH,
     PAYMENT_STATUS_CHOICES,
     PAYMENT_WAITING,
@@ -29,9 +29,10 @@ class Team(models.Model):
     city = models.CharField(
         max_length=CITY_MAX_LENGTH, blank=True, null=True, verbose_name="City / Club"
     )
-    division = models.CharField(
-        max_length=50, choices=DIVISION_CHOICES, default=DIVISION_PRO_MEN
+    league_level = models.CharField(
+        max_length=50, choices=LEAGUE_LEVEL_CHOICES, default=LEAGUE_LEVEL_INDEPENDENT
     )
+    instagram = models.CharField(max_length=255, blank=True, null=True)
     group_name = models.CharField(
         max_length=GROUP_NAME_MAX_LENGTH, blank=True, null=True
     )
@@ -43,6 +44,8 @@ class Team(models.Model):
     cap_surname = models.CharField(
         max_length=PERSON_NAME_MAX_LENGTH, verbose_name="Captain Surname"
     )
+    cap_dob = models.DateField(null=True, blank=True, verbose_name="Captain Date of Birth")
+    cap_jersey = models.IntegerField(null=True, blank=True, verbose_name="Captain Jersey Number")
     cap_email = models.EmailField(max_length=EMAIL_MAX_LENGTH, unique=True)
     cap_phone = models.CharField(
         max_length=PHONE_MAX_LENGTH, unique=True, blank=True, null=True
@@ -69,6 +72,7 @@ class Player(models.Model):
     first_name = models.CharField(max_length=PERSON_NAME_MAX_LENGTH)
     last_name = models.CharField(max_length=PERSON_NAME_MAX_LENGTH)
     jersey_number = models.IntegerField(blank=True, null=True)
+    date_of_birth = models.DateField(null=True, blank=True)
 
     class Meta:
         db_table = TABLE_PLAYERS

@@ -8,15 +8,17 @@ so they can be changed in one place.
 # ── Slot / Capacity ─────────────────────────────────────
 MAX_TOURNAMENT_SLOTS = 12
 
-# ── Division Choices ─────────────────────────────────────
-DIVISION_PRO_MEN = "pro_men"
-DIVISION_PRO_WOMEN = "pro_women"
-DIVISION_AMATEUR = "amateur"
+# ── League Level Choices ────────────────────────────────────
+LEAGUE_LEVEL_1ST = "1st"
+LEAGUE_LEVEL_2ND = "2nd"
+LEAGUE_LEVEL_3RD = "3rd"
+LEAGUE_LEVEL_INDEPENDENT = "independent"
 
-DIVISION_CHOICES = [
-    (DIVISION_PRO_MEN, "Pro Men's"),
-    (DIVISION_PRO_WOMEN, "Pro Women's"),
-    (DIVISION_AMATEUR, "Amateur / Mixed"),
+LEAGUE_LEVEL_CHOICES = [
+    (LEAGUE_LEVEL_1ST, "1st Liga"),
+    (LEAGUE_LEVEL_2ND, "2nd Liga"),
+    (LEAGUE_LEVEL_3RD, "3rd Liga"),
+    (LEAGUE_LEVEL_INDEPENDENT, "Independent Team"),
 ]
 
 # ── Payment Status ───────────────────────────────────────
