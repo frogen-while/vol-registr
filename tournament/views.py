@@ -3,10 +3,18 @@
 import json
 import logging
 
+
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.core.mail import send_mail
+
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
+
+
+def faq(request):
+    """FAQ page."""
+    return render(request, "tournament/faq.html")
 
 from .constants import MAX_TOURNAMENT_SLOTS
 from .forms import TeamRegistrationForm
@@ -32,9 +40,10 @@ def register(request):
     return render(request, "tournament/register.html")
 
 
-def about(request):
-    """Renders the About Us page."""
-    return render(request, 'tournament/about.html')
+@ensure_csrf_cookie
+def register(request):
+    """Registration form page (renders the empty form + CSRF cookie)."""
+    return render(request, "tournament/register.html")
 
 
 
@@ -61,9 +70,28 @@ def api_register_team(request):
         first_error = next(iter(form.errors.values()))[0]
         return JsonResponse({"success": False, "error": first_error}, status=400)
 
+
     try:
         players_data = data.get("players", [])
         team = register_team(form.cleaned_data, players_data=players_data)
+
+        # Send payment instructions email
+        user_email = form.cleaned_data.get('email')
+        if user_email:
+            send_mail(
+                subject="Registration Successful – Payment Instructions",
+                message=(
+                    "Thank you for registering for the tournament!\n\n"
+                    "To complete your registration, please transfer the entry fee to the following account:\n"
+                    "IBAN: [YOUR IBAN HERE]\n"
+                    "Title: Pocket Aces Registration – [Your Team Name]\n\n"
+                    "If you have any questions, reply to this email."
+                ),
+                from_email=None,  # Uses DEFAULT_FROM_EMAIL
+                recipient_list=[user_email],
+                fail_silently=False,
+            )
+
         return JsonResponse({"success": True, "team_id": team.id})
 
     except ValueError as exc:

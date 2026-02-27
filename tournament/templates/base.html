@@ -30,7 +30,7 @@
             <div class="site-nav__tooltip" data-i18n="nav_match_tip">Available during the tournament</div>
           </div>
 
-          <span class="site-nav__link site-nav__link--disabled" data-i18n="nav_faq">FAQ</span>
+          <a href="{% url 'faq' %}" class="site-nav__link" data-i18n="nav_faq">FAQ</a>
 
           <a href="{% url 'register' %}" class="site-nav__cta" data-i18n="nav_register">Register Team</a>
         </div>
@@ -46,6 +46,7 @@
           </button>
         </div>
       </div>
+      <div class="site-nav__overlay" id="navOverlay"></div>
     </nav>
 
     {% block content %}{% endblock %}
@@ -68,6 +69,7 @@
           <ul class="site-footer__links">
             <li><a href="{% url 'index' %}">Home</a></li>
             <li><a href="{% url 'register' %}">Register Team</a></li>
+            <li><a href="{% url 'faq' %}">FAQ</a></li>
           </ul>
         </div>
 
@@ -75,11 +77,11 @@
           <h3 class="site-footer__heading">Connect</h3>
           <div class="site-footer__socials">
             <a href="https://instagram.com/pocketaces.sc" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="https://tiktok.com/@pocketaces.sc" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-            <a href="https://facebook.com/pocketaces.sc" target="_blank" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-            <a href="#" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="https://tiktok.com/@pocketaces.vt7" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            <a href="https://facebook.com/profile.php?id=61563557414834" target="_blank" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+            <a href="https://youtube.com/@PocketAcesSC" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
           </div>
-          <a href="mailto:contact@pocketaces.sc" class="site-footer__contact">contact@pocketaces.sc</a>
+          <a href="mailto:info@pocketaces.team" class="site-footer__contact">info@pocketaces.team</a>
         </div>
       </div>
       
@@ -96,5 +98,34 @@
     {% block scripts %}
     {% endblock %}
     <script src="{% static 'js/navbar.js' %}"></script>
+    
+      <!-- Inline FAQ accordion logic for reliability -->
+      <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+          const btn = item.querySelector('.faq-question');
+          if (!btn) return;
+          btn.addEventListener('click', function () {
+            const isOpen = item.classList.contains('open');
+            faqItems.forEach(i => {
+              i.classList.remove('open');
+              const b = i.querySelector('.faq-question');
+              if (b) b.setAttribute('aria-expanded', 'false');
+            });
+            if (!isOpen) {
+              item.classList.add('open');
+              btn.setAttribute('aria-expanded', 'true');
+            }
+          });
+          btn.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              btn.click();
+            }
+          });
+        });
+      });
+      </script>
 </body>
 </html>

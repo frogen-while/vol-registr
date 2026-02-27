@@ -125,3 +125,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'pocketacesteam@gmail.com'         # <-- ваш Gmail
+EMAIL_HOST_PASSWORD = 'nhiq zhdv msql zprj'        # <-- app password, не обычный пароль!
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

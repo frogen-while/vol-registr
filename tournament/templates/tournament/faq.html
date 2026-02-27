@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FAQ | Pocket Aces Invitational{% endblock %}
+
+{% block content %}
+<section class="faq-section section">
+  <div class="container">
+    <h1 class="faq-title">FAQ</h1>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">What if a player is under 18?</button>
+        <div class="faq-answer">
+          <p>If a participant is under 18, a <a href="/static/assets/parent_agreement.pdf" target="_blank">parental consent form</a> must be filled out and provided at registration.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">What if our team doesn't have uniforms?</button>
+        <div class="faq-answer">
+          <p>You must make your numbers clearly visible by any means. If not, your team will not receive detailed statistics.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">Can we get a refund?</button>
+        <div class="faq-answer">
+          <p>Yes, you can get a refund until the end of registration. Just contact support.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">Can we bring spectators?</button>
+        <div class="faq-answer">
+          <p>Absolutely! There are seats for spectators in the hall.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">How many players can be on a team?</button>
+        <div class="faq-answer">
+          <p>A team can have 6 to 12 players, including substitutes.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">Can we change a player after registration?</button>
+        <div class="faq-answer">
+          <p>Yes, you can replace a player before the tournament starts by notifying the organizers.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button" aria-expanded="false">Where can we find the match schedule?</button>
+        <div class="faq-answer">
+          <p>The match schedule will be published on the website and sent to team captains by email a few days before the tournament.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+
+
+{% block extra_js %}
+<script>
+// FAQ accordion logic
+document.addEventListener('DOMContentLoaded', function () {
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    const btn = item.querySelector('.faq-question');
+    btn.addEventListener('click', function () {
+      const isOpen = item.classList.contains('open');
+      faqItems.forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+      });
+      if (!isOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+    btn.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        btn.click();
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

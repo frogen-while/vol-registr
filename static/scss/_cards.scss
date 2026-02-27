@@ -1,8 +1,26 @@
-// ═══════════════════════════════════════════════════════
-//  Flip Cards Section
-// ═══════════════════════════════════════════════════════
 @use 'variables' as *;
 @use 'mixins' as *;
+
+@media (max-width: 600px) {
+  .card-front__title {
+    font-size: 1.5rem !important;
+    line-height: 1.2 !important;
+    text-align: center;
+  }
+  .card-front__text {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    text-align: center;
+  }
+  .card-front__list li {
+    font-size: 0.7rem !important;
+    line-height: 1.6 !important;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  Flip Cards Section
+// ══════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 // ── Perspective Section ─────────────────────────────
 .perspective-section {
@@ -458,5 +476,9 @@
   // Show front face immediately (no GSAP flip on mobile)
   .flip-card {
     transform: rotateY(180deg);
+  }
+  .flip-card-front {
+    gap: 1.3rem;
+    padding: 1.3rem 1.1rem;
   }
 }

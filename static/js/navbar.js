@@ -31,6 +31,7 @@
   const nav      = document.getElementById('siteNav');
   const menu     = document.getElementById('navMenu');
   const burger   = document.getElementById('navBurger');
+  const overlay  = document.getElementById('navOverlay');
   const langWrap = document.getElementById('langToggle');
 
   // ── Apply language ────────────────────────────────────────
@@ -61,17 +62,31 @@
   onScroll(); // init
 
   // ── Mobile burger ─────────────────────────────────────────
-  burger && burger.addEventListener('click', () => {
-    const open = menu.classList.toggle('open');
+
+  function setMenuOpen(open) {
+    menu.classList.toggle('open', open);
     burger.classList.toggle('open', open);
     burger.setAttribute('aria-expanded', String(open));
+    document.body.classList.toggle('nav-open', open);
+    document.documentElement.classList.toggle('nav-open', open);
+    overlay && overlay.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+  }
+
+  burger && burger.addEventListener('click', () => {
+    setMenuOpen(!menu.classList.contains('open'));
+  });
+
+  // Overlay click closes menu
+  overlay && overlay.addEventListener('click', () => {
+    setMenuOpen(false);
   });
 
   // Close menu when nav link is clicked
   menu && menu.addEventListener('click', e => {
     if (e.target.closest('.site-nav__link, .site-nav__cta')) {
-      menu.classList.remove('open');
-      burger && burger.classList.remove('open');
+      setMenuOpen(false);
     }
   });
 

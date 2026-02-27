@@ -29,7 +29,7 @@ $color-gold:  #ffd700;
 $color-white: #ffffff;
 
 // ── Gradients ───────────────────────────────────────
-$gradient-brand:     linear-gradient(to right, $color-sky-400, $color-indigo-500);
+$gradient-brand: linear-gradient(45deg, $color-indigo-500, $color-sky-400);
 $gradient-btn:       linear-gradient(to right, $color-sky-500, $color-indigo-600);
 $gradient-btn-hover: linear-gradient(to right, $color-sky-400, $color-indigo-500);
 
@@ -56,3 +56,21 @@ $transition-slow: 0.5s ease;
 // ── Fonts ───────────────────────────────────────────
 $font-primary: 'Montserrat', sans-serif;
 $font-sans:    'Montserrat', sans-serif;
+$font-body:   'Montserrat', sans-serif;
+
+// ── Typography ──────────────────────────────────────
+$font-body: 'Montserrat', sans-serif;
+
+// ── Layout ──────────────────────────────────────────
+$container-width: 1200px;
+$gutter: 1.5rem;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+
+// ── Borders & Shadows ───────────────────────────────
+$border-radius: 0.5rem;
+$shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+$shadow-md: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1);
+$shadow-2xl: 0 1rem 2rem rgba(0, 0, 0, 0.1);
