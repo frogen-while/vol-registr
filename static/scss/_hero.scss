@@ -5,12 +5,11 @@
 @use 'mixins' as *;
 
 .hero {
-  height: 100vh;
+  min-height: 100vh;
   position: relative;
   @include flex-center;
   overflow: hidden;
   background-color: $color-bg-hero;
-  contain: paint;
 
   // Desktop radial glow on left side
   &::before {
@@ -39,6 +38,7 @@
   padding: 1vh 0 0 4vw;
   pointer-events: none;
   z-index: 0;
+  overflow: hidden;
 
   img {
     width: min(120vw, 80rem);
@@ -53,27 +53,33 @@
 // ── Content Wrapper ─────────────────────────────────
 .hero-content {
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
   position: relative;
   z-index: 10;
   display: flex;
-  align-items: center;
-  padding: 0 clamp(1.25rem, 5vw, 10rem) 10rem;
+  align-items: flex-start;
+  padding: clamp(5.5rem, 10vh, 10rem) clamp(1.25rem, 5vw, 10rem) 2rem;
+  overflow: visible;
 }
 
 .hero__left {
   width: 100%;
   @include flex-col;
-  justify-content: center;
   text-align: left;
-  gap: 2.5rem;
+  gap: clamp(0.75rem, 1.5vh, 1.5rem);
+  position: relative;
+  z-index: 25;
+  overflow: visible;
 
-  @include respond(lg) { width: 75%; }
+  @include respond(lg) {
+    width: 65%;
+    gap: clamp(1rem, 2vh, 2rem);
+  }
 }
 
 // ── Label (date / location pill) ────────────────────
 .hero__label-wrap {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
   overflow: hidden;
 }
 
@@ -100,13 +106,14 @@
   text-transform: uppercase;
   letter-spacing: -0.05em;
   line-height: 0.85;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .hero-title__main {
-  font-size: clamp(4.2rem, 8vw, 13rem);
+  font-size: clamp(3rem, 7vw, 13rem);
   display: block;
   line-height: 0.9;
+  white-space: nowrap;
   transform: translateY(100%);
   @include gradient-text;
 }
@@ -124,18 +131,18 @@
 // ── Description ─────────────────────────────────────
 .hero-text {
   color: $color-slate-400;
-  font-size: clamp(0.875rem, 1.5vw, 1.75rem);
-  max-width: 64rem;
+  font-size: clamp(0.78rem, 1.1vw, 1.15rem);
+  max-width: 42rem;
   opacity: 0;
   transform: translateY(1rem);
-  line-height: 1.625;
+  line-height: 1.7;
   font-weight: 500;
 
   @include respond(lg) {
-    max-width: 52rem;
+    max-width: 38rem;
   }
   @include respond(2xl) {
-    font-size: clamp(1.1rem, 2vw, 2.8rem);
+    font-size: clamp(0.9rem, 1.2vw, 1.3rem);
   }
 }
 
@@ -168,10 +175,10 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4rem;
+  gap: 2rem;
   opacity: 0;
   transform: translateY(1rem);
-  padding-top: 1rem;
+  padding-top: 0;
 
   @include respond(md) {
     flex-direction: row;
@@ -179,7 +186,7 @@
     flex-wrap: wrap;
   }
   @include mobile-only {
-    gap: 1.25rem;
+    gap: 1rem;
     width: 100%;
   }
 }
@@ -223,23 +230,23 @@
 
   @include respond(lg) {
     display: block;
-    width: 40%;
+    width: 50%;
     height: 100%;
     position: absolute;
     top: 0; right: 0;
     z-index: 20;
-    pointer-events: auto;
+    pointer-events: none;
+    overflow: visible;
   }
 }
 
 .hero-player {
   position: absolute;
-  bottom: -20%;
-  right: -5%;
-  height: 135vh;
+  bottom: -35%;
+  right: 0;
+  height: 145%;
+  width: auto;
   max-width: none;
-  object-fit: contain;
-  object-position: bottom;
   opacity: 0;
   transform: translateX(5rem);
   transition: transform 100ms ease-out;
@@ -264,14 +271,14 @@
 // ── Mobile Hero Overrides ───────────────────────────
 @include mobile-only {
   .hero {
-    height: 100vh;
     min-height: 100vh;
 
     &::before { display: none; }
   }
 
   .hero-content {
-    padding: 2rem 1.25rem 6rem;
+    min-height: 100vh;
+    padding: clamp(5.5rem, 10vh, 8rem) 1.25rem 1.5rem;
     align-items: flex-start;
     z-index: 10;
   }
@@ -311,7 +318,8 @@
   }
 
   .hero-label {
-    font-size: clamp(0.55rem, 2vw, 0.7rem);
-    letter-spacing: 0.12em;
+    font-size: clamp(0.6rem, 2.5vw, 0.8rem);
+    letter-spacing: 0.1em;
+    padding: 0.4rem 0.75rem;
   }
 }

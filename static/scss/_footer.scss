@@ -1,0 +1,134 @@
+// ═══════════════════════════════════════════════════════
+//  Footer Styles
+// ═══════════════════════════════════════════════════════
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.site-footer {
+  background-color: #020617; // Slate 950
+  padding: 4rem 1.5rem 2rem;
+  border-top: 1px solid rgba($color-slate-700, 0.4);
+  position: relative;
+  z-index: 10;
+}
+
+.site-footer__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  gap: 3rem;
+  
+  @include respond(md) {
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 2rem;
+  }
+}
+
+.site-footer__col {
+  @include flex-col;
+  gap: 1rem;
+}
+
+.site-footer__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  
+  img {
+    height: 2.5rem;
+    width: auto;
+  }
+  
+  span {
+    font-size: 1.25rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: $color-white;
+    letter-spacing: -0.02em;
+  }
+}
+
+.site-footer__desc {
+  font-size: 0.95rem;
+  color: $color-slate-400;
+  max-width: 20rem;
+  line-height: 1.6;
+}
+
+.site-footer__heading {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: $color-slate-500;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.site-footer__links {
+  list-style: none;
+  padding: 0;
+  @include flex-col;
+  gap: 0.75rem;
+  
+  a {
+    color: $color-slate-300;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color $transition-base;
+    
+    &:hover {
+      color: $color-sky-400;
+    }
+  }
+}
+
+.site-footer__socials {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  
+  a {
+    width: 2.5rem;
+    height: 2.5rem;
+    @include flex-center;
+    background: rgba($color-slate-800, 0.5);
+    border: 1px solid rgba($color-slate-700, 0.5);
+    border-radius: $radius-full;
+    color: $color-slate-300;
+    font-size: 1.1rem;
+    transition: all $transition-base;
+    
+    &:hover {
+      background: $color-sky-500;
+      color: $color-white;
+      border-color: $color-sky-500;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.site-footer__contact {
+  color: $color-sky-400;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: opacity $transition-base;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.site-footer__bottom {
+  max-width: 1400px;
+  margin: 3rem auto 0;
+  padding-top: 2rem;
+  border-top: 1px solid rgba($color-slate-800, 0.5);
+  text-align: center;
+  
+  p {
+    font-size: 0.85rem;
+    color: $color-slate-500;
+  }
+}

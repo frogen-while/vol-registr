@@ -115,12 +115,6 @@
         </div>
 
         <div class="reg-field">
-          <label class="reg-label" for="city">City / Club</label>
-          <input class="reg-input" type="text" id="city" name="city"
-                 placeholder="e.g. Warsaw" maxlength="100">
-        </div>
-
-        <div class="reg-field">
           <label class="reg-label" for="instagram">Instagram Handle</label>
           <div class="reg-input-prefix">
             <span class="reg-prefix">@</span>
@@ -145,34 +139,6 @@
           <input class="reg-input" type="text" id="capName" name="capName"
                  placeholder="e.g. Jan Kowalski" maxlength="100" required>
           <span class="reg-error" id="err-capName"></span>
-        </div>
-
-        <div class="reg-field">
-          <label class="reg-label">Date of Birth</label>
-          <div class="reg-dob-row">
-            <div class="reg-select-wrap">
-              <select class="reg-select" id="capDobDay" name="capDobDay">
-                <option value="">DD</option>
-                {% for d in "x"|ljust:"31" %}{% endfor %}
-              </select>
-            </div>
-            <div class="reg-select-wrap">
-              <select class="reg-select" id="capDobMonth" name="capDobMonth">
-                <option value="">MM</option>
-              </select>
-            </div>
-            <div class="reg-select-wrap">
-              <select class="reg-select" id="capDobYear" name="capDobYear">
-                <option value="">YYYY</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="reg-field">
-          <label class="reg-label" for="capJersey">Jersey Number</label>
-          <input class="reg-input reg-input--short" type="number" id="capJersey" name="capJersey"
-                 placeholder="#" min="0" max="99">
         </div>
 
         <div class="reg-field">
@@ -202,11 +168,17 @@
       <!-- ─── STEP 3: Roster ────────────────────────── -->
       <div class="reg-panel reg-panel--hidden" id="step3">
         <h3 class="reg-panel__title">Team Roster</h3>
-        <p class="reg-panel__hint">4 main players required · 2 substitutes optional</p>
+        <p class="reg-panel__hint">Minimum 6 players required</p>
+        <p class="reg-panel__note">⚠ Captain must be listed as one of the players below</p>
+
+        <div class="reg-jersey-warning" id="jerseyWarning">
+          <span class="reg-jersey-warning__icon">ℹ</span>
+          <span>Jersey numbers are optional, but if <strong>any</strong> player is missing a number, the <strong>entire team will not receive match statistics</strong>.</span>
+        </div>
 
         <div class="roster-list" id="rosterList">
-          <!-- Players 1–4 (required) -->
-          {% for i in "1234" %}
+          <!-- Players 1–6 (required) -->
+          {% for i in "123456" %}
           <div class="roster-row" data-index="{{ forloop.counter }}">
             <div class="roster-row__num">{{ forloop.counter }}</div>
             <div class="roster-row__fields">
@@ -216,52 +188,14 @@
                      placeholder="Last Name" maxlength="50">
               <input class="reg-input roster-jersey" type="number"
                      placeholder="#" min="0" max="99">
-              <div class="reg-dob-row roster-dob">
-                <div class="reg-select-wrap">
-                  <select class="reg-select roster-dob-day"><option value="">DD</option></select>
-                </div>
-                <div class="reg-select-wrap">
-                  <select class="reg-select roster-dob-month"><option value="">MM</option></select>
-                </div>
-                <div class="reg-select-wrap">
-                  <select class="reg-select roster-dob-year"><option value="">YYYY</option></select>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-
-          <!-- Sep line -->
-          <div class="roster-sep">
-            <span>Substitutes (optional)</span>
-          </div>
-
-          <!-- Players 5–6 (optional subs) -->
-          {% for i in "56" %}
-          <div class="roster-row roster-row--sub" data-index="{{ forloop.counter|add:4 }}">
-            <div class="roster-row__num">SUB</div>
-            <div class="roster-row__fields">
-              <input class="reg-input roster-first" type="text"
-                     placeholder="First Name" maxlength="50">
-              <input class="reg-input roster-last" type="text"
-                     placeholder="Last Name" maxlength="50">
-              <input class="reg-input roster-jersey" type="number"
-                     placeholder="#" min="0" max="99">
-              <div class="reg-dob-row roster-dob">
-                <div class="reg-select-wrap">
-                  <select class="reg-select roster-dob-day"><option value="">DD</option></select>
-                </div>
-                <div class="reg-select-wrap">
-                  <select class="reg-select roster-dob-month"><option value="">MM</option></select>
-                </div>
-                <div class="reg-select-wrap">
-                  <select class="reg-select roster-dob-year"><option value="">YYYY</option></select>
-                </div>
-              </div>
             </div>
           </div>
           {% endfor %}
         </div>
+
+        <button type="button" class="reg-btn reg-btn--add" id="addPlayerBtn">
+          + Add Player
+        </button>
 
         <!-- Checkboxes -->
         <div class="reg-checks">

@@ -32,6 +32,13 @@ def register(request):
     return render(request, "tournament/register.html")
 
 
+def about(request):
+    """Renders the About Us page."""
+    return render(request, 'tournament/about.html')
+
+
+
+
 @require_POST
 def api_register_team(request):
     """

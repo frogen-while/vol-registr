@@ -1,7 +1,7 @@
 /**
  * @file register-page.js
  * @description Registration page: 3-step form with step navigation,
- *              validation, DOB selects, GSAP entrance animations,
+ *              validation, GSAP entrance animations,
  *              and JSON form submission.
  */
 
@@ -9,54 +9,11 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // â”€â”€ DOB Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  const MONTHS = [
-    'January','February','March','April','May','June',
-    'July','August','September','October','November','December',
-  ];
-  const CURRENT_YEAR = new Date().getFullYear();
-
-  function populateDobSelects(dayEl, monthEl, yearEl, minAge = 14) {
-    if (!dayEl || !monthEl || !yearEl) return;
-
-    // Days 1-31
-    for (let d = 1; d <= 31; d++) {
-      const o = new Option(String(d).padStart(2, '0'), String(d));
-      dayEl.appendChild(o);
-    }
-
-    // Months
-    MONTHS.forEach((name, idx) => {
-      monthEl.appendChild(new Option(name, String(idx + 1)));
-    });
-
-    // Years (current year â€“ minAge down to 1940)
-    for (let y = CURRENT_YEAR - minAge; y >= 1940; y--) {
-      yearEl.appendChild(new Option(String(y), String(y)));
-    }
-  }
-
-  // Captain DOB
-  populateDobSelects(
-    document.getElementById('capDobDay'),
-    document.getElementById('capDobMonth'),
-    document.getElementById('capDobYear'),
-    16,
-  );
-
-  // Roster DOBs
-  document.querySelectorAll('.roster-dob').forEach(row => {
-    populateDobSelects(
-      row.querySelector('.roster-dob-day'),
-      row.querySelector('.roster-dob-month'),
-      row.querySelector('.roster-dob-year'),
-      14,
-    );
-  });
-
-  // â”€â”€ Step State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Step State --
   let currentStep = 1;
   const TOTAL_STEPS = 3;
+  const MIN_PLAYERS = 6;
+  let playerCount = 6; // initial roster rows
 
   const panels = {
     1: document.getElementById('step1'),
@@ -112,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // â”€â”€ Validation Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Validation Helpers --
   function setError(id, msg) {
     const el = document.getElementById('err-' + id);
     if (!el) return;
@@ -127,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     input.classList.toggle('error', hasError);
   }
 
-  // â”€â”€ Step 1 Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Step 1 Validation --
   function validateStep1() {
     clearErrors('teamName', 'leagueLevel');
     let ok = true;
@@ -150,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return ok;
   }
 
-  // â”€â”€ Step 2 Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Step 2 Validation --
   function validateStep2() {
     clearErrors('capName', 'phone', 'email');
     let ok = true;
@@ -186,27 +143,49 @@ document.addEventListener('DOMContentLoaded', () => {
     return ok;
   }
 
-  // â”€â”€ Step 3 Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Step 3 Validation --
   function validateStep3() {
     clearErrors('checks');
     let ok = true;
 
-    // 4 required players
-    const rows = document.querySelectorAll('.roster-row:not(.roster-row--sub)');
-    let missingPlayer = false;
+    // Count filled-in players (first + last name present)
+    const rows = document.querySelectorAll('.roster-row');
+    let filledCount = 0;
     rows.forEach(row => {
       const first = row.querySelector('.roster-first');
       const last  = row.querySelector('.roster-last');
-      if (!first.value.trim() || !last.value.trim()) {
-        markInputError(first, !first.value.trim());
-        markInputError(last,  !last.value.trim());
-        missingPlayer = true;
+      const hasFirst = first && first.value.trim();
+      const hasLast  = last && last.value.trim();
+
+      if (hasFirst && hasLast) {
+        filledCount++;
+        markInputError(first, false);
+        markInputError(last, false);
+      } else if (hasFirst || hasLast) {
+        // Partially filled - mark incomplete fields
+        if (!hasFirst) markInputError(first, true);
+        if (!hasLast)  markInputError(last, true);
       } else {
+        // Completely empty - clear errors
         markInputError(first, false);
         markInputError(last, false);
       }
     });
-    if (missingPlayer) {
+
+    if (filledCount < MIN_PLAYERS) {
+      setError('checks', 'At least ' + MIN_PLAYERS + ' players are required (currently ' + filledCount + ').');
+      // Also mark empty required rows
+      let marked = 0;
+      rows.forEach(row => {
+        if (marked >= MIN_PLAYERS) return;
+        const first = row.querySelector('.roster-first');
+        const last  = row.querySelector('.roster-last');
+        if (!first.value.trim() || !last.value.trim()) {
+          markInputError(first, !first.value.trim());
+          markInputError(last, !last.value.trim());
+        }
+        marked++;
+      });
       ok = false;
     }
 
@@ -216,14 +195,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const chkPayment = document.getElementById('chkPayment');
 
     if (!chkTerms.checked || !chkAge.checked || !chkPayment.checked) {
-      setError('checks', 'Please accept all required checkboxes to continue.');
+      setError('checks', (ok ? '' : setError('checks', '') || '') + 'Please accept all required checkboxes to continue.');
       ok = false;
     }
 
     return ok;
   }
 
-  // â”€â”€ Next / Back Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Next / Back Buttons --
   document.querySelectorAll('.reg-btn--next').forEach(btn => {
     btn.addEventListener('click', () => {
       const next = parseInt(btn.dataset.next, 10);
@@ -242,41 +221,56 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // â”€â”€ Collect DOB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  function collectDob(dayEl, monthEl, yearEl) {
-    const d = dayEl   ? dayEl.value   : '';
-    const m = monthEl ? monthEl.value : '';
-    const y = yearEl  ? yearEl.value  : '';
-    if (!d || !m || !y) return null;
-    return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  // -- Add Player Button --
+  const addPlayerBtn = document.getElementById('addPlayerBtn');
+  const rosterList   = document.getElementById('rosterList');
+
+  if (addPlayerBtn && rosterList) {
+    addPlayerBtn.addEventListener('click', () => {
+      playerCount++;
+      const row = document.createElement('div');
+      row.className = 'roster-row';
+      row.dataset.index = String(playerCount);
+      row.innerHTML =
+        '<div class="roster-row__num">' + playerCount + '</div>' +
+        '<div class="roster-row__fields">' +
+          '<input class="reg-input roster-first" type="text" placeholder="First Name" maxlength="50">' +
+          '<input class="reg-input roster-last" type="text" placeholder="Last Name" maxlength="50">' +
+          '<input class="reg-input roster-jersey" type="number" placeholder="#" min="0" max="99">' +
+        '</div>';
+
+      rosterList.appendChild(row);
+
+      // Animate the new row in
+      gsap.from(row, {
+        opacity: 0,
+        y: 15,
+        duration: 0.35,
+        ease: 'power2.out',
+      });
+    });
   }
 
-  // â”€â”€ Collect Roster â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Collect Roster --
   function collectPlayers() {
     const players = [];
     document.querySelectorAll('.roster-row').forEach(row => {
       const first  = row.querySelector('.roster-first')?.value.trim() || '';
       const last   = row.querySelector('.roster-last')?.value.trim()  || '';
       const jersey = row.querySelector('.roster-jersey')?.value || '';
-      const dob    = collectDob(
-        row.querySelector('.roster-dob-day'),
-        row.querySelector('.roster-dob-month'),
-        row.querySelector('.roster-dob-year'),
-      );
 
-      if (first) {
+      if (first && last) {
         players.push({
           firstName:    first,
           lastName:     last,
           jerseyNumber: jersey ? parseInt(jersey, 10) : null,
-          dob:          dob,
         });
       }
     });
     return players;
   }
 
-  // â”€â”€ Form Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Form Submit --
   const form       = document.getElementById('registrationForm');
   const submitBtn  = document.getElementById('submitBtn');
 
@@ -288,22 +282,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Collect payload
     const leagueLevelEl = document.querySelector('input[name="leagueLevel"]:checked');
-    const capDob = collectDob(
-      document.getElementById('capDobDay'),
-      document.getElementById('capDobMonth'),
-      document.getElementById('capDobYear'),
-    );
 
     const payload = {
       teamName:    document.getElementById('teamName')?.value.trim() || '',
       leagueLevel: leagueLevelEl ? leagueLevelEl.value : '',
-      city:        document.getElementById('city')?.value.trim() || '',
       instagram:   document.getElementById('instagram')?.value.trim() || '',
       capName:     document.getElementById('capName')?.value.trim() || '',
-      capDob:      capDob,
-      capJersey:   document.getElementById('capJersey')?.value
-                     ? parseInt(document.getElementById('capJersey').value, 10)
-                     : null,
       phone:       document.getElementById('phone')?.value.trim() || '',
       email:       document.getElementById('email')?.value.trim() || '',
       players:     collectPlayers(),
@@ -352,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // â”€â”€ Entrance Animations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Entrance Animations --
   gsap.from('.reg-brand__hero', {
     opacity: 0,
     y: 30,
@@ -380,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initial stepper state
   updateStepper(1);
 
-  // ── Promo Flip Card ──────────────────────────────────────
+  // -- Promo Flip Card --
   (function initPromoCard() {
     const photos = window.REG_CARD_PHOTOS;
     if (!photos || !photos.length) return;
@@ -398,22 +382,21 @@ document.addEventListener('DOMContentLoaded', () => {
       return photos[idx];
     }
 
-    // Start with a random photo (back is showing at 0°)
+    // Start with a random photo (back is showing at 0deg)
     img.src = nextPhoto();
 
-    // Continuous spin: back at 0°–180°, front at 180°–360°
+    // Continuous spin: back at 0-180, front at 180-360
     // Swap photo silently at the start of each cycle while back faces viewer
-    card.style.transition = 'none'; // override CSS transition — GSAP owns this
+    card.style.transition = 'none'; // override CSS transition - GSAP owns this
     gsap.to(card, {
       rotationY: '+=360',
       duration: 5,
       ease: 'none',
       repeat: -1,
       onRepeat: function () {
-        // Back is facing – load next photo quietly
+        // Back is facing - load next photo quietly
         img.src = nextPhoto();
       },
     });
   })();
 });
-

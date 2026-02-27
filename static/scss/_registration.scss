@@ -285,6 +285,17 @@
     margin: -0.75rem 0 0;
     letter-spacing: 0.02em;
   }
+
+  &__note {
+    font-size: 0.82rem;
+    color: $color-sky-400;
+    background: rgba($color-sky-400, 0.08);
+    border: 1px solid rgba($color-sky-400, 0.2);
+    border-radius: $radius-md;
+    padding: 0.65rem 1rem;
+    margin: -0.5rem 0 0;
+    line-height: 1.5;
+  }
 }
 
 @keyframes panelIn {
@@ -649,32 +660,57 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 // â”€â”€ Roster â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- Jersey Warning --
+.reg-jersey-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba($color-gold, 0.25);
+  border-radius: $radius-md;
+  background: rgba($color-gold, 0.06);
+  font-size: 0.8rem;
+  color: $color-slate-400;
+  line-height: 1.55;
+
+  &__icon {
+    color: $color-gold;
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  strong {
+    color: $color-gold;
+    font-weight: 700;
+  }
+}
+
 .roster-list {
   @include flex-col;
   gap: 0.6rem;
 }
 
-.roster-sep {
-  display: flex;
+// -- Add Player Button --
+.reg-btn--add {
+  display: inline-flex;
   align-items: center;
-  gap: 1rem;
-  margin: 0.5rem 0;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  border: 1px dashed rgba($color-slate-600, 0.6);
+  border-radius: $radius-md;
+  background: transparent;
+  color: $color-slate-400;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
-  span {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: $color-slate-600;
-    white-space: nowrap;
-  }
-
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: rgba($color-slate-800, 0.8);
+  &:hover {
+    border-color: $color-sky-400;
+    color: $color-sky-400;
+    background: rgba($color-sky-400, 0.06);
   }
 }
 
@@ -690,13 +726,6 @@ input[type="number"] { -moz-appearance: textfield; }
   transition: border-color 0.2s;
 
   &:hover { border-color: rgba($color-slate-700, 0.8); }
-
-  &--sub {
-    opacity: 0.75;
-    border-style: dashed;
-
-    &:hover { opacity: 1; }
-  }
 
   &__num {
     font-size: 0.65rem;
@@ -721,25 +750,10 @@ input[type="number"] { -moz-appearance: textfield; }
       padding: 0.55rem 0.75rem;
       font-size: 0.85rem;
     }
-
-    .reg-dob-row {
-      grid-column: 1 / -1;
-      margin-top: 0.1rem;
-
-      .reg-select {
-        padding: 0.55rem 1.5rem 0.55rem 0.65rem;
-        font-size: 0.8rem;
-      }
-
-      .reg-select-wrap::after {
-        right: 0.5rem;
-        font-size: 0.6rem;
-      }
-    }
   }
 }
 
-// â”€â”€ Success State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- Success State --
 .reg-success {
   align-items: center;
   text-align: center;
@@ -792,8 +806,6 @@ input[type="number"] { -moz-appearance: textfield; }
     grid-template-columns: 1fr 1fr;
 
     .roster-jersey { width: 5rem; }
-
-    .reg-dob-row { grid-column: 1 / -1; }
   }
 
   .reg-stepper__steps { justify-content: space-around; }
