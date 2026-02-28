@@ -11,11 +11,11 @@
   <!-- Left Column: Branding -->
   <div class="reg-brand">
     <div class="reg-brand__hero gsap-hero-text">
-      <h2 class="reg-brand__subtitle">Official Registration</h2>
-      <h1 class="reg-brand__title">
+      <h2 class="reg-brand__subtitle" data-i18n="reg_title">Official Registration</h2>
+      <h1 class="reg-brand__title" data-i18n="reg_subtitle">
         Pocket<br>Aces<br><span class="gradient-text">Invitational</span>
       </h1>
-      <p class="reg-brand__desc">
+      <p class="reg-brand__desc" data-i18n="reg_desc">
         Secure your team's spot in the most prestigious volleyball tournament of 2026.
         Only 12 slots available.
       </p>
@@ -60,15 +60,15 @@
       <div class="reg-stepper__steps">
         <div class="reg-step active" data-step="1">
           <div class="reg-step__dot"><span>1</span></div>
-          <div class="reg-step__label">Team</div>
+          <div class="reg-step__label" data-i18n="reg_step1">Team</div>
         </div>
         <div class="reg-step" data-step="2">
           <div class="reg-step__dot"><span>2</span></div>
-          <div class="reg-step__label">Captain</div>
+          <div class="reg-step__label" data-i18n="reg_step2">Captain</div>
         </div>
         <div class="reg-step" data-step="3">
           <div class="reg-step__dot"><span>3</span></div>
-          <div class="reg-step__label">Roster</div>
+          <div class="reg-step__label" data-i18n="reg_step3">Roster</div>
         </div>
       </div>
     </div>
@@ -78,53 +78,53 @@
 
       <!-- ─── STEP 1: Team Identity ─────────────────── -->
       <div class="reg-panel" id="step1">
-        <h3 class="reg-panel__title">Team Identity</h3>
+        <h3 class="reg-panel__title" data-i18n="reg_identity">Team Identity</h3>
 
         <div class="reg-field">
-          <label class="reg-label" for="teamName">Team Name <span class="req">*</span></label>
-          <input class="reg-input" type="text" id="teamName" name="teamName"
-                 placeholder="e.g. Warsaw Eagles" maxlength="100" required>
+          <label class="reg-label" for="teamName" data-i18n="reg_team_name">Team Name <span class="req">*</span></label>
+             <input class="reg-input" type="text" id="teamName" name="teamName"
+               placeholder="e.g. Warsaw Eagles" maxlength="100" required data-i18n-ph="reg_team_ph">
           <span class="reg-error" id="err-teamName"></span>
         </div>
 
         <div class="reg-field">
-          <label class="reg-label">League Level <span class="req">*</span></label>
+          <label class="reg-label" data-i18n="reg_league">League Level <span class="req">*</span></label>
           <div class="reg-radio-group" id="leagueLevelGroup">
             <label class="reg-radio">
               <input type="radio" name="leagueLevel" value="1st">
               <span class="reg-radio__box"></span>
-              <span class="reg-radio__label">1st Liga</span>
+              <span class="reg-radio__label" data-i18n="reg_1st">1st Liga</span>
             </label>
             <label class="reg-radio">
               <input type="radio" name="leagueLevel" value="2nd">
               <span class="reg-radio__box"></span>
-              <span class="reg-radio__label">2nd Liga</span>
+              <span class="reg-radio__label" data-i18n="reg_2nd">2nd Liga</span>
             </label>
             <label class="reg-radio">
               <input type="radio" name="leagueLevel" value="3rd">
               <span class="reg-radio__box"></span>
-              <span class="reg-radio__label">3rd Liga</span>
+              <span class="reg-radio__label" data-i18n="reg_3rd">3rd Liga</span>
             </label>
             <label class="reg-radio">
               <input type="radio" name="leagueLevel" value="independent">
               <span class="reg-radio__box"></span>
-              <span class="reg-radio__label">Independent Team</span>
+              <span class="reg-radio__label" data-i18n="reg_indep">Independent Team</span>
             </label>
           </div>
           <span class="reg-error" id="err-leagueLevel"></span>
         </div>
 
         <div class="reg-field">
-          <label class="reg-label" for="instagram">Instagram Handle</label>
+          <label class="reg-label" for="instagram" data-i18n="reg_ig">Instagram Handle</label>
           <div class="reg-input-prefix">
             <span class="reg-prefix">@</span>
-            <input class="reg-input reg-input--prefixed" type="text" id="instagram" name="instagram"
-                   placeholder="yourteam" maxlength="254">
+                 <input class="reg-input reg-input--prefixed" type="text" id="instagram" name="instagram"
+                   placeholder="yourteam" maxlength="254" data-i18n-ph="reg_ig_ph">
           </div>
         </div>
 
         <div class="reg-actions">
-          <button type="button" class="reg-btn reg-btn--next" data-next="2">
+          <button type="button" class="reg-btn reg-btn--next" data-next="2" data-i18n="reg_next1">
             Next: Captain <span class="reg-btn__arrow">→</span>
           </button>
         </div>
@@ -132,34 +132,34 @@
 
       <!-- ─── STEP 2: Captain Details ───────────────── -->
       <div class="reg-panel reg-panel--hidden" id="step2">
-        <h3 class="reg-panel__title">Captain Details</h3>
+        <h3 class="reg-panel__title" data-i18n="reg_captain">Captain Details</h3>
 
         <div class="reg-field">
-          <label class="reg-label" for="capName">Full Name <span class="req">*</span></label>
-          <input class="reg-input" type="text" id="capName" name="capName"
-                 placeholder="e.g. Jan Kowalski" maxlength="100" required>
+          <label class="reg-label" for="capName" data-i18n="reg_fullname">Full Name <span class="req">*</span></label>
+             <input class="reg-input" type="text" id="capName" name="capName"
+               placeholder="e.g. Jan Kowalski" maxlength="100" required data-i18n-ph="reg_fullname_ph">
           <span class="reg-error" id="err-capName"></span>
         </div>
 
         <div class="reg-field">
-          <label class="reg-label" for="phone">Phone Number <span class="req">*</span></label>
-          <input class="reg-input" type="tel" id="phone" name="phone"
-                 placeholder="+48 123 456 789" maxlength="20" required>
+          <label class="reg-label" for="phone" data-i18n="reg_phone">Phone Number <span class="req">*</span></label>
+             <input class="reg-input" type="tel" id="phone" name="phone"
+               placeholder="+48 123 456 789" maxlength="20" required data-i18n-ph="reg_phone_ph">
           <span class="reg-error" id="err-phone"></span>
         </div>
 
         <div class="reg-field">
-          <label class="reg-label" for="email">Email Address <span class="req">*</span></label>
-          <input class="reg-input" type="email" id="email" name="email"
-                 placeholder="captain@yourteam.com" maxlength="100" required>
+          <label class="reg-label" for="email" data-i18n="reg_email">Email Address <span class="req">*</span></label>
+             <input class="reg-input" type="email" id="email" name="email"
+               placeholder="captain@yourteam.com" maxlength="100" required data-i18n-ph="reg_email_ph">
           <span class="reg-error" id="err-email"></span>
         </div>
 
         <div class="reg-actions">
-          <button type="button" class="reg-btn reg-btn--back" data-prev="1">
+          <button type="button" class="reg-btn reg-btn--back" data-prev="1" data-i18n="reg_back">
             <span class="reg-btn__arrow">←</span> Back
           </button>
-          <button type="button" class="reg-btn reg-btn--next" data-next="3">
+          <button type="button" class="reg-btn reg-btn--next" data-next="3" data-i18n="reg_next2">
             Next: Roster <span class="reg-btn__arrow">→</span>
           </button>
         </div>
@@ -167,9 +167,9 @@
 
       <!-- ─── STEP 3: Roster ────────────────────────── -->
       <div class="reg-panel reg-panel--hidden" id="step3">
-        <h3 class="reg-panel__title">Team Roster</h3>
-        <p class="reg-panel__hint">Minimum 6 players required</p>
-        <p class="reg-panel__note">⚠ Captain must be listed as one of the players below</p>
+        <h3 class="reg-panel__title" data-i18n="reg_roster">Team Roster</h3>
+        <p class="reg-panel__hint" data-i18n="reg_hint">Minimum 6 players required</p>
+        <p class="reg-panel__note" data-i18n="reg_note">⚠ Captain must be listed as one of the players below</p>
 
         <div class="reg-jersey-warning" id="jerseyWarning">
           <span class="reg-jersey-warning__icon">ℹ</span>
@@ -182,18 +182,15 @@
           <div class="roster-row" data-index="{{ forloop.counter }}">
             <div class="roster-row__num">{{ forloop.counter }}</div>
             <div class="roster-row__fields">
-              <input class="reg-input roster-first" type="text"
-                     placeholder="First Name" maxlength="50">
-              <input class="reg-input roster-last" type="text"
-                     placeholder="Last Name" maxlength="50">
-              <input class="reg-input roster-jersey" type="number"
-                     placeholder="#" min="0" max="99">
+              <input class="reg-input roster-first" type="text" placeholder="First Name" maxlength="50" data-i18n-ph="reg_first">
+              <input class="reg-input roster-last" type="text" placeholder="Last Name" maxlength="50" data-i18n-ph="reg_last">
+              <input class="reg-input roster-jersey" type="number" placeholder="#" min="0" max="99" data-i18n-ph="reg_jersey">
             </div>
           </div>
           {% endfor %}
         </div>
 
-        <button type="button" class="reg-btn reg-btn--add" id="addPlayerBtn">
+        <button type="button" class="reg-btn reg-btn--add" id="addPlayerBtn" data-i18n="reg_add">
           + Add Player
         </button>
 
@@ -202,32 +199,32 @@
           <label class="reg-check">
             <input type="checkbox" id="chkTerms" required>
             <span class="reg-check__box"></span>
-            <span>I have read and accept the tournament regulations</span>
+            <span data-i18n="reg_terms">I have read and accept the tournament regulations</span>
           </label>
           <label class="reg-check">
             <input type="checkbox" id="chkAge" required>
             <span class="reg-check__box"></span>
-            <span>All players are 18 years of age or older</span>
+            <span data-i18n="reg_age">All players are 18 years of age or older</span>
           </label>
           <label class="reg-check">
             <input type="checkbox" id="chkPhoto">
             <span class="reg-check__box"></span>
-            <span>I consent to photos/videos being taken during the event</span>
+            <span data-i18n="reg_photo">I consent to photos/videos being taken during the event</span>
           </label>
           <label class="reg-check">
             <input type="checkbox" id="chkPayment" required>
             <span class="reg-check__box"></span>
-            <span>I understand the entry fee is <strong>400 PLN</strong> and payment details will be sent by email</span>
+            <span data-i18n="reg_payment">I understand the entry fee is <strong>400 PLN</strong> and payment details will be sent by email</span>
           </label>
         </div>
         <span class="reg-error" id="err-checks"></span>
 
         <div class="reg-actions">
-          <button type="button" class="reg-btn reg-btn--back" data-prev="2">
+          <button type="button" class="reg-btn reg-btn--back" data-prev="2" data-i18n="reg_back">
             <span class="reg-btn__arrow">←</span> Back
           </button>
           <button type="submit" class="reg-btn reg-btn--submit" id="submitBtn">
-            <span class="reg-btn__text">Register Team</span>
+            <span class="reg-btn__text" data-i18n="reg_submit">Register Team</span>
             <span class="reg-btn__spinner" aria-hidden="true"></span>
           </button>
         </div>
@@ -236,8 +233,8 @@
       <!-- ─── SUCCESS ───────────────────────────────── -->
       <div class="reg-panel reg-panel--hidden reg-success" id="stepSuccess">
         <div class="reg-success__icon">✓</div>
-        <h3 class="reg-success__title">Registration Submitted!</h3>
-        <p class="reg-success__text">
+        <h3 class="reg-success__title" data-i18n="reg_success">Registration Submitted!</h3>
+        <p class="reg-success__text" data-i18n="reg_success_txt">
           Your team has been registered. Payment instructions will be sent to your email address shortly.
         </p>
       </div>

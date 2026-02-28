@@ -13,22 +13,22 @@
         <div class="hero__left">
 
             <div class="hero__label-wrap">
-                <span class="hero-label">
+                <span class="hero-label" data-i18n="hero.label">
                     April 11, 2026 • Rzgów, Szkolna 5
                 </span>
             </div>
 
             <h1 class="hero-title">
-                <div class="hero-title__main">POCKET ACES</div><br>
-                <span class="hero-title__sub">SPRING TOURNAMENT 2026</span>
+                <div class="hero-title__main" data-i18n="hero.title.main">POCKET ACES</div><br>
+                <span class="hero-title__sub" data-i18n="hero.title.sub">SPRING TOURNAMENT 2026</span>
             </h1>
 
-            <p class="hero-text">
+            <p class="hero-text" data-i18n="hero.text">
                 The first official tournament by Pocket Aces Sports Club, organized by a team of over 20 members. Built around professional organization, a competitive format, and high standards.
-
+            </p>
             <div class="hero-price">
                 <span class="hero-price__value">400 PLN</span>
-                <span class="hero-price__label">per team</span>
+                <span class="hero-price__label" data-i18n="hero.price.label">per team</span>
             </div>
 
             <div class="hero-btn-container">
@@ -37,11 +37,11 @@
                         <span id="registeredCount">{{ registered_teams }}</span>
                         <span class="hero-counter__total">/ {{ max_slots }}</span>
                     </div>
-                    <div class="hero-counter__label">Teams Registered</div>
+                    <div class="hero-counter__label" data-i18n="hero.counter.label">Teams Registered</div>
                 </div>
 
                 <a href="{% url 'register' %}" class="btn-cta">
-                    <span class="btn-cta__text">Secure Your Spot</span>
+                    <span class="btn-cta__text" data-i18n="hero.cta">Secure Your Spot</span>
                     <div class="btn-cta__shimmer"></div>
                 </a>
             </div>
@@ -62,7 +62,7 @@
 <!-- The Stakes Section (Cards Flip) -->
 <section class="perspective-section">
     <div class="container">
-        <h2 class="section-heading">The Deal</h2>
+        <h2 class="section-heading" data-i18n="deal.heading">The Deal</h2>
 
         <div class="cards-grid swiper cards-swiper">
             <div class="swiper-wrapper">
@@ -88,15 +88,15 @@
                             <span class="card-rank">A</span>
                             <span class="card-suit">♠</span>
                         </div>
-                        <h3 class="card-front__title">Grand Prize</h3>
+                        <h3 class="card-front__title" data-i18n="deal.card1.title">Grand Prize</h3>
                         <div class="divider"></div>
-                        <p class="card-front__text">
+                        <p class="card-front__text" data-i18n="deal.card1.text">
                             Top 3 teams receive official Pocket Aces trophies and medals, with individual MVP awards presented to the best players of the tournament.
                         </p>
                         <ul class="card-front__list">
-                            <li>Championship Trophy</li>
-                            <li>Medals for Top 3 Teams</li>
-                            <li>6 MVP Awards</li>
+                            <li data-i18n="deal.card1.list1">Championship Trophy</li>
+                            <li data-i18n="deal.card1.list2">Medals for Top 3 Teams</li>
+                            <li data-i18n="deal.card1.list3">6 MVP Awards</li>
                         </ul>
                     </div>
                 </div>
@@ -123,13 +123,14 @@
                             <span class="card-rank">A</span>
                             <span class="card-suit">♥</span>
                         </div>
-                        <h3 class="card-front__title">Competitive Format</h3>
+                        <h3 class="card-front__title" data-i18n="deal.card2.title">Competitive Format</h3>
                         <div class="divider"></div>
-                        <p class="card-front__text">
+                        <p class="card-front__text" data-i18n="deal.card2.text">
                             Group stage followed by single-elimination playoffs. All matches are played to two winning sets with rally scoring.
+                        </p>
                         <ul class="card-front__list">
-                            <li>Group Stage + Playoffs</li>
-                            <li>Minimum 2 Games Guaranteed</li>
+                            <li data-i18n="deal.card2.list1">Group Stage + Playoffs</li>
+                            <li data-i18n="deal.card2.list2">Minimum 2 Games Guaranteed</li>
                         </ul>
                     </div>
                 </div>
@@ -156,14 +157,14 @@
                             <span class="card-rank">A</span>
                             <span class="card-suit">♣</span>
                         </div>
-                        <h3 class="card-front__title">High Level Organization</h3>
+                        <h3 class="card-front__title" data-i18n="deal.card3.title">High Level Organization</h3>
                         <div class="divider"></div>
-                        <p class="card-front__text">
+                        <p class="card-front__text" data-i18n="deal.card3.text">
                             A team of up to 20 organizers ensures smooth operation across every aspect of the event — from logistics and scheduling to live scoring and on-court officiating.
                         </p>
                         <ul class="card-front__list">
-                            <li>Fixed Match Schedule</li>
-                            <li>Live Score Tracking</li>
+                            <li data-i18n="deal.card3.list1">Fixed Match Schedule</li>
+                            <li data-i18n="deal.card3.list2">Live Score Tracking</li>
                         </ul>
                     </div>
                 </div>
@@ -190,14 +191,14 @@
                             <span class="card-rank">A</span>
                             <span class="card-suit">♦</span>
                         </div>
-                        <h3 class="card-front__title">Full Day Experience</h3>
+                        <h3 class="card-front__title" data-i18n="deal.card4.title">Full Day Experience</h3>
                         <div class="divider"></div>
-                        <p class="card-front__text">
+                        <p class="card-front__text" data-i18n="deal.card4.text">
                             A full day of competitive volleyball, team camaraderie, and real tournament atmosphere.
                         </p>
                         <ul class="card-front__list">
-                            <li>Professional Venue & Equipment</li>
-                            <li>Post-Tournament Highlights</li>
+                            <li data-i18n="deal.card4.list1">Professional Venue & Equipment</li>
+                            <li data-i18n="deal.card4.list2">Post-Tournament Highlights</li>
                         </ul>
                     </div>
                 </div>
@@ -218,9 +219,9 @@
 <section class="section section--location">
     <div class="location-grid">
         <div class="location-content">
-            <h2 class="location__title">The Arena</h2>
+            <h2 class="location__title" data-i18n="location.title">The Arena</h2>
             <div class="divider divider--wide"></div>
-            <p class="location__text">
+            <p class="location__text" data-i18n="location.text">
                 Join us in Rzgów, Poland for an unforgettable experience. The venue features professional-grade courts, changing rooms, and a spectator area.
             </p>
 
@@ -228,20 +229,20 @@
                 <div class="location__info-item">
                     <div class="location__info-icon">📍</div>
                     <div>
-                        <h4 class="location__info-label">Location</h4>
-                        <p class="location__info-value">Rzgów, Szkolna 5</p>
+                        <h4 class="location__info-label" data-i18n="location.info.label">Location</h4>
+                        <p class="location__info-value" data-i18n="location.info.value">Rzgów, Szkolna 5</p>
                     </div>
                 </div>
                 <div class="location__info-item">
                     <div class="location__info-icon">📅</div>
                     <div>
-                        <h4 class="location__info-label">Date</h4>
-                        <p class="location__info-value">April 11, 2026</p>
+                        <h4 class="location__info-label" data-i18n="location.date.label">Date</h4>
+                        <p class="location__info-value" data-i18n="location.date.value">April 11, 2026</p>
                     </div>
                 </div>
             </div>
 
-            <a href="https://maps.app.goo.gl/VKvC4xZpQ3mr9CHq7" target="_blank" class="location__link">
+            <a href="https://maps.app.goo.gl/VKvC4xZpQ3mr9CHq7" target="_blank" class="location__link" data-i18n="location.link">
                 View on Google Maps <span>→</span>
             </a>
         </div>
@@ -257,7 +258,7 @@
 <!-- Arena Gallery -->
 <section class="section section--arena">
     <div class="container">
-        <h2 class="section-heading">The Venue</h2>
+        <h2 class="section-heading" data-i18n="arena.heading">The Venue</h2>
         <div class="arena-gallery">
             <div class="arena-gallery__item arena-gallery__item--main">
                 <img src="{% static 'assets/arena/1.jpg' %}" alt="Arena main court" loading="lazy">

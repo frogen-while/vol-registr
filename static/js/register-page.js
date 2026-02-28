@@ -8,6 +8,32 @@
 /* global gsap, document */
 
 document.addEventListener('DOMContentLoaded', () => {
+  // ── Language Support ─────────────────────────────
+  // Use translation object from navbar.js
+  const T = window.PA_TRANSLATIONS || (window.T || {});
+  let lang = localStorage.getItem('pa_lang') || 'en';
+
+  function applyLangReg(l) {
+    lang = l;
+    const t = T[l] || T.en || {};
+    // Text content
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+    // Placeholders
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      const key = el.dataset.i18nPh;
+      if (t[key] !== undefined) el.placeholder = t[key];
+    });
+  }
+
+  // Listen for global language change
+  window.addEventListener('pa_lang_change', e => {
+    applyLangReg(e.detail);
+  });
+  // Initial language
+  applyLangReg(lang);
 
   // -- Step State --
   let currentStep = 1;
@@ -70,10 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -- Validation Helpers --
-  function setError(id, msg) {
+  function setError(id, msg, msgKey, msgArg) {
     const el = document.getElementById('err-' + id);
     if (!el) return;
-    el.textContent = msg;
+    let t = T[lang] || T.en || {};
+    if (msgKey && t[msgKey]) {
+      el.textContent = t[msgKey].replace('{n}', msgArg !== undefined ? msgArg : '');
+    } else {
+      el.textContent = msg;
+    }
   }
 
   function clearErrors(...ids) {
@@ -91,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const teamName = document.getElementById('teamName');
     if (!teamName.value.trim()) {
-      setError('teamName', 'Team name is required.');
+      setError('teamName', '', 'err_team_name');
       markInputError(teamName, true);
       ok = false;
     } else {
@@ -100,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const selected = document.querySelector('input[name="leagueLevel"]:checked');
     if (!selected) {
-      setError('leagueLevel', 'Please select a league level.');
+      setError('leagueLevel', '', 'err_league');
       ok = false;
     }
 
@@ -114,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const capName = document.getElementById('capName');
     if (!capName.value.trim() || capName.value.trim().indexOf(' ') === -1) {
-      setError('capName', 'Please enter first and last name.');
+      setError('capName', '', 'err_fullname');
       markInputError(capName, true);
       ok = false;
     } else {
@@ -123,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const phone = document.getElementById('phone');
     if (!phone.value.trim()) {
-      setError('phone', 'Phone number is required.');
+      setError('phone', '', 'err_phone');
       markInputError(phone, true);
       ok = false;
     } else {
@@ -133,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const email = document.getElementById('email');
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRe.test(email.value.trim())) {
-      setError('email', 'Please enter a valid email address.');
+      setError('email', '', 'err_email');
       markInputError(email, true);
       ok = false;
     } else {
@@ -173,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (filledCount < MIN_PLAYERS) {
-      setError('checks', 'At least ' + MIN_PLAYERS + ' players are required (currently ' + filledCount + ').');
+      setError('checks', '', 'err_players', filledCount);
       // Also mark empty required rows
       let marked = 0;
       rows.forEach(row => {
@@ -195,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chkPayment = document.getElementById('chkPayment');
 
     if (!chkTerms.checked || !chkAge.checked || !chkPayment.checked) {
-      setError('checks', (ok ? '' : setError('checks', '') || '') + 'Please accept all required checkboxes to continue.');
+      setError('checks', '', 'err_checks');
       ok = false;
     }
 
@@ -325,12 +356,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (stepperFill) stepperFill.style.width = '100%';
         stepDots.forEach(dot => dot.classList.replace('active', 'done') || dot.classList.add('done'));
       } else {
-        setError('checks', data.error || 'Registration failed. Please try again.');
+        setError('checks', data.error || '', 'err_failed');
         submitBtn.classList.remove('loading');
         submitBtn.disabled = false;
       }
     } catch (err) {
-      setError('checks', 'Network error. Please check your connection and try again.');
+      setError('checks', '', 'err_network');
       submitBtn.classList.remove('loading');
       submitBtn.disabled = false;
     }
