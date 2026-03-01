@@ -34,7 +34,7 @@
             <div class="hero-btn-container">
                 <div class="hero-counter">
                     <div class="hero-counter__value">
-                        <span id="registeredCount">{{ registered_teams }}</span>
+                        <span id="registeredCount" class="hero-counter__current">{{ registered_teams }}</span>
                         <span class="hero-counter__total">/ {{ max_slots }}</span>
                     </div>
                     <div class="hero-counter__label" data-i18n="hero.counter.label">Teams Registered</div>
@@ -268,6 +268,47 @@
             </div>
             <div class="arena-gallery__item">
                 <img src="{% static 'assets/arena/3.jpg' %}" alt="Arena facilities" loading="lazy">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Road to Victory -->
+<section class="section section--road">
+    <div class="container">
+        <h2 class="section-heading" data-i18n="road.heading">Road to Victory</h2>
+        <div class="road-timeline">
+            <div class="road-item road-item--active">
+                <div class="road-item__meta">
+                    <div class="road-item__date" data-i18n="road.step1.date">March 1</div>
+                    <h3 class="road-item__title" data-i18n="road.step1.title">Registration Opens</h3>
+                </div>
+                <div class="road-item__marker"></div>
+                <div class="road-item__desc" data-i18n="road.step1.desc">Team registration begins. Secure your spot early as places are limited.</div>
+            </div>
+            <div class="road-item">
+                <div class="road-item__meta">
+                    <div class="road-item__date" data-i18n="road.step2.date">April 5</div>
+                    <h3 class="road-item__title" data-i18n="road.step2.title">Registration Closes</h3>
+                </div>
+                <div class="road-item__marker"></div>
+                <div class="road-item__desc" data-i18n="road.step2.desc">Last day to register your team and submit the roster.</div>
+            </div>
+            <div class="road-item">
+                <div class="road-item__meta">
+                    <div class="road-item__date" data-i18n="road.step3.date">April 8</div>
+                    <h3 class="road-item__title" data-i18n="road.step3.title">Schedule Release</h3>
+                </div>
+                <div class="road-item__marker"></div>
+                <div class="road-item__desc" data-i18n="road.step3.desc">Match schedule and groups will be published and sent to captains.</div>
+            </div>
+            <div class="road-item">
+                <div class="road-item__meta">
+                    <div class="road-item__date" data-i18n="road.step4.date">April 11</div>
+                    <h3 class="road-item__title" data-i18n="road.step4.title">Tournament Day</h3>
+                </div>
+                <div class="road-item__marker"></div>
+                <div class="road-item__desc" data-i18n="road.step4.desc">The big day! Group stage matches start at 9:00 AM.</div>
             </div>
         </div>
     </div>

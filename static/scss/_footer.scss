@@ -1,8 +1,15 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.site-footer__bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 // ═══════════════════════════════════════════════════════
 //  Footer Styles
 // ═══════════════════════════════════════════════════════
-@use 'variables' as *;
-@use 'mixins' as *;
+
 
 .site-footer {
   background-color: #020617; // Slate 950
@@ -10,6 +17,7 @@
   border-top: 1px solid rgba($color-slate-700, 0.4);
   position: relative;
   z-index: 10;
+  min-height: 320px;
 }
 
 .site-footer__inner {
@@ -24,21 +32,15 @@
   }
 }
 
-.site-footer__col {
-  @include flex-col;
-  gap: 1rem;
+.site-footer__bottom {
+  width: 100%;
+  text-align: center;
+  display: block;
+  margin: 0;
+  padding-top: 2rem;
+  border-top: 1px solid rgba($color-slate-800, 0.5);
 }
 
-.site-footer__logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  text-decoration: none;
-  
-  img {
-    height: 2.5rem;
-    width: auto;
-  }
   
   span {
     font-size: 1.25rem;
@@ -47,7 +49,7 @@
     color: $color-white;
     letter-spacing: -0.02em;
   }
-}
+
 
 .site-footer__desc {
   font-size: 0.95rem;
@@ -125,10 +127,29 @@
   margin: 3rem auto 0;
   padding-top: 2rem;
   border-top: 1px solid rgba($color-slate-800, 0.5);
-  text-align: center;
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  .site-footer__skylogo {
+    width: 32px;
+    height: auto;
+    display: block;
+    opacity: 0.95;
+  }
+
   p {
     font-size: 0.85rem;
     color: $color-slate-500;
+    text-align: center;
+    margin: 0;
+    display: block;
+  }
+
+  @include respond(sm) {
+    .site-footer__skylogo {
+      width: 28px;
+    }
   }
 }

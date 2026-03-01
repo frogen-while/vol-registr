@@ -52,11 +52,19 @@
         link: 'View on Google Maps'
       },
       arena: { heading: 'The Venue' },
+      // Road to Victory
+      road: {
+        heading: 'Road to Victory',
+        step1: { date: 'March 1', title: 'Registration Opens', desc: 'Team registration begins. Secure your spot early as places are limited.' },
+        step2: { date: 'April 5', title: 'Registration Closes', desc: 'Last day to register your team and submit the roster.' },
+        step3: { date: 'April 8', title: 'Schedule Release', desc: 'Match schedule and groups will be published and sent to captains.' },
+        step4: { date: 'April 11', title: 'Tournament Day', desc: 'The big day! Group stage matches start at 9:00 AM.' }
+      },
       // FAQ page
       faq: {
         title: 'FAQ',
         q1: 'What if a player is under 18?',
-        a1: 'If a participant is under 18, a parental consent form must be filled out and provided at registration.',
+        a1: 'If any player is under 18, a <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026.pdf" target="_blank">parental consent form</a> must be filled out and provided at registration.',
         q2: "What if our team doesn't have uniforms?",
         a2: 'You must make your numbers clearly visible by any means. If not, your team will not receive detailed statistics.',
         q3: 'Can we get a refund?',
@@ -80,6 +88,12 @@
       nav_match_tip: 'Available during the tournament',
       nav_faq:       'FAQ',
       nav_register:  'Register Team',
+      footer_nav: 'Navigation',
+      footer_documents: 'Documents',
+      footer_connect: 'Connect',
+      footer_about: 'About',
+      footer_identity: 'Pocket Aces Sport Club — community-run volleyball club organizing local tournaments and events.',
+      site_identity: 'Pocket Aces Sport Club — community-run volleyball club organizing local tournaments and events.',
       reg_step1:     'Team',
       reg_step2:     'Captain',
       reg_step3:     'Roster',
@@ -108,13 +122,14 @@
       reg_back:      'Back',
       reg_roster:    'Team Roster',
       reg_hint:      'Minimum 6 players required',
-      reg_note:      '⚠ Captain must be listed as one of the players below',
+      reg_note:      '<strong>Important:</strong><br>Captain must be listed as one of the players below.<br><br>If any player is under 18, a <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026.pdf" target="_blank">parental consent form</a> must be filled out and provided at registration.<br><br>Jersey numbers are optional, but if <strong>any</strong> player is missing a number, the <strong>entire team will not receive match statistics</strong>.',
       reg_first:     'First Name',
       reg_last:      'Last Name',
       reg_jersey:    '#',
       reg_add:       '+ Add Player',
-      reg_terms:     'I have read and accept the tournament regulations',
+      reg_terms:     'I have read and accept the <a href="/static/assets/documents/Regulations_english.pdf" target="_blank">tournament regulations</a>',
       reg_age:       'All players are 18 years of age or older',
+        reg_parental:  'If any player is under 18, a <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026.pdf" target="_blank">parental consent form</a> must be filled out and provided at registration.',
       reg_photo:     'I consent to photos/videos being taken during the event',
       reg_payment:   'I understand the entry fee is <strong>400 PLN</strong> and payment details will be sent by email',
       reg_submit:    'Register Team',
@@ -177,11 +192,19 @@
         link: 'Zobacz na Google Maps'
       },
       arena: { heading: 'Obiekt' },
+      // Road to Victory
+      road: {
+        heading: 'Droga do Zwycięstwa',
+        step1: { date: '1 marca', title: 'Otwarcie Rejestracji', desc: 'Rozpoczęcie rejestracji drużyn. Zarezerwuj miejsce wcześniej, liczba miejsc ograniczona.' },
+        step2: { date: '5 kwietnia', title: 'Koniec Rejestracji', desc: 'Ostatni dzień na rejestrację drużyny i przesłanie składu.' },
+        step3: { date: '8 kwietnia', title: 'Publikacja Harmonogramu', desc: 'Harmonogram meczów i grupy zostaną opublikowane i wysłane do kapitanów.' },
+        step4: { date: '11 kwietnia', title: 'Dzień Turnieju', desc: 'Wielki dzień! Mecze fazy grupowej rozpoczynają się o 9:00.' }
+      },
       // FAQ page
       faq: {
         title: 'FAQ',
         q1: 'Co jeśli zawodnik ma mniej niż 18 lat?',
-        a1: 'Jeśli uczestnik ma mniej niż 18 lat, należy dostarczyć wypełnioną zgodę rodzica podczas rejestracji.',
+        a1: 'Jeśli którykolwiek z zawodników ma mniej niż 18 lat, należy wypełnić <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026.pdf" target="_blank">zgodę rodzica</a> i dostarczyć ją organizatorom.',
         q2: 'Co jeśli drużyna nie ma strojów?',
         a2: 'Numery muszą być wyraźnie widoczne w dowolny sposób. W przeciwnym razie drużyna nie otrzyma szczegółowych statystyk.',
         q3: 'Czy można otrzymać zwrot opłaty?',
@@ -196,15 +219,21 @@
         a7: 'Harmonogram zostanie opublikowany na stronie i wysłany kapitanom drużyn e-mailem kilka dni przed turniejem.',
         ask_title: 'Zadaj pytanie',
         ask_email_ph: 'Twój email',
-        ask_question_ph: 'Twój вопрос',
-        ask_btn: 'Отправить',
-        ask_success: 'Вопрос отправлен!'
+        ask_question_ph: 'Twoje pytanie',
+        ask_btn: 'Wyślij',
+        ask_success: 'Pytanie wysłane!'
       },
       nav_home:      'Strona Główna',
       nav_match:     'Mecze',
       nav_match_tip: 'Dostępne podczas turnieju',
       nav_faq:       'FAQ',
       nav_register:  'Zarejestruj Drużynę',
+      footer_nav: 'Nawigacja',
+      footer_documents: 'Dokumenty',
+      footer_connect: 'Kontakt',
+      footer_about: 'O nas',
+      footer_identity: 'Pocket Aces Sport Club — lokalny klub siatkówki organizujący turnieje i wydarzenia.',
+      site_identity: 'Pocket Aces Sport Club — lokalny klub siatkówki organizujący turnieje i wydarzenia.',
       reg_step1:     'Drużyna',
       reg_step2:     'Kapitan',
       reg_step3:     'Skład',
@@ -233,13 +262,14 @@
       reg_back:      'Wstecz',
       reg_roster:    'Skład Drużyny',
       reg_hint:      'Minimum 6 zawodników',
-      reg_note:      '⚠ Kapitan musi być wymieniony jako jeden z zawodników poniżej',
+      reg_note:      '<strong>Ważne:</strong><br>Kapitan musi być wymieniony jako jeden z zawodników poniżej.<br><br>Jeśli którykolwiek z zawodników ma mniej niż 18 lat, należy wypełnić <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026.pdf" target="_blank">zgodę rodzica</a> i dostarczyć ją organizatorom.<br><br>Numery na koszulkach są opcjonalne, ale jeśli <strong>ktokolwiek</strong> nie będzie miał numeru, <strong>cała drużyna nie otrzyma statystyk meczowych</strong>.',
       reg_first:     'Imię',
       reg_last:      'Nazwisko',
       reg_jersey:    '#',
       reg_add:       '+ Dodaj Zawodnika',
-      reg_terms:     'Przeczytałem i akceptuję regulamin turnieju',
+      reg_terms:     'Przeczytałem i akceptuję <a href="/static/assets/documents/Regulations_polish.pdf" target="_blank">regulamin turnieju</a>',
       reg_age:       'Wszyscy zawodnicy mają ukończone 18 lat',
+        reg_parental:  'Jeśli którykolwiek z zawodników ma mniej niż 18 lat, należy wypełnić <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026.pdf" target="_blank">zgodę rodzica</a> i dostarczyć ją organizatorom.',
       reg_photo:     'Wyrażam zgodę na zdjęcia/filmy podczas wydarzenia',
       reg_payment:   'Rozumiem, że wpisowe wynosi <strong>400 PLN</strong>, a szczegóły płatności zostaną przesłane e-mailem',
       reg_submit:    'Zarejestruj Drużynę',
@@ -276,9 +306,22 @@
 
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.dataset.i18n;
-      // Support nested keys: hero.title.main → t.hero.title.main
       const value = key.split('.').reduce((acc, k) => (acc && acc[k] !== undefined ? acc[k] : undefined), t);
-      if (value !== undefined) el.textContent = value;
+      if (value !== undefined) {
+        // Для FAQ-ответов и специальных заметок используем innerHTML
+        if (/^faq\.a\d+$/.test(key) || key === 'reg_note' || key === 'reg_parental' || key === 'reg_payment' || key === 'reg_terms') {
+          el.innerHTML = value;
+        } else {
+          el.textContent = value;
+        }
+      }
+    });
+
+    // Update placeholders
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      const key = el.dataset.i18nPh;
+      const value = key.split('.').reduce((acc, k) => (acc && acc[k] !== undefined ? acc[k] : undefined), t);
+      if (value !== undefined) el.placeholder = value;
     });
 
     // update button active states
@@ -309,8 +352,8 @@
     document.body.classList.toggle('nav-open', open);
     document.documentElement.classList.toggle('nav-open', open);
     overlay && overlay.classList.toggle('open', open);
-    document.body.style.overflow = open ? 'hidden' : '';
-    document.documentElement.style.overflow = open ? 'hidden' : '';
+    // document.body.style.overflow = open ? 'hidden' : '';
+    // document.documentElement.style.overflow = open ? 'hidden' : '';
   }
 
   burger && burger.addEventListener('click', () => {

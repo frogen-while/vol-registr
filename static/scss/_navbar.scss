@@ -1,16 +1,7 @@
 @use 'variables' as *;
 @use 'mixins' as *;
 @use 'sass:color';
-html.nav-open, body.nav-open {
-  overflow: hidden !important;
-  touch-action: none;
-}
 
-
-body.nav-open {
-  overflow: hidden !important;
-  touch-action: none;
-}
 // ═══════════════════════════════════════════════════════
 //  Site Navigation
 // ═══════════════════════════════════════════════════════
@@ -35,6 +26,13 @@ $nav-h: 4.25rem;
     -webkit-backdrop-filter: blur(18px);
     box-shadow: 0 1px 0 rgba($color-slate-700, 0.45),
                 0 4px 24px rgba($color-bg-body, 0.5);
+  }
+
+  body.nav-open & {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
   }
 }
 
@@ -82,6 +80,11 @@ $nav-h: 4.25rem;
   }
 }
 
+// Hide the header logo image when the footer logo is preferred
+.site-brand__img {
+  display: none !important;
+}
+
 // ── Menu ──────────────────────────────────────────────
 
 .site-nav__menu {
@@ -93,48 +96,47 @@ $nav-h: 4.25rem;
   @include mobile-only {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 80vw;
-    max-width: 320px;
-    background: rgba($color-bg-body, 0.97);
-    backdrop-filter: blur(20px);
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    background: rgba($color-bg-body, 0.65);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    padding: 2.5rem 1.5rem 1.5rem 1.5rem;
-    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 2.5rem;
     z-index: 1200;
-    box-shadow: 2px 0 24px rgba($color-sky-400, 0.08);
-    transition: transform 0.35s cubic-bezier(.77,0,.18,1), opacity 0.25s;
-    transform: translateX(-100%);
+    transition: opacity 0.3s ease, visibility 0.3s;
     opacity: 0;
+    visibility: hidden;
 
     &.open {
       display: flex;
-      transform: translateX(0);
       opacity: 1;
+      visibility: visible;
+    }
+
+    .site-nav__link {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: $color-white;
+    }
+
+    .site-nav__cta {
+      width: 100%;
+      max-width: 300px;
+      justify-content: center;
+      font-size: 1.1rem;
+      padding: 1rem;
     }
   }
 }
 
 .site-nav__overlay {
   display: none;
-  @include mobile-only {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba($color-bg-body, 0.55);
-    z-index: 1199;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s;
-    &.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-  }
 }
 
 // ── Nav Link ─────────────────────────────────────────
@@ -258,6 +260,14 @@ $nav-h: 4.25rem;
   align-items: center;
   gap: 0.75rem;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1202;
+
+  @include mobile-only {
+    margin-left: 1rem;
+    flex-grow: 1;
+    justify-content: space-between;
+  }
 }
 
 // ── Language Toggle ───────────────────────────────────
@@ -310,6 +320,8 @@ $nav-h: 4.25rem;
   border: none;
   cursor: pointer;
   padding: 0;
+  position: relative;
+  z-index: 1201;
 
   @include mobile-only { display: flex; }
 

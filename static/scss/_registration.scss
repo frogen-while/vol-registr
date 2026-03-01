@@ -529,9 +529,18 @@ input[type="number"] { -moz-appearance: textfield; }
   align-items: flex-start;
   gap: 0.75rem;
   cursor: pointer;
-  font-size: 0.85rem;
-  color: $color-slate-400;
+  font-size: 0.72rem !important;
+  color: $color-slate-400 !important;
   line-height: 1.5;
+  text-transform: none !important;
+  font-weight: 400 !important;
+
+  span {
+    text-transform: none !important;
+    font-weight: 400 !important;
+    font-size: 0.72rem !important;
+    color: $color-slate-400 !important;
+  }
 
   input[type="checkbox"] { display: none; }
 
@@ -569,7 +578,58 @@ input[type="number"] { -moz-appearance: textfield; }
     }
   }
 
-  strong { color: $color-sky-400; font-weight: 700; }
+  strong {
+    color: inherit;
+    font-weight: 600;
+    font-size: 0.95em;
+    opacity: 0.95;
+  }
+  
+}
+
+/* Stronger specificity to override competing rules */
+.reg-checks .reg-check,
+.reg-checks .reg-check span,
+.reg-checks .reg-check strong,
+.reg-checks .reg-check a {
+  font-size: 0.72rem !important;
+  color: $color-slate-400 !important;
+}
+
+.reg-checks .reg-check a { text-decoration: underline; }
+
+// Make the consent/payment line and related notes uniformly smaller and grey
+.reg-check[data-i18n="reg_payment"],
+.reg-check[data-i18n="reg_parental"],
+.reg-panel__note[data-i18n="reg_note"] {
+  font-size: 0.72rem;
+  color: $color-slate-400;
+  line-height: 1.4;
+
+  // Ensure any strong/emphasis inside keeps a subtle emphasis but inherits color
+  strong, em {
+    color: inherit;
+    font-weight: 600;
+    font-size: 0.95em;
+    opacity: 0.95;
+  }
+
+  // If the translation is nested inside a span, make sure it inherits
+  span { color: inherit; }
+}
+
+// Ensure links inside the consent/payment text inherit the grey color
+.reg-check a,
+.reg-panel__note a {
+  color: inherit;
+  font-weight: 600;
+  font-size: 0.95em;
+  text-decoration: underline;
+}
+
+// Also ensure any strong/em inside checkboxes inherit the muted style
+.reg-check strong, .reg-check em {
+  color: inherit;
 }
 
 // â”€â”€ Navigation Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -809,5 +869,10 @@ input[type="number"] { -moz-appearance: textfield; }
   }
 
   .reg-stepper__steps { justify-content: space-around; }
+}
+
+
+.reg-jersey-warning, .reg-brand__note {
+  display: none !important;
 }
 

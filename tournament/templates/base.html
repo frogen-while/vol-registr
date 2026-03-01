@@ -17,9 +17,9 @@
     <!-- Site Navigation -->
     <nav class="site-nav" id="siteNav">
       <div class="site-nav__inner">
-        <a href="{% url 'index' %}" class="site-nav__logo">
-          <img src="{% static 'assets/logo.png' %}" alt="Pocket Aces">
-          <span class="site-nav__logo-text">Pocket Aces</span>
+
+        <a href="{% url 'index' %}" class="site-brand" aria-label="Pocket Aces">
+          <img src="{% static 'assets/logo.png' %}" alt="Pocket Aces" class="site-brand__img" />
         </a>
 
         <div class="site-nav__menu" id="navMenu">
@@ -54,18 +54,10 @@
     <!-- Site Footer -->
     <footer class="site-footer">
       <div class="site-footer__inner">
-        <div class="site-footer__col site-footer__col--brand">
-          <a href="{% url 'index' %}" class="site-footer__logo">
-            <img src="{% static 'assets/logo.png' %}" alt="Pocket Aces">
-            <span>Pocket Aces</span>
-          </a>
-          <p class="site-footer__desc">
-            Amateur sports community founded by passion. Volleyball, tournaments, and events.
-          </p>
-        </div>
+        
 
         <div class="site-footer__col">
-          <h3 class="site-footer__heading">Navigation</h3>
+          <h3 class="site-footer__heading" data-i18n="footer_nav">Navigation</h3>
           <ul class="site-footer__links">
             <li><a href="{% url 'index' %}">Home</a></li>
             <li><a href="{% url 'register' %}">Register Team</a></li>
@@ -74,7 +66,16 @@
         </div>
 
         <div class="site-footer__col">
-          <h3 class="site-footer__heading">Connect</h3>
+          <h3 class="site-footer__heading" data-i18n="footer_documents">Documents</h3>
+          <ul class="site-footer__links">
+            <li><a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026.pdf" target="_blank">Parental Consent Form</a></li>
+            <li><a href="{% url 'privacy_policy_en' %}" target="_blank">Privacy Policy</a></li>
+            <li><a href="/static/assets/documents/Regulations_english.pdf" target="_blank">Regulations (EN)</a></li>
+            <li><a href="/static/assets/documents/Regulations_polish.pdf" target="_blank">Regulations (PL)</a></li>
+          </ul>
+        </div>
+        <div class="site-footer__col">
+          <h3 class="site-footer__heading" data-i18n="footer_connect">Connect</h3>
           <div class="site-footer__socials">
             <a href="https://instagram.com/pocketaces.sc" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
             <a href="https://tiktok.com/@pocketaces.vt7" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
@@ -84,9 +85,10 @@
           <a href="mailto:info@pocketaces.team" class="site-footer__contact">info@pocketaces.team</a>
         </div>
       </div>
-      
+
       <div class="site-footer__bottom">
-        <p>&copy; 2026 Pocket Aces Sport Club. All rights reserved.</p>
+        <img src="{% static 'assets/logo.png' %}" alt="Pocket Aces" class="site-footer__skylogo" />
+        <p class="site-footer__copyright">&copy; 2026 Pocket Aces Sport Club. All rights reserved.</p>
       </div>
     </footer>
 

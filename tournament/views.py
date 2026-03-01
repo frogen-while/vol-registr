@@ -1,8 +1,11 @@
+def privacy_policy_en(request):
+    """Privacy Policy page (EN)."""
+    return render(request, "tournament/pivate_policy_en.html")
 """Thin view layer — delegates logic to forms and services."""
 
 import json
 import logging
-
+from django.conf import settings
 
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -102,3 +105,30 @@ def api_register_team(request):
         return JsonResponse(
             {"success": False, "error": "Internal server error."}, status=500
         )
+
+@require_POST
+def api_ask_question(request):
+    """
+    JSON endpoint: send a question to the organizers.
+    """
+    try:
+        data = json.loads(request.body)
+        email = data.get('email')
+        question = data.get('question')
+        
+        if not email or not question:
+             return JsonResponse({'success': False, 'error': 'Email and question are required.'}, status=400)
+
+        # Send email to admin (self)
+        send_mail(
+            subject=f'New Question from {email}',
+            message=f'Sender: {email}\n\nQuestion:\n{question}',
+            from_email=None, 
+            recipient_list=[settings.DEFAULT_FROM_EMAIL], 
+            fail_silently=False,
+        )
+        
+        return JsonResponse({'success': True})
+    except Exception as e:
+        logger.error(f'Error sending question: {e}')
+        return JsonResponse({'success': False, 'error': 'Failed to send question.'}, status=500)
