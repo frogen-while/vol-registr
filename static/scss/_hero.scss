@@ -112,7 +112,7 @@
 .hero-title__main {
   font-size: clamp(3rem, 7vw, 13rem);
   @media (max-width: 600px) {
-    font-size: 5rem;
+    font-size: 3.2rem;
     line-height: 1.15;
   }
   display: block;
@@ -123,7 +123,7 @@
   @include gradient-text;
 
   @media (max-width: 600px) {
-    font-size: 5rem;
+    font-size: 3.2rem;
     line-height: 1.15;
     white-space: normal;
     word-break: break-word;

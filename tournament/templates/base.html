@@ -18,8 +18,9 @@
     <nav class="site-nav" id="siteNav">
       <div class="site-nav__inner">
 
-        <a href="{% url 'index' %}" class="site-brand" aria-label="Pocket Aces">
-          <img src="{% static 'assets/logo.png' %}" alt="Pocket Aces" class="site-brand__img" />
+        <a href="{% url 'index' %}" class="site-nav__logo" aria-label="Pocket Aces">
+          <img src="{% static 'assets/logo.png' %}" alt="Pocket Aces" />
+          <span class="site-nav__logo-text">Pocket Aces</span>
         </a>
 
         <div class="site-nav__menu" id="navMenu">

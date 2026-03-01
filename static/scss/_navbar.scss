@@ -80,10 +80,7 @@ $nav-h: 4.25rem;
   }
 }
 
-// Hide the header logo image when the footer logo is preferred
-.site-brand__img {
-  display: none !important;
-}
+// (removed .site-brand__img hide rule so header logo displays)
 
 // ── Menu ──────────────────────────────────────────────
 
