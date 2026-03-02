@@ -869,6 +869,24 @@ input[type="number"] { -moz-appearance: textfield; }
   }
 
   .reg-stepper__steps { justify-content: space-around; }
+
+  // Make action buttons more compact on small screens
+  .reg-actions {
+    gap: 0.5rem;
+  }
+
+  .reg-actions .reg-btn {
+    padding: 0.55rem 1rem;
+    font-size: 0.82rem;
+  }
+
+  // Ensure primary CTA fits neatly on narrow viewports
+  .reg-btn--next,
+  .reg-btn--submit {
+    margin-left: 0;
+    width: 100%;
+    max-width: none;
+  }
 }
 
 

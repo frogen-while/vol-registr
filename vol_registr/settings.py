@@ -28,6 +28,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.18.10', '127.0.0.1', 'localhost', 'maksymkotsiubailo.alwaysdata.net', '*']
 
+# Trusted origins for CSRF checks (add production domains as needed)
+CSRF_TRUSTED_ORIGINS = [
+    'https://demo.pocketaces.team',
+    'https://www.demo.pocketaces.team',
+    'http://demo.pocketaces.team',
+    'http://www.demo.pocketaces.team',
+]
+
 
 # Application definition
 
