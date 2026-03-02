@@ -26,7 +26,24 @@ SECRET_KEY = 'django-insecure-o4bf9ey12d*dv5p%pi7nj8%b-py*9#tjt5#^x%4*!xy91e*%@d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.18.10', '127.0.0.1', 'localhost', 'maksymkotsiubailo.alwaysdata.net', '*']
+ALLOWED_HOSTS = ['192.168.18.10', '127.0.0.1', 'localhost', 'demo.pocketaces.team', 'pocketaces.team','*']
+
+# CSRF / cookie settings
+# If your frontend is served from a different origin (e.g. https://demo.pocketaces.team)
+# and calls this backend, Django requires explicit trusted origins for unsafe methods.
+CSRF_TRUSTED_ORIGINS = [
+    'https://demo.pocketaces.team',
+    'https://pocketaces.team',
+]
+
+# If you're behind a reverse proxy/ingress that terminates TLS, enable this so
+# Django correctly detects HTTPS (important for secure cookies / CSRF).
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# These are safe defaults when you're serving the site over HTTPS.
+# Keep local dev working over plain HTTP.
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
 
 
 # Application definition

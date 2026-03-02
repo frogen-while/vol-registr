@@ -351,7 +351,7 @@
 // Remove number input spinners
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-input[type="number"] { -moz-appearance: textfield; }
+
 
 // â”€â”€ Input with Prefix (@) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 .reg-input-prefix {
@@ -687,6 +687,11 @@ input[type="number"] { -moz-appearance: textfield; }
     background: $color-sky-400;
     color: $color-bg-body;
     margin-left: auto;
+
+    @media (max-width: 480px) {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.85rem;
+    }
 
     &:hover { background: color.adjust($color-sky-400, $lightness: 8%); }
 
