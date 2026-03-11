@@ -1644,9 +1644,6 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-input[type=number] {
-  -moz-appearance: textfield;
-}
 
 .reg-input-prefix {
   display: flex;
@@ -1985,6 +1982,13 @@ input[type=number] {
 .reg-btn--submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .reg-btn--submit {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.85rem;
+  }
 }
 .reg-btn__spinner {
   display: none;
