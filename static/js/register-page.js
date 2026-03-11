@@ -322,6 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
       phone:       document.getElementById('phone')?.value.trim() || '',
       email:       document.getElementById('email')?.value.trim() || '',
       players:     collectPlayers(),
+      lang:        localStorage.getItem('pa_lang') || 'en',
     };
 
     // Loading state

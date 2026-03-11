@@ -54,6 +54,9 @@ class Team(models.Model):
     payment_status = models.IntegerField(
         choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_WAITING
     )
+    blik_number = models.CharField(
+        max_length=20, blank=True, default="", verbose_name="Assigned BLIK"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

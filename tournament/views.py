@@ -19,8 +19,9 @@ def faq(request):
     """FAQ page."""
     return render(request, "tournament/faq.html")
 
-from .constants import MAX_TOURNAMENT_SLOTS
+from .constants import MAX_TOURNAMENT_SLOTS, PAYMENT_ACCOUNTS
 from .forms import TeamRegistrationForm
+from .models import Team
 from .services import get_available_slots, register_team
 
 logger = logging.getLogger(__name__)
@@ -80,16 +81,51 @@ def api_register_team(request):
 
         # Send payment instructions email
         user_email = form.cleaned_data.get('email')
+        lang = data.get('lang', 'en')
+        if lang not in ('en', 'pl'):
+            lang = 'en'
+
         if user_email:
-            send_mail(
-                subject="Registration Successful – Payment Instructions",
-                message=(
-                    "Thank you for registering for the tournament!\n\n"
+            # Assign BLIK by capacity: 6 / 3 / 3
+            blik = PAYMENT_ACCOUNTS[0]["blik"]  # fallback
+            for account in PAYMENT_ACCOUNTS:
+                used = Team.objects.filter(blik_number=account["blik"]).count()
+                if used < account["capacity"]:
+                    blik = account["blik"]
+                    break
+            team.blik_number = blik
+            team.save(update_fields=["blik_number"])
+
+            if lang == 'pl':
+                subject = "Rejestracja zakończona – Instrukcje płatności"
+                message = (
+                    f"Dziękujemy za rejestrację drużyny {team.name} na turniej Pocket Aces!\n\n"
+                    "Aby dokończyć rejestrację, prosimy o przelew opłaty startowej na poniższe konto:\n"
+                    f"BLIK: {blik}\n"
+                    f"Tytuł: {team.name}\n\n"
+                    "W razie pytań odpowiedz na tego maila.\n\n"
+                    "─────────────────────────────\n"
+                    "Do zobaczenia na boisku! 🏐\n\n"
+                    "Z poważaniem\n"
+                    "Zespół Pocket Aces Sports Club\n"
+                )
+            else:
+                subject = "Registration Successful – Payment Instructions"
+                message = (
+                    f"Thank you for registering {team.name} for the Pocket Aces tournament!\n\n"
                     "To complete your registration, please transfer the entry fee to the following account:\n"
-                    "IBAN: [YOUR IBAN HERE]\n"
-                    "Title: Pocket Aces Registration – [Your Team Name]\n\n"
-                    "If you have any questions, reply to this email."
-                ),
+                    f"BLIK: {blik}\n"
+                    f"Title: Pocket Aces Registration – {team.name}\n\n"
+                    "If you have any questions, reply to this email.\n\n"
+                    "─────────────────────────────\n"
+                    "See you on the court! 🏐\n\n"
+                    "Best regards,\n"
+                    "Pocket Aces Sports Club Team\n"
+                )
+
+            send_mail(
+                subject=subject,
+                message=message,
                 from_email=None,  # Uses DEFAULT_FROM_EMAIL
                 recipient_list=[user_email],
                 fail_silently=False,

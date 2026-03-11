@@ -32,6 +32,13 @@ PAYMENT_STATUS_CHOICES = [
     (PAYMENT_REFUND, "Refund"),
 ]
 
+# ── Payment Accounts ──────────────────────────────────
+PAYMENT_ACCOUNTS = [
+    {"blik": "793 424 526", "capacity": 6},
+    {"blik": "572 637 803", "capacity": 3},
+    {"blik": "535 054 366", "capacity": 3},
+]
+
 # ── Field Limits ─────────────────────────────────────────
 TEAM_NAME_MAX_LENGTH = 100
 CITY_MAX_LENGTH = 100
