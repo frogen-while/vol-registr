@@ -1,0 +1,160 @@
+/* =================================================================
+   Registered Teams Button & Modal
+==================================================================== */
+
+/* --- Button Wrapper (Outer Layer) --- */
+.rt-btn__wrapper {
+  position: relative;
+  padding: 3px; /* Gap for the glow */
+  border-radius: 14px; /* Outer corner rounding */
+  cursor: pointer;
+  background: linear-gradient(135deg, #4f46e5, #8a5cf6); /* Purple/indigo gradient for the border */
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  box-shadow: 0 0 0 0 rgba(138, 92, 246, 0); /* Initial shadow (transparent) */
+}
+
+/* --- Glowing Effect on Hover --- */
+.rt-btn__wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(138, 92, 246, 0.3), /* Main glow */
+              0 0 15px rgba(138, 92, 246, 0.4);      /* Subtle halo */
+}
+
+/* --- Button Inner Box --- */
+.rt-btn__inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #2a303c; /* Dark gray background */
+  padding: 1.25rem 1.5rem;
+  border-radius: 11px; /* Inner corner rounding (slightly smaller) */
+  border: 1px solid rgba(255, 255, 255, 0.05); /* Subtle inner border */
+}
+
+/* --- Cyan Vertical Bar --- */
+.rt-btn__bar {
+  width: 4px;
+  height: 3.5rem;
+  background-color: #0ea5e9; /* Cyan color */
+  border-radius: 2px;
+}
+
+/* --- Content (Numbers + Text) --- */
+.rt-btn__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+/* --- Numbers (Top Row) --- */
+.rt-btn__numbers {
+  display: flex;
+  align-items: baseline;
+  line-height: 1;
+}
+
+.rt-btn__current {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.rt-btn__total {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #525c7a; /* Dark gray for '/ 12' */
+  margin-left: 0.25rem;
+}
+
+/* --- Text (Bottom Row) --- */
+.rt-btn__text {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #94a3b8; /* Gray for text */
+}
+
+/* --- Modal Overlay --- */
+.rt-modal__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background-color: rgba(2, 6, 23, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.rt-modal__overlay.active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease;
+}
+
+/* --- Modal Content Box --- */
+.rt-modal__content {
+  position: relative;
+  background-color: #1e293b; /* Dark blue-gray */
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 1rem;
+  padding: 2.5rem;
+  width: 90%;
+  max-width: 500px;
+  color: #e2e8f0;
+  transform: scale(0.95);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.rt-modal__overlay.active .rt-modal__content {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* --- Modal Close Button --- */
+.rt-modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.rt-modal__close:hover {
+  color: #e2e8f0;
+}
+
+/* --- Modal Title --- */
+.rt-modal__title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(45deg, #6366f1, #38bdf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* --- Modal Teams List --- */
+.rt-modal__teams-list p {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #334155;
+  font-size: 1.1rem;
+}
+
+.rt-modal__teams-list p:last-child {
+  border-bottom: none;
+}

@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
         initCardModal();
     }
 
+    // ─── Registered Teams Modal ───────────────────────
+    initRegisteredTeamsModal();
+
     // ─── Scroll-triggered Sections ──────────────────
     if (typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
@@ -282,4 +285,52 @@ function initCardModal() {
 function closeCardModal(overlay) {
     overlay.classList.remove('active');
     document.body.style.overflow = '';
+}
+
+// ═══════════════════════════════════════════════════════
+//  Registered Teams Modal
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Click the 'Registered Teams' button to open a modal
+ * showing the list of teams.
+ */
+function initRegisteredTeamsModal() {
+    const modal = document.getElementById('registeredTeamsModal');
+    const openBtn = document.getElementById('registeredTeamsBtn');
+    const closeBtn = document.getElementById('registeredTeamsModalClose');
+
+    if (!modal || !openBtn || !closeBtn) {
+        return;
+    }
+
+    // Open modal
+    openBtn.addEventListener('click', () => {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    // Close via button
+    closeBtn.addEventListener('click', () => {
+        closeModal();
+    });
+
+    // Close via overlay click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Close via Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
 }

@@ -32,12 +32,20 @@
             </div>
 
             <div class="hero-btn-container">
-                <div class="hero-counter">
-                    <div class="hero-counter__value">
-                        <span id="registeredCount" class="hero-counter__current">{{ registered_teams }}</span>
-                        <span class="hero-counter__total">/ {{ max_slots }}</span>
+                <!-- Registered Teams Button -->
+                <div id="registeredTeamsBtn" class="rt-btn__wrapper">
+                    <div class="rt-btn__inner">
+                        <div class="rt-btn__bar"></div>
+                        <div class="rt-btn__content">
+                            <div class="rt-btn__numbers">
+                                <span class="rt-btn__current">{{ registered_teams }}</span>
+                                <span class="rt-btn__total">/ {{ max_slots }}</span>
+                            </div>
+                            <div class="rt-btn__text">
+                                ZOBACZ ZAREJESTROWANE DRUŻYNY →
+                            </div>
+                        </div>
                     </div>
-                    <div class="hero-counter__label" data-i18n="hero.counter.label">Teams Registered</div>
                 </div>
 
                 <a href="{% url 'register' %}" class="btn-cta">
@@ -49,6 +57,23 @@
 
         <div class="hero-player-container" id="heroPlayerContainer">
             <img src="{% static 'assets/main_player.png' %}" alt="Main Player" class="hero-player">
+        </div>
+    </div>
+
+    <!-- Registered Teams Modal -->
+    <div id="registeredTeamsModal" class="rt-modal__overlay">
+        <div class="rt-modal__content">
+            <button id="registeredTeamsModalClose" class="rt-modal__close">&times;</button>
+            <h2 class="rt-modal__title">Zarejestrowane Drużyny</h2>
+            <div class="rt-modal__teams-list">
+                <!-- Team list will be populated here dynamically if needed -->
+                <p>Team 1</p>
+                <p>Team 2</p>
+                <p>Team 3</p>
+                <p>Team 4</p>
+                <p>Team 5</p>
+                <p>Team 6</p>
+            </div>
         </div>
     </div>
 
