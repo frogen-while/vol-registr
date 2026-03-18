@@ -1,48 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Pocket Aces Invitational{% endblock %}</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/darkroomengineering/lenis@latest/bundled/lenis.min.js"></script>
     {% block extra_head %}{% endblock %}
-</head>
-<body>
+  </head>
+  <body>
     <!-- Site Navigation -->
     <nav class="site-nav" id="siteNav">
       <div class="site-nav__inner">
-
-        <a href="{% url 'index' %}" class="site-nav__logo" aria-label="Pocket Aces">
+        <a
+          href="{% url 'index' %}"
+          class="site-nav__logo"
+          aria-label="Pocket Aces"
+        >
           <img src="{% static 'assets/logo.png' %}" alt="Pocket Aces" />
           <span class="site-nav__logo-text">Pocket Aces</span>
         </a>
 
         <div class="site-nav__menu" id="navMenu">
-          <a href="{% url 'index' %}" class="site-nav__link" data-i18n="nav_home">Home</a>
+          <a
+            href="{% url 'index' %}"
+            class="site-nav__link"
+            data-i18n="nav_home"
+            >Home</a
+          >
 
           <div class="site-nav__item">
-            <span class="site-nav__link site-nav__link--disabled" data-i18n="nav_match">Match</span>
-            <div class="site-nav__tooltip" data-i18n="nav_match_tip">Available during the tournament</div>
+            <span
+              class="site-nav__link site-nav__link--disabled"
+              data-i18n="nav_match"
+              >Match</span
+            >
+            <div class="site-nav__tooltip" data-i18n="nav_match_tip">
+              Available during the tournament
+            </div>
           </div>
 
-          <a href="{% url 'faq' %}" class="site-nav__link" data-i18n="nav_faq">FAQ</a>
+          <a href="{% url 'faq' %}" class="site-nav__link" data-i18n="nav_faq"
+            >FAQ</a
+          >
 
-          <a href="{% url 'register' %}" class="site-nav__cta" data-i18n="nav_register">Register Team</a>
+          <a
+            href="{% url 'register' %}"
+            class="site-nav__cta"
+            data-i18n="nav_register"
+            >Register Team</a
+          >
         </div>
 
         <div class="site-nav__controls">
-          <button class="site-nav__lang" id="langToggle" aria-label="Switch language">
+          <button
+            class="site-nav__lang"
+            id="langToggle"
+            aria-label="Switch language"
+          >
             <span class="site-nav__lang-opt active" data-lang="en">EN</span>
             <span class="site-nav__lang-sep">|</span>
             <span class="site-nav__lang-opt" data-lang="pl">PL</span>
           </button>
-          <button class="site-nav__burger" id="navBurger" aria-label="Menu" aria-expanded="false">
+          <button
+            class="site-nav__burger"
+            id="navBurger"
+            aria-label="Menu"
+            aria-expanded="false"
+          >
             <span></span><span></span><span></span>
           </button>
         </div>
@@ -55,10 +91,10 @@
     <!-- Site Footer -->
     <footer class="site-footer">
       <div class="site-footer__inner">
-        
-
         <div class="site-footer__col">
-          <h3 class="site-footer__heading" data-i18n="footer_nav">Navigation</h3>
+          <h3 class="site-footer__heading" data-i18n="footer_nav">
+            Navigation
+          </h3>
           <ul class="site-footer__links">
             <li><a href="{% url 'index' %}">Home</a></li>
             <li><a href="{% url 'register' %}">Register Team</a></li>
@@ -67,29 +103,93 @@
         </div>
 
         <div class="site-footer__col">
-          <h3 class="site-footer__heading" data-i18n="footer_documents">Documents</h3>
+          <h3 class="site-footer__heading" data-i18n="footer_documents">
+            Documents
+          </h3>
           <ul class="site-footer__links">
-            <li><a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026.pdf" target="_blank">Parental Consent Form</a></li>
-            <li><a href="{% url 'privacy_policy_en' %}" target="_blank">Privacy Policy</a></li>
-            <li><a href="/static/assets/documents/Regulations_english.pdf" target="_blank">Regulations (EN)</a></li>
-            <li><a href="/static/assets/documents/Regulations_polish.pdf" target="_blank">Regulations (PL)</a></li>
+            <li>
+              <a
+                href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026.pdf"
+                target="_blank"
+                rel="noopener"
+                >Parental Consent Form</a
+              >
+            </li>
+            <li>
+              <a
+                href="{% url 'privacy_policy_en' %}"
+                target="_blank"
+                rel="noopener"
+                >Privacy Policy</a
+              >
+            </li>
+            <li>
+              <a
+                href="/static/assets/documents/Regulations_english.pdf"
+                target="_blank"
+                rel="noopener"
+                >Regulations (EN)</a
+              >
+            </li>
+            <li>
+              <a
+                href="/static/assets/documents/Regulations_polish.pdf"
+                target="_blank"
+                rel="noopener"
+                >Regulations (PL)</a
+              >
+            </li>
           </ul>
         </div>
         <div class="site-footer__col">
-          <h3 class="site-footer__heading" data-i18n="footer_connect">Connect</h3>
+          <h3 class="site-footer__heading" data-i18n="footer_connect">
+            Connect
+          </h3>
           <div class="site-footer__socials">
-            <a href="https://instagram.com/pocketaces.sc" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="https://tiktok.com/@pocketaces.vt7" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-            <a href="https://facebook.com/profile.php?id=61563557414834" target="_blank" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-            <a href="https://youtube.com/@PocketAcesSC" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            <a
+              href="https://instagram.com/pocketaces.sc"
+              target="_blank"
+              rel="noopener"
+              aria-label="Instagram"
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a
+              href="https://tiktok.com/@pocketaces.vt7"
+              target="_blank"
+              rel="noopener"
+              aria-label="TikTok"
+              ><i class="fab fa-tiktok"></i
+            ></a>
+            <a
+              href="https://facebook.com/profile.php?id=61563557414834"
+              target="_blank"
+              rel="noopener"
+              aria-label="Facebook"
+              ><i class="fab fa-facebook"></i
+            ></a>
+            <a
+              href="https://youtube.com/@PocketAcesSC"
+              target="_blank"
+              rel="noopener"
+              aria-label="YouTube"
+              ><i class="fab fa-youtube"></i
+            ></a>
           </div>
-          <a href="mailto:info@pocketaces.team" class="site-footer__contact">info@pocketaces.team</a>
+          <a href="mailto:info@pocketaces.team" class="site-footer__contact"
+            >info@pocketaces.team</a
+          >
         </div>
       </div>
 
       <div class="site-footer__bottom">
-        <img src="{% static 'assets/logo.png' %}" alt="Pocket Aces" class="site-footer__skylogo" />
-        <p class="site-footer__copyright">&copy; 2026 Pocket Aces Sport Club. All rights reserved.</p>
+        <img
+          src="{% static 'assets/logo.png' %}"
+          alt="Pocket Aces"
+          class="site-footer__skylogo"
+        />
+        <p class="site-footer__copyright">
+          &copy; 2026 Pocket Aces Sport Club. All rights reserved.
+        </p>
       </div>
     </footer>
 
@@ -98,37 +198,36 @@
     <script src="{% static 'js/config.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    {% block scripts %}
-    {% endblock %}
+    {% block scripts %} {% endblock %}
     <script src="{% static 'js/navbar.js' %}"></script>
-    
-      <!-- Inline FAQ accordion logic for reliability -->
-      <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const faqItems = document.querySelectorAll('.faq-item');
-        faqItems.forEach(item => {
-          const btn = item.querySelector('.faq-question');
+
+    <!-- Inline FAQ accordion logic for reliability -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const faqItems = document.querySelectorAll(".faq-item");
+        faqItems.forEach((item) => {
+          const btn = item.querySelector(".faq-question");
           if (!btn) return;
-          btn.addEventListener('click', function () {
-            const isOpen = item.classList.contains('open');
-            faqItems.forEach(i => {
-              i.classList.remove('open');
-              const b = i.querySelector('.faq-question');
-              if (b) b.setAttribute('aria-expanded', 'false');
+          btn.addEventListener("click", function () {
+            const isOpen = item.classList.contains("open");
+            faqItems.forEach((i) => {
+              i.classList.remove("open");
+              const b = i.querySelector(".faq-question");
+              if (b) b.setAttribute("aria-expanded", "false");
             });
             if (!isOpen) {
-              item.classList.add('open');
-              btn.setAttribute('aria-expanded', 'true');
+              item.classList.add("open");
+              btn.setAttribute("aria-expanded", "true");
             }
           });
-          btn.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
+          btn.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
               btn.click();
             }
           });
         });
       });
-      </script>
-</body>
+    </script>
+  </body>
 </html>
