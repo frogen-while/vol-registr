@@ -7,11 +7,23 @@ class PlayerInline(admin.TabularInline):
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'league_level', 'city', 'cap_name', 'payment_status', 'created_at')
-    list_filter = ('league_level', 'payment_status', 'created_at')
-    search_fields = ('name', 'cap_name', 'cap_email', 'city')
+    list_display = ('name', 'league_level', 'city', 'cap_name', 'cap_surname', 'payment_status', 'blik_number', 'group_name', 'created_at')
+    list_filter = ('league_level', 'payment_status', 'created_at', 'group_name')
+    search_fields = ('name', 'cap_name', 'cap_surname', 'cap_email', 'cap_phone', 'city', 'instagram')
     inlines = [PlayerInline]
     actions = ['mark_as_accepted', 'mark_as_waiting']
+    
+    fieldsets = (
+        ('Team Details', {
+            'fields': ('name', 'city', 'league_level', 'logo_path', 'instagram', 'group_name')
+        }),
+        ('Captain Contact', {
+            'fields': ('cap_name', 'cap_surname', 'cap_dob', 'cap_jersey', 'cap_email', 'cap_phone')
+        }),
+        ('Payment & Status', {
+            'fields': ('payment_status', 'blik_number')
+        }),
+    )
 
     def mark_as_accepted(self, request, queryset):
         queryset.update(payment_status=1)
@@ -23,6 +35,6 @@ class TeamAdmin(admin.ModelAdmin):
 
 @admin.register(Player)
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'team', 'jersey_number')
+    list_display = ('first_name', 'last_name', 'team', 'jersey_number', 'date_of_birth')
     search_fields = ('first_name', 'last_name', 'team__name')
-    list_filter = ('team__league_level',)
+    list_filter = ('team__league_level', 'team')
