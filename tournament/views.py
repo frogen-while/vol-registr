@@ -30,10 +30,12 @@ logger = logging.getLogger(__name__)
 def index(request):
     """Landing page with live slot counter."""
     available = get_available_slots()
+    teams = Team.objects.all().order_by('created_at')
     context = {
         "available_slots": available,
         "registered_teams": MAX_TOURNAMENT_SLOTS - available,
         "max_slots": MAX_TOURNAMENT_SLOTS,
+        "teams": teams,
     }
     return render(request, "tournament/index.html", context)
 

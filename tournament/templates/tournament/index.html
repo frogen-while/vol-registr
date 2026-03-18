@@ -62,17 +62,39 @@
 
     <!-- Registered Teams Modal -->
     <div id="registeredTeamsModal" class="rt-modal__overlay">
-        <div class="rt-modal__content">
+        <div class="rt-modal__content sports-scoreboard">
             <button id="registeredTeamsModalClose" class="rt-modal__close">&times;</button>
-            <h2 class="rt-modal__title">Zarejestrowane Drużyny</h2>
+            <div class="rt-modal__header">
+                <h2 class="rt-modal__title">Zarejestrowane Drużyny</h2>
+                <div class="rt-modal__subtitle">POCKET ACES SPRING TOURNAMENT</div>
+            </div>
+            
             <div class="rt-modal__teams-list">
-                <!-- Team list will be populated here dynamically if needed -->
-                <p>Team 1</p>
-                <p>Team 2</p>
-                <p>Team 3</p>
-                <p>Team 4</p>
-                <p>Team 5</p>
-                <p>Team 6</p>
+                <div class="rt-table-header">
+                    <span class="rt-col-rank">#</span>
+                    <span class="rt-col-team">Drużyna</span>
+                    <span class="rt-col-city">Miasto / Klub</span>
+                    <span class="rt-col-status">Status</span>
+                </div>
+                
+                {% if teams %}
+                    {% for team in teams %}
+                        <div class="rt-team-row {% if forloop.counter <= max_slots %}rt-in-tournament{% else %}rt-reserve{% endif %}">
+                            <span class="rt-col-rank">{{ forloop.counter }}</span>
+                            <span class="rt-col-team">{{ team.name }}</span>
+                            <span class="rt-col-city">{{ team.city|default:"-" }}</span>
+                            <span class="rt-col-status">
+                                {% if team.payment_status == 1 %}
+                                    <span class="rt-badge rt-badge-paid">OPŁACONE</span>
+                                {% else %}
+                                    <span class="rt-badge rt-badge-waiting">OCZEKUJĄCE</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="rt-no-teams">Brak zarejestrowanych drużyn.</div>
+                {% endif %}
             </div>
         </div>
     </div>
