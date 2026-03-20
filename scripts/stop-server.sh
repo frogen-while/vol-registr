@@ -1,11 +1,44 @@
 #!/usr/bin/env sh
-set -eu
+set -u
 
 # Stop running gunicorn process using pidfile and port fallback.
 PIDFILE="${PIDFILE:-gunicorn.pid}"
 PORT="${PORT:-8001}"
 
-echo "Stopping old gunicorn processes..."
+echo "Stopping old gunicorn processes (best effort)..."
+
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+find_listener_pid() {
+  if command_exists ss; then
+    ss -ltnp 2>/dev/null \
+      | awk -v port=":$PORT" '$0 ~ port { if (match($0, /pid=[0-9]+/)) { print substr($0, RSTART + 4, RLENGTH - 4); exit } }'
+    return 0
+  fi
+
+  if command_exists lsof; then
+    lsof -tiTCP:"$PORT" -sTCP:LISTEN 2>/dev/null | head -n 1
+    return 0
+  fi
+
+  return 1
+}
+
+is_port_busy() {
+  if command_exists ss; then
+    ss -ltn 2>/dev/null | awk -v port=":$PORT" '$0 ~ port { found=1 } END { exit(found ? 0 : 1) }'
+    return $?
+  fi
+
+  if command_exists lsof; then
+    lsof -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1
+    return $?
+  fi
+
+  return 1
+}
 
 if [ -f "$PIDFILE" ]; then
   OLD_PID=$(cat "$PIDFILE" 2>/dev/null || true)
@@ -30,32 +63,31 @@ else
 fi
 
 PORT_PID=""
-if command -v ss >/dev/null 2>&1; then
-  PORT_PID=$(ss -ltnp 2>/dev/null | grep "0.0.0.0:$PORT\|127.0.0.1:$PORT" | grep -o 'pid=[0-9]*' | grep -o '[0-9]*' | head -n 1 || true)
-elif command -v lsof >/dev/null 2>&1; then
-  PORT_PID=$(lsof -tiTCP:"$PORT" -sTCP:LISTEN 2>/dev/null | head -n 1 || true)
-fi
+PORT_PID=$(find_listener_pid 2>/dev/null || true)
 
 if [ -n "$PORT_PID" ]; then
   echo "Found process $PORT_PID listening on port $PORT. Sending TERM signal."
   kill -TERM "$PORT_PID" 2>/dev/null || true
   sleep 2
 else
-  echo "No listener process found for port $PORT (or lookup tools unavailable)."
+  echo "No listener process found for port $PORT."
 fi
 
-if command -v ss >/dev/null 2>&1; then
-  if ss -ltn 2>/dev/null | grep -q ":$PORT"; then
-    echo "Port $PORT is still busy! Forcing kill (best effort)..."
-    PORT_PID=$(ss -ltnp 2>/dev/null | grep "0.0.0.0:$PORT\|127.0.0.1:$PORT" | grep -o 'pid=[0-9]*' | grep -o '[0-9]*' | head -n 1 || true)
-    if [ -n "$PORT_PID" ]; then kill -9 "$PORT_PID" 2>/dev/null || true; fi
+if is_port_busy; then
+  echo "Port $PORT is still busy. Forcing kill (best effort)..."
+  PORT_PID=$(find_listener_pid 2>/dev/null || true)
+  if [ -n "$PORT_PID" ]; then
+    kill -KILL "$PORT_PID" 2>/dev/null || true
     sleep 2
-  fi
-elif command -v lsof >/dev/null 2>&1; then
-  if lsof -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1; then
-    echo "Port $PORT is still busy! Forcing kill (best effort)..."
-    PORT_PID=$(lsof -tiTCP:"$PORT" -sTCP:LISTEN 2>/dev/null | head -n 1 || true)
-    if [ -n "$PORT_PID" ]; then kill -9 "$PORT_PID" 2>/dev/null || true; fi
-    sleep 2
+  else
+    echo "Could not resolve PID for busy port $PORT."
   fi
 fi
+
+if is_port_busy; then
+  echo "Warning: port $PORT is still busy after stop attempts; continuing deploy."
+else
+  echo "Port $PORT is free."
+fi
+
+exit 0
