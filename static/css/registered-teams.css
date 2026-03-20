@@ -262,6 +262,19 @@
   text-align: left;
 }
 
+.rt-col-action {
+  width: 2rem;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: #cbd5e1;
+}
+
+.rt-team-row:hover .rt-col-action {
+  color: #0ea5e9;
+}
+
 /* Team Rows */
 .rt-team-row {
   display: flex;
@@ -349,4 +362,13 @@
   font-weight: 600;
   font-size: 1rem;
   font-family: 'Montserrat', sans-serif;
+}
+
+@media (max-width: 600px) {
+  .rt-col-captain, .rt-col-level {
+    display: none;
+  }
+  .rt-col-team {
+    flex: 1;
+  }
 }

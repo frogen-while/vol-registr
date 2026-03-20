@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ team.name }} - Pocket Aces{% endblock %}
+
+{% block extra_head %}
+<style>
+  .team-detail-section {
+    padding-top: 8rem;
+    padding-bottom: 4rem;
+    min-height: 100vh;
+    color: #e2e8f0;
+    font-family: 'Montserrat', sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .team-detail-content {
+    position: relative;
+    z-index: 10;
+  }
+  
+  .team-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .team-name {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .team-level {
+    font-size: 1.25rem;
+    color: #0ea5e9;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .team-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .team-card {
+    background-color: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .team-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+  }
+
+  .team-card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid rgba(51, 65, 85, 0.5);
+    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .team-card-title i {
+    color: #0ea5e9;
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+  }
+
+  /* Captain Info */
+  .cap-info-item {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cap-info-label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  .cap-info-value {
+    font-size: 1.1rem;
+    color: #e2e8f0;
+    font-weight: 500;
+  }
+
+  .cap-info-value a {
+    color: #38bdf8;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .cap-info-value a:hover {
+    color: #7dd3fc;
+  }
+
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    color: #38bdf8;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .contact-link i {
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+    transition: transform 0.2s;
+  }
+
+  .contact-link:hover {
+    color: #7dd3fc;
+  }
+
+  .contact-link:hover i {
+    transform: translateX(4px);
+  }
+
+  /* Roster List */
+  .roster-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .roster-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+    transition: background-color 0.2s;
+    border-radius: 0.25rem;
+  }
+
+  .roster-item:last-child {
+    border-bottom: none;
+  }
+
+  .roster-item:hover {
+    background-color: rgba(30, 41, 59, 0.8);
+    transform: translateX(4px);
+    transition: all 0.2s ease;
+  }
+
+  .player-number {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #38bdf8;
+    width: 3rem;
+    text-align: center;
+    margin-right: 1rem;
+  }
+
+  .player-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f8fafc;
+    flex: 1;
+  }
+
+  .player-icon {
+    color: #334155;
+    font-size: 1.25rem;
+    opacity: 0.5;
+  }
+  
+  .roster-item:hover .player-icon {
+    color: #0ea5e9;
+    opacity: 1;
+  }
+  
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    color: #94a3b8;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    transition: color 0.2s;
+  }
+  
+  .back-btn:hover {
+    color: #e2e8f0;
+  }
+  
+  .back-btn i {
+    margin-right: 0.5rem;
+  }
+  
+  .team-detail-watermark {
+    display: none;
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Background decorations -->
+<div class="sports-bg-wrapper">
+  <div class="sports-bg-image"></div>
+  <div class="sports-bg-grid"></div>
+  <div class="sports-bg-stripes"></div>
+  <div class="sports-bg-glow"></div>
+  <div class="sports-bg-overlay"></div>
+  <div class="sports-bg-watermark">POCKET<br>ACES</div>
+</div>
+
+<section class="team-detail-section">
+  
+  <div class="container team-detail-content">
+    <a href="{% url 'index' %}#registeredTeamsModal" class="back-btn">
+      <i class="fas fa-arrow-left"></i> <span data-i18n="team_back">Wróć do listy drużyn</span>
+    </a>
+
+    <div class="team-header">
+      <h1 class="team-name">{{ team.name }}</h1>
+      <div class="team-level">{{ team.get_league_level_display }}</div>
+      {% if team.instagram %}
+      <div class="team-ig" style="margin-top: 0.5rem;">
+        <a href="https://instagram.com/{{ team.instagram }}" target="_blank" style="color: #e1306c; text-decoration: none;">
+          <i class="fab fa-instagram"></i> @{{ team.instagram }}
+        </a>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="team-grid">
+      <!-- Info Kapitan -->
+      <div class="team-card">
+        <h2 class="team-card-title"><i class="fas fa-user-shield"></i> <span data-i18n="team_captain">Kapitan</span></h2>
+        
+        <div class="cap-info-item">
+          <span class="cap-info-label" data-i18n="team_name">Imię i Nazwisko</span>
+          <span class="cap-info-value">{{ team.cap_name }} {{ team.cap_surname }}</span>
+        </div>
+        
+        <div class="cap-info-item">
+          <span class="cap-info-label" data-i18n="team_jersey">Numer Koszulki</span>
+          <span class="cap-info-value">{% if team.cap_jersey %}{{ team.cap_jersey }}{% else %}-{% endif %}</span>
+        </div>
+
+        <div class="cap-info-item">
+          <span class="cap-info-label" data-i18n="team_email">Email</span>
+          <span class="cap-info-value"><a href="mailto:{{ team.cap_email }}" class="contact-link"><span data-i18n="team_mail_to">Napisz</span> <i class="fas fa-arrow-right"></i></a></span>
+        </div>
+        
+        {% if team.cap_phone %}
+        <div class="cap-info-item">
+          <span class="cap-info-label" data-i18n="team_phone">Telefon</span>
+          <span class="cap-info-value"><a href="tel:{{ team.cap_phone }}" class="contact-link"><span data-i18n="team_call">Zadzwoń</span> <i class="fas fa-arrow-right"></i></a></span>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Skład (Roster) -->
+      <div class="team-card">
+        <h2 class="team-card-title"><i class="fas fa-users"></i> <span data-i18n="team_roster">Skład Drużyny</span></h2>
+        
+        {% if team.players.all %}
+        <ul class="roster-list">
+          {% for player in team.players.all %}
+          <li class="roster-item">
+            <div class="player-number">{% if player.jersey_number %}{{ player.jersey_number }}{% else %}-{% endif %}</div>
+            <div class="player-name">{{ player.first_name }} {{ player.last_name }}</div>
+            <div class="player-icon"><i class="fas fa-volleyball-ball"></i></div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p style="color: #94a3b8; font-style: italic;" data-i18n="team_empty">Brak dodanych graczy.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

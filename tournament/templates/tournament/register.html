@@ -2,12 +2,17 @@
 {% load static %}
 
 {% block content %}
-<!-- Background decorations (outside grid to avoid extra grid cells) -->
-<div class="grid-bg"></div>
-<div class="glow-orb glow-1"></div>
-<div class="glow-orb glow-2"></div>
+<!-- Background decorations -->
+<div class="sports-bg-wrapper">
+  <div class="sports-bg-image"></div>
+  <div class="sports-bg-grid"></div>
+  <div class="sports-bg-stripes"></div>
+  <div class="sports-bg-glow"></div>
+  <div class="sports-bg-overlay"></div>
+  <div class="sports-bg-watermark">POCKET<br>ACES</div>
+</div>
 
-<div class="reg-layout">
+<div class="reg-layout" style="position: relative; z-index: 10;">
   <!-- Left Column: Branding -->
   <div class="reg-brand">
     <div class="reg-brand__hero gsap-hero-text">

@@ -68,15 +68,17 @@
                     <span class="rt-col-team" data-i18n="registered.col_team">Drużyna</span>
                     <span class="rt-col-captain" data-i18n="registered.col_captain">Kapitan</span>
                     <span class="rt-col-level" data-i18n="registered.col_level">Poziom</span>
+                    <span class="rt-col-action"></span>
                 </div>
                 
                 {% if teams %}
                     {% for team in teams %}
-                        <div class="rt-team-row {% if forloop.counter <= max_slots %}rt-in-tournament{% else %}rt-reserve{% endif %}">
+                        <div class="rt-team-row {% if forloop.counter <= max_slots %}rt-in-tournament{% else %}rt-reserve{% endif %}" onclick="window.location.href='{% url 'team_detail' team.id %}'" style="cursor: pointer;">
                             <span class="rt-col-rank">{{ forloop.counter }}</span>
                             <span class="rt-col-team">{{ team.name }}</span>
                             <span class="rt-col-captain">{{ team.cap_name }} {{ team.cap_surname }}</span>
                             <span class="rt-col-level">{{ team.get_league_level_display }}</span>
+                            <span class="rt-col-action"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></span>
                         </div>
                     {% endfor %}
                 {% else %}

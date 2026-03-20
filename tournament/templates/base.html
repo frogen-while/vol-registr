@@ -7,6 +7,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
     <link rel="stylesheet" href="{% static 'css/registered-teams.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/sports-bg.css' %}" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
@@ -17,7 +18,6 @@
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/darkroomengineering/lenis@latest/bundled/lenis.min.js"></script>
     {% block extra_head %}{% endblock %}
   </head>
   <body>
@@ -195,12 +195,11 @@
     </footer>
 
     <!-- Global config & utils (loaded before page-specific scrip) -->
-    <script src="{% static 'js/lenis-init.js' %}"></script>
     <script src="{% static 'js/config.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     {% block scripts %} {% endblock %}
-    <script src="{% static 'js/navbar.js' %}"></script>
+    <script src="{% static 'js/navbar.js' %}?v=1.1"></script>
 
     <!-- Inline FAQ accordion logic for reliability -->
     <script>

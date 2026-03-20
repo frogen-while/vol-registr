@@ -333,5 +333,15 @@ function initRegisteredTeamsModal() {
     function closeModal() {
         modal.classList.remove('active');
         document.body.style.overflow = '';
+        // Remove hash without scrolling
+        if (window.location.hash === '#registeredTeamsModal') {
+            history.replaceState(null, null, ' ');
+        }
+    }
+
+    // Check if URL has hash to open modal on load
+    if (window.location.hash === '#registeredTeamsModal') {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
 }

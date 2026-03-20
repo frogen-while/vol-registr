@@ -153,7 +153,19 @@
       err_players:   'At least 6 players are required (currently {n}).',
       err_checks:    'Please accept all required checkboxes to continue.',
       err_network:   'Network error. Please check your connection and try again.',
-      err_failed:    'Registration failed. Please try again.'
+      err_failed:    'Registration failed. Please try again.',
+      
+      // Team detail page
+      team_back: 'Back to teams list',
+      team_captain: 'Captain',
+      team_roster: 'Team Roster',
+      team_name: 'First and Last Name',
+      team_jersey: 'Jersey Number',
+      team_email: 'Email',
+      team_phone: 'Phone',
+      team_mail_to: 'Mail to',
+      team_call: 'Call',
+      team_empty: 'No players added.'
     },
     pl: {
       // Main page (index.html)
@@ -298,11 +310,23 @@
       err_league:    'Wybierz poziom ligi.',
       err_fullname:  'Podaj imię i nazwisko.',
       err_phone:     'Telefon jest wymagany.',
-      err_email:     'Podaj poprawny adres e-mail.',
-      err_players:   'Wymaganych jest co najmniej 6 zawodników (obecnie {n}).',
-      err_checks:    'Zaakceptuj wszystkie wymagane zgody, aby kontynuować.',
-      err_network:   'Błąd sieci. Sprawdź połączenie i spróbuj ponownie.',
-      err_failed:    'Rejestracja nie powiodła się. Spróbuj ponownie.'
+      err_email:     'Podaj prawidłowy e-mail.',
+      err_players:   'Wymaganych jest co najmniej 6 graczy (obecnie {n}).',
+      err_checks:    'Zaakceptuj wszystkie wymagane pola wyboru.',
+      err_network:   'Błąd sieci. Sprawdź połączenie.',
+      err_failed:    'Rejestracja nie powiodła się. Spróbuj ponownie.',
+      
+      // Team detail page
+      team_back: 'Wróć do listy drużyn',
+      team_captain: 'Kapitan',
+      team_roster: 'Skład Drużyny',
+      team_name: 'Imię i Nazwisko',
+      team_jersey: 'Numer Koszulki',
+      team_email: 'Email',
+      team_phone: 'Telefon',
+      team_mail_to: 'Napisz',
+      team_call: 'Zadzwoń',
+      team_empty: 'Brak dodanych graczy.'
     },
   };
 

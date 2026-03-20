@@ -8,7 +8,7 @@ import logging
 from django.conf import settings
 
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.core.mail import send_mail
 
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -39,6 +39,10 @@ def index(request):
     }
     return render(request, "tournament/index.html", context)
 
+def team_detail(request, team_id):
+    """Team detail page showing roster and captain info."""
+    team = get_object_or_404(Team, id=team_id)
+    return render(request, "tournament/team_detail.html", {"team": team})
 
 @ensure_csrf_cookie
 def register(request):
