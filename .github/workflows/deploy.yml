@@ -25,8 +25,10 @@ jobs:
             cd "$PROJECT_DIR"
             git fetch --prune origin master
             git reset --hard origin/master
-            echo "DEPLOYED_COMMIT=$(git rev-parse --short HEAD)"
+            ASSET_VERSION=$(git rev-parse --short HEAD)
+            echo "DEPLOYED_COMMIT=$ASSET_VERSION"
             git --no-pager log -1 --pretty='format:DEPLOYED_SUBJECT=%s%n'
+            echo "STATIC_ASSET_VERSION=$ASSET_VERSION"
 
             chmod +x scripts/deploy-app.sh
             chmod +x scripts/stop-server.sh
@@ -46,6 +48,7 @@ jobs:
             TIMEOUT="120" \
             PIDFILE="gunicorn.pid" \
             LOGFILE="gunicorn.log" \
+            STATIC_ASSET_VERSION="$ASSET_VERSION" \
             VENV_GUNICORN=".venv/bin/gunicorn" \
             sh scripts/start-server.sh
 

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static static_v %}
 
 {% block content %}
 <!-- Background decorations -->
@@ -258,5 +258,5 @@
     "{% static 'assets/cart-reg/5.png' %}"
   ];
 </script>
-<script src="{% static 'js/register-page.js' %}"></script>
+<script src="{% static_v 'js/register-page.js' %}"></script>
 {% endblock %}

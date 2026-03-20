@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static static_v %}
 
 {% block title %}FAQ | Pocket Aces Invitational{% endblock %}
 
@@ -90,5 +90,5 @@
 
 
 {% block scripts %}
-  <script src="{% static 'js/faq.js' %}"></script>
+  <script src="{% static_v 'js/faq.js' %}"></script>
 {% endblock %}

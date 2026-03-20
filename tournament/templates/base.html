@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Pocket Aces Invitational{% endblock %}</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/registered-teams.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/sports-bg.css' %}" />
+    {% load static static_v %}
+    <link rel="stylesheet" href="{% static_v 'css/styles.css' %}" />
+    <link rel="stylesheet" href="{% static_v 'css/registered-teams.css' %}" />
+    <link rel="stylesheet" href="{% static_v 'css/sports-bg.css' %}" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
@@ -195,11 +195,11 @@
     </footer>
 
     <!-- Global config & utils (loaded before page-specific scrip) -->
-    <script src="{% static 'js/config.js' %}"></script>
-    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static_v 'js/config.js' %}"></script>
+    <script src="{% static_v 'js/utils.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     {% block scripts %} {% endblock %}
-    <script src="{% static 'js/navbar.js' %}?v=1.1"></script>
+    <script src="{% static_v 'js/navbar.js' %}"></script>
 
     <!-- Inline FAQ accordion logic for reliability -->
     <script>
