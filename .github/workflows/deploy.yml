@@ -36,8 +36,14 @@ jobs:
             python manage.py collectstatic --noinput
 
             echo "Stopping old gunicorn processes..."
-            # Use pgrep to safely kill without killing the shell script itself
-            pgrep -f "gunicorn.*vol_registr" | xargs -r kill || true
+            # Find PIDs of gunicorn master and worker processes specifically, excluding this bash script
+            PIDS=$(ps aux | grep '[g]unicorn.*vol_registr\.wsgi' | awk '{print $2}')
+            if [ -n "$PIDS" ]; then
+              echo "Killing PIDS: $PIDS"
+              kill -TERM $PIDS || true
+            else
+              echo "No gunicorn processes found."
+            fi
             sleep 2
 
             setsid .venv/bin/gunicorn vol_registr.wsgi:application \
