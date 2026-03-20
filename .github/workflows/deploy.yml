@@ -26,7 +26,7 @@ jobs:
             git fetch --prune origin master
             git reset --hard origin/master
             echo "DEPLOYED_COMMIT=$(git rev-parse --short HEAD)"
-            git --no-pager log -1 --pretty='format:DEPLOYED_SUBJECT=%s'
+            git --no-pager log -1 --pretty='format:DEPLOYED_SUBJECT=%s%n'
 
             chmod +x scripts/deploy-app.sh
             chmod +x scripts/stop-server.sh
