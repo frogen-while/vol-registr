@@ -35,11 +35,9 @@ jobs:
             python manage.py migrate
             python manage.py collectstatic --noinput
 
-            LISTEN_PID="$(ss -ltnp 2>/dev/null | awk '/0.0.0.0:8001|0.0.0.0:8001/ {print $NF}' | sed -n 's/.*pid=\([0-9]\+\).*/\1/p' | head -n 1)"
-            if [ -n "$LISTEN_PID" ] && kill -0 "$LISTEN_PID" 2>/dev/null; then
-              kill "$LISTEN_PID" || true
-              sleep 2
-            fi
+            echo "Stopping old gunicorn processes..."
+            pkill -f "gunicorn.*vol_registr" || true
+            sleep 2
 
             setsid .venv/bin/gunicorn vol_registr.wsgi:application \
               --bind 0.0.0.0:8001 \
