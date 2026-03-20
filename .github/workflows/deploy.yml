@@ -36,15 +36,24 @@ jobs:
             python manage.py collectstatic --noinput
 
             echo "Stopping old gunicorn processes..."
-            # Find PIDs of gunicorn master and worker processes specifically, excluding this bash script
-            PIDS=$(ps aux | grep '[g]unicorn.*vol_registr\.wsgi' | awk '{print $2}')
-            if [ -n "$PIDS" ]; then
-              echo "Killing PIDS: $PIDS"
-              kill -TERM $PIDS || true
+            # Find the PID listening on port 8001
+            PORT_PID=$(ss -ltnp 2>/dev/null | grep '0.0.0.0:8001\|127.0.0.1:8001' | grep -o 'pid=[0-9]*' | grep -o '[0-9]*' | head -n 1)
+            
+            if [ -n "$PORT_PID" ]; then
+              echo "Found process $PORT_PID listening on port 8001. Sending TERM signal."
+              kill -TERM $PORT_PID || true
+              sleep 2
             else
-              echo "No gunicorn processes found."
+              echo "No process found on port 8001."
             fi
-            sleep 2
+
+            # Double check nothing is listening on 8001 anymore
+            if ss -ltn | grep -q ':8001'; then
+               echo "Port 8001 is still busy! Forcing kill..."
+               PORT_PID=$(ss -ltnp 2>/dev/null | grep '0.0.0.0:8001\|127.0.0.1:8001' | grep -o 'pid=[0-9]*' | grep -o '[0-9]*' | head -n 1)
+               if [ -n "$PORT_PID" ]; then kill -9 $PORT_PID || true; fi
+               sleep 2
+            fi
 
             setsid .venv/bin/gunicorn vol_registr.wsgi:application \
               --bind 0.0.0.0:8001 \
