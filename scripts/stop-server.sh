@@ -11,6 +11,15 @@ command_exists() {
   command -v "$1" >/dev/null 2>&1
 }
 
+find_gunicorn_pid() {
+  if command_exists pgrep; then
+    pgrep -f "gunicorn" 2>/dev/null | head -n 1
+    return 0
+  fi
+
+  return 1
+}
+
 find_listener_pid() {
   if command_exists ss; then
     ss -ltnp 2>/dev/null \
@@ -23,6 +32,15 @@ find_listener_pid() {
     return 0
   fi
 
+  if command_exists netstat; then
+    netstat -ltnp 2>/dev/null \
+      | awk -v port=":$PORT" '$4 ~ port"$" { split($7, a, "/"); if (a[1] ~ /^[0-9]+$/) { print a[1]; exit } }'
+    return 0
+  fi
+
+  find_gunicorn_pid 2>/dev/null || true
+  return 0
+
   return 1
 }
 
@@ -34,6 +52,21 @@ is_port_busy() {
 
   if command_exists lsof; then
     lsof -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1
+    return $?
+  fi
+
+  if command_exists netstat; then
+    netstat -ltn 2>/dev/null | awk -v port=":$PORT" '$4 ~ port"$" { found=1 } END { exit(found ? 0 : 1) }'
+    return $?
+  fi
+
+  if command_exists nc; then
+    nc -z 127.0.0.1 "$PORT" >/dev/null 2>&1
+    return $?
+  fi
+
+  if command_exists pgrep; then
+    pgrep -f "gunicorn" >/dev/null 2>&1
     return $?
   fi
 
@@ -85,7 +118,8 @@ if is_port_busy; then
 fi
 
 if is_port_busy; then
-  echo "Warning: port $PORT is still busy after stop attempts; continuing deploy."
+  echo "Error: port $PORT is still busy after stop attempts."
+  exit 1
 else
   echo "Port $PORT is free."
 fi
