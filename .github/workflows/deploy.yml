@@ -20,6 +20,7 @@ jobs:
           script: |
             set -e
             PROJECT_DIR="/srv/vol-registr"
+            PID_FILE="/tmp/vol-registr-gunicorn.pid"
 
             cd "$PROJECT_DIR"
             git pull --ff-only origin master
@@ -34,11 +35,20 @@ jobs:
             python manage.py migrate
             python manage.py collectstatic --noinput
 
-            pkill -f "gunicorn vol_registr.wsgi:application" || true
+            if [ -f "$PID_FILE" ]; then
+              OLD_PID="$(cat "$PID_FILE")"
+              if [ -n "$OLD_PID" ] && kill -0 "$OLD_PID" 2>/dev/null; then
+                kill -TERM "$OLD_PID"
+                sleep 2
+              fi
+              rm -f "$PID_FILE"
+            fi
+
             nohup .venv/bin/gunicorn vol_registr.wsgi:application \
               --bind 127.0.0.1:8000 \
               --workers 3 \
               --timeout 120 \
+              --pid "$PID_FILE" \
               > gunicorn.log 2>&1 &
 
             sleep 2
