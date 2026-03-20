@@ -19,6 +19,7 @@ jobs:
           script_stop: true
           script: |
             set -e
+            echo "DEPLOY_SCRIPT_V3"
             PROJECT_DIR="/srv/vol-registr"
 
             cd "$PROJECT_DIR"
