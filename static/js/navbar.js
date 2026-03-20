@@ -27,7 +27,7 @@
         },
         card2: {
           title: 'Competitive Format',
-          text: 'Group stage followed by single-elimination playoffs. All matches are played to two winning sets with rally scoring.',
+          text: 'Group stage followed by playoffs. Group stage matches are played to two winning sets, while playoff matches are played to three winning sets. Rally scoring.',
           list1: 'Group Stage + Playoffs',
           list2: 'Minimum 2 Games Guaranteed'
         },
@@ -188,7 +188,7 @@
         },
         card2: {
           title: 'Konkurencyjny Format',
-          text: 'Faza grupowa, a następnie play-offy. Wszystkie mecze do dwóch wygranych setów, punktacja rally.',
+          text: 'Faza grupowa, a następnie play-offy. W fazie grupowej mecze do dwóch wygranych setów, natomiast w play-offach do trzech wygranych setów. Punktacja rally.',
           list1: 'Faza grupowa + play-offy',
           list2: 'Gwarantowane minimum 2 mecze'
         },
