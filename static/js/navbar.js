@@ -330,6 +330,15 @@
     },
   };
 
+  const MOBILE_TEXT_OVERRIDES = {
+    en: {
+      'hero.text': 'Official Pocket Aces tournament with pro organization and top-level competition.'
+    },
+    pl: {
+      'hero.text': 'Oficjalny turniej Pocket Aces z profesjonalną organizacją i mocną rywalizacją.'
+    }
+  };
+
   // ── State ─────────────────────────────────────────────────
   let lang = localStorage.getItem('pa_lang') || 'en';
 
@@ -345,10 +354,13 @@
     lang = l;
     localStorage.setItem('pa_lang', l);
     const t = T[l] || T.en;
+    const isMobile = window.matchMedia('(max-width: 767.98px)').matches;
 
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.dataset.i18n;
-      const value = key.split('.').reduce((acc, k) => (acc && acc[k] !== undefined ? acc[k] : undefined), t);
+      const baseValue = key.split('.').reduce((acc, k) => (acc && acc[k] !== undefined ? acc[k] : undefined), t);
+      const mobileValue = MOBILE_TEXT_OVERRIDES[l] && MOBILE_TEXT_OVERRIDES[l][key];
+      const value = isMobile && mobileValue !== undefined ? mobileValue : baseValue;
       if (value !== undefined) {
         // Для FAQ-ответов и специальных заметок используем innerHTML
         if (/^faq\.a\d+$/.test(key) || key === 'reg_note' || key === 'reg_parental' || key === 'reg_payment' || key === 'reg_terms') {
