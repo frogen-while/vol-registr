@@ -23,7 +23,8 @@ jobs:
             PROJECT_DIR="/srv/vol-registr"
 
             cd "$PROJECT_DIR"
-            git pull --ff-only origin master
+            git fetch --prune origin master
+            git reset --hard origin/master
 
             chmod +x scripts/deploy-app.sh
             chmod +x scripts/stop-server.sh
