@@ -646,6 +646,19 @@ body {
   .rt-link {
     grid-area: teams;
     align-self: start;
+    width: 100%;
+    align-items: flex-end;
+    margin-top: -0.3rem;
+  }
+
+  .rt-link__numbers {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .rt-link__text {
+    width: 100%;
+    text-align: right;
   }
 
   .hero-btn-container .btn-cta {
