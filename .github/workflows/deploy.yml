@@ -37,9 +37,17 @@ jobs:
 
             if [ -f "$PID_FILE" ]; then
               OLD_PID="$(cat "$PID_FILE")"
-              if [ -n "$OLD_PID" ] && kill -0 "$OLD_PID" 2>/dev/null; then
-                kill -TERM "$OLD_PID"
-                sleep 2
+              if [ -n "$OLD_PID" ] && [ "$OLD_PID" != "$$" ] && kill -0 "$OLD_PID" 2>/dev/null; then
+                OLD_CMD="$(ps -p "$OLD_PID" -o args= 2>/dev/null || true)"
+                case "$OLD_CMD" in
+                  *gunicorn*vol_registr.wsgi:application*)
+                    kill -TERM "$OLD_PID"
+                    sleep 2
+                    ;;
+                  *)
+                    echo "Skip stop: PID $OLD_PID is not target gunicorn process"
+                    ;;
+                esac
               fi
               rm -f "$PID_FILE"
             fi
