@@ -43,9 +43,9 @@ jobs:
                 echo "Found gunicorn PID $OLD_PID from pidfile. Sending TERM signal."
                 kill -TERM "$OLD_PID" 2>/dev/null || true
                 i=0
-                while [ $i -lt 20 ]; do
+                while [ $i -lt 15 ]; do
                   if kill -0 "$OLD_PID" 2>/dev/null; then
-                    sleep 0.5
+                    sleep 1
                     i=$((i + 1))
                   else
                     break
