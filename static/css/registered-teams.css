@@ -364,11 +364,124 @@
   font-family: 'Montserrat', sans-serif;
 }
 
-@media (max-width: 600px) {
-  .rt-col-captain, .rt-col-level {
+@media (max-width: 768px) {
+  .rt-modal__content.sports-scoreboard {
+    width: min(96vw, 560px);
+    padding: 1.1rem 0.85rem 1rem;
+    border-radius: 0.85rem;
+    max-height: 92vh;
+  }
+
+  .rt-modal__header {
+    margin-bottom: 1rem;
+    padding: 0 0.45rem 0.85rem;
+  }
+
+  .rt-modal__title {
+    font-size: 1.35rem;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.25rem;
+  }
+
+  .rt-modal__subtitle {
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+  }
+
+  .rt-table-header {
     display: none;
   }
-  .rt-col-team {
-    flex: 1;
+
+  .rt-modal__teams-list {
+    gap: 0.6rem;
+    padding: 0 0.1rem;
+  }
+
+  .rt-team-row {
+    display: grid;
+    grid-template-columns: 2.2rem 1fr auto;
+    grid-template-areas:
+      "rank team action"
+      "rank captain action"
+      "rank level action";
+    align-items: center;
+    column-gap: 0.65rem;
+    row-gap: 0.2rem;
+    padding: 0.78rem 0.72rem;
+    border-left-width: 2px;
+    border-radius: 0.75rem;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(17, 28, 48, 0.98) 100%);
+    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.09);
+  }
+
+  .rt-team-row .rt-col-rank {
+    grid-area: rank;
+    width: 2.2rem;
+    font-size: 1.05rem;
+    line-height: 1;
+    align-self: start;
+    margin-top: 0.08rem;
+  }
+
+  .rt-team-row .rt-col-team {
+    grid-area: team;
+    min-width: 0;
+    padding-right: 0.35rem;
+    font-size: 0.93rem;
+    letter-spacing: 0.01em;
+    text-transform: none;
+  }
+
+  .rt-team-row .rt-col-captain,
+  .rt-team-row .rt-col-level {
+    display: block;
+    min-width: 0;
+    padding-right: 0.35rem;
+    font-size: 0.72rem;
+    line-height: 1.25;
+    color: #94a3b8;
+  }
+
+  .rt-team-row .rt-col-captain {
+    grid-area: captain;
+  }
+
+  .rt-team-row .rt-col-level {
+    grid-area: level;
+    color: #7dd3fc;
+    font-weight: 700;
+  }
+
+  .rt-team-row .rt-col-action {
+    grid-area: action;
+    width: auto;
+    justify-self: end;
+    align-self: center;
+    opacity: 0.8;
+  }
+
+  .rt-team-row .rt-col-action svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .rt-team-row:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .rt-modal__content.sports-scoreboard {
+    padding: 1rem 0.65rem 0.9rem;
+  }
+
+  .rt-team-row {
+    grid-template-columns: 2rem 1fr auto;
+    padding: 0.72rem 0.65rem;
+    column-gap: 0.55rem;
+  }
+
+  .rt-team-row .rt-col-team {
+    font-size: 0.88rem;
   }
 }
