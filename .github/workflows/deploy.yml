@@ -36,29 +36,67 @@ jobs:
             python manage.py collectstatic --noinput
 
             echo "Stopping old gunicorn processes..."
-            # Find the PID listening on port 8001
-            PORT_PID=$(ss -ltnp 2>/dev/null | grep '0.0.0.0:8001\|127.0.0.1:8001' | grep -o 'pid=[0-9]*' | grep -o '[0-9]*' | head -n 1)
-            
-            if [ -n "$PORT_PID" ]; then
-              echo "Found process $PORT_PID listening on port 8001. Sending TERM signal."
-              kill -TERM $PORT_PID || true
-              sleep 2
+            # Prefer a PID file (reliable, avoids killing the SSH session by accident).
+            if [ -f "gunicorn.pid" ]; then
+              OLD_PID=$(cat gunicorn.pid 2>/dev/null || true)
+              if [ -n "$OLD_PID" ] && kill -0 "$OLD_PID" 2>/dev/null; then
+                echo "Found gunicorn PID $OLD_PID from pidfile. Sending TERM signal."
+                kill -TERM "$OLD_PID" 2>/dev/null || true
+                i=0
+                while [ $i -lt 20 ]; do
+                  if kill -0 "$OLD_PID" 2>/dev/null; then
+                    sleep 0.5
+                    i=$((i + 1))
+                  else
+                    break
+                  fi
+                done
+              else
+                echo "Pidfile exists but process is not running."
+              fi
+              rm -f gunicorn.pid || true
             else
-              echo "No process found on port 8001."
+              echo "No pidfile found."
             fi
 
-            # Double check nothing is listening on 8001 anymore
-            if ss -ltn | grep -q ':8001'; then
-               echo "Port 8001 is still busy! Forcing kill..."
-               PORT_PID=$(ss -ltnp 2>/dev/null | grep '0.0.0.0:8001\|127.0.0.1:8001' | grep -o 'pid=[0-9]*' | grep -o '[0-9]*' | head -n 1)
-               if [ -n "$PORT_PID" ]; then kill -9 $PORT_PID || true; fi
-               sleep 2
+            # Fallback: if the port is still busy, try to locate and stop the listener.
+            PORT_PID=""
+            if command -v ss >/dev/null 2>&1; then
+              PORT_PID=$(ss -ltnp 2>/dev/null | grep '0.0.0.0:8001\|127.0.0.1:8001' | grep -o 'pid=[0-9]*' | grep -o '[0-9]*' | head -n 1 || true)
+            elif command -v lsof >/dev/null 2>&1; then
+              PORT_PID=$(lsof -tiTCP:8001 -sTCP:LISTEN 2>/dev/null | head -n 1 || true)
+            fi
+
+            if [ -n "$PORT_PID" ]; then
+              echo "Found process $PORT_PID listening on port 8001. Sending TERM signal."
+              kill -TERM "$PORT_PID" 2>/dev/null || true
+              sleep 2
+            else
+              echo "No listener process found for port 8001 (or lookup tools unavailable)."
+            fi
+
+            # Final safety: if port is still busy, force kill the listener (best effort, never fail deploy).
+            if command -v ss >/dev/null 2>&1; then
+              if ss -ltn 2>/dev/null | grep -q ':8001'; then
+                echo "Port 8001 is still busy! Forcing kill (best effort)..."
+                PORT_PID=$(ss -ltnp 2>/dev/null | grep '0.0.0.0:8001\|127.0.0.1:8001' | grep -o 'pid=[0-9]*' | grep -o '[0-9]*' | head -n 1 || true)
+                if [ -n "$PORT_PID" ]; then kill -9 "$PORT_PID" 2>/dev/null || true; fi
+                sleep 2
+              fi
+            elif command -v lsof >/dev/null 2>&1; then
+              if lsof -iTCP:8001 -sTCP:LISTEN >/dev/null 2>&1; then
+                echo "Port 8001 is still busy! Forcing kill (best effort)..."
+                PORT_PID=$(lsof -tiTCP:8001 -sTCP:LISTEN 2>/dev/null | head -n 1 || true)
+                if [ -n "$PORT_PID" ]; then kill -9 "$PORT_PID" 2>/dev/null || true; fi
+                sleep 2
+              fi
             fi
 
             setsid .venv/bin/gunicorn vol_registr.wsgi:application \
               --bind 0.0.0.0:8001 \
               --workers 3 \
               --timeout 120 \
+              --pid gunicorn.pid \
               > gunicorn.log 2>&1 < /dev/null &
 
             sleep 2
