@@ -9,7 +9,7 @@
     en: {
       // Main page (index.html)
       hero: {
-        label: 'April 12, 2026 • Rzgów, Szkolna 5',
+        label: 'April 11, 2026 • Rzgów, Szkolna 5',
         title: { main: 'POCKET ACES', sub: 'SPRING TOURNAMENT 2026' },
         text: 'The first official tournament by Pocket Aces Sports Club, organized by a team of over 20 members. Built around professional organization, a competitive format, and high standards.',
         price: { label: 'per team' },
@@ -48,7 +48,7 @@
         title: 'The Arena',
         text: 'Join us in Rzgów, Poland for an unforgettable experience. The venue features professional-grade courts, changing rooms, and a spectator area.',
         info: { label: 'Location', value: 'Rzgów, Szkolna 5' },
-        date: { label: 'Date', value: 'April 12, 2026' },
+        date: { label: 'Date', value: 'April 11, 2026' },
         link: 'View on Google Maps'
       },
       registered: {
@@ -67,7 +67,7 @@
         step1: { date: 'March 1', title: 'Registration Opens', desc: 'Team registration begins. Secure your spot early as places are limited.' },
         step2: { date: 'April 5', title: 'Registration Closes', desc: 'Last day to register your team and submit the roster.' },
         step3: { date: 'April 8', title: 'Schedule Release', desc: 'Match schedule and groups will be published and sent to captains.' },
-        step4: { date: 'April 12', title: 'Tournament Day', desc: 'The big day! Group stage matches start at 9:00 AM.' }
+        step4: { date: 'April 11', title: 'Tournament Day', desc: 'The big day! Group stage matches start at 9:00 AM.' }
       },
       // FAQ page
       faq: {
@@ -170,7 +170,7 @@
     pl: {
       // Main page (index.html)
       hero: {
-        label: '12 kwietnia 2026 • Rzgów, Szkolna 5',
+        label: '11 kwietnia 2026 • Rzgów, Szkolna 5',
         title: { main: 'POCKET ACES', sub: 'WIOSENNY TURNIEJ 2026' },
         text: 'Pierwszy oficjalny turniej klubu Pocket Aces Sports, organizowany przez zespół ponad 20 członków. Profesjonalna organizacja, konkurencyjny format i wysokie standardy.',
         price: { label: 'za drużynę' },
@@ -209,7 +209,7 @@
         title: 'Arena',
         text: 'Dołącz do nas w Rzgowie, Polska, na niezapomniane wydarzenie. Obiekt posiada profesjonalne boiska, szatnie i trybuny dla widzów.',
         info: { label: 'Lokalizacja', value: 'Rzgów, Szkolna 5' },
-        date: { label: 'Data', value: '12 kwietnia 2026' },
+        date: { label: 'Data', value: '11 kwietnia 2026' },
         link: 'Zobacz na Google Maps'
       },
       registered: {
@@ -228,7 +228,7 @@
         step1: { date: '1 marca', title: 'Otwarcie Rejestracji', desc: 'Rozpoczęcie rejestracji drużyn. Zarezerwuj miejsce wcześniej, liczba miejsc ograniczona.' },
         step2: { date: '5 kwietnia', title: 'Koniec Rejestracji', desc: 'Ostatni dzień na rejestrację drużyny i przesłanie składu.' },
         step3: { date: '8 kwietnia', title: 'Publikacja Harmonogramu', desc: 'Harmonogram meczów i grupy zostaną opublikowane i wysłane do kapitanów.' },
-        step4: { date: '12 kwietnia', title: 'Dzień Turnieju', desc: 'Wielki dzień! Mecze fazy grupowej rozpoczynają się o 9:00.' }
+        step4: { date: '11 kwietnia', title: 'Dzień Turnieju', desc: 'Wielki dzień! Mecze fazy grupowej rozpoczynają się o 9:00.' }
       },
       // FAQ page
       faq: {
