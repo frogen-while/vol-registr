@@ -305,7 +305,8 @@ function initRegisteredTeamsModal() {
     }
 
     // Open modal
-    openBtn.addEventListener('click', () => {
+    openBtn.addEventListener('click', (e) => {
+        e.preventDefault();
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
     });

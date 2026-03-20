@@ -51,6 +51,15 @@
         date: { label: 'Date', value: 'April 11, 2026' },
         link: 'View on Google Maps'
       },
+      registered: {
+        cta: 'See registered teams ->',
+        modal_title: 'Registered Teams',
+        modal_subtitle: 'Pocket Aces Spring Tournament',
+        col_team: 'Team',
+        col_captain: 'Captain',
+        col_level: 'Level',
+        empty: 'No registered teams.'
+      },
       arena: { heading: 'The Venue' },
       // Road to Victory
       road: {
@@ -190,6 +199,15 @@
         info: { label: 'Lokalizacja', value: 'Rzgów, Szkolna 5' },
         date: { label: 'Data', value: '11 kwietnia 2026' },
         link: 'Zobacz na Google Maps'
+      },
+      registered: {
+        cta: 'Zobacz zarejestrowane drużyny ->',
+        modal_title: 'Zarejestrowane Drużyny',
+        modal_subtitle: 'Pocket Aces Spring Tournament',
+        col_team: 'Drużyna',
+        col_captain: 'Kapitan',
+        col_level: 'Poziom',
+        empty: 'Brak zarejestrowanych drużyn.'
       },
       arena: { heading: 'Obiekt' },
       // Road to Victory

@@ -32,21 +32,14 @@
             </div>
 
             <div class="hero-btn-container">
-                <!-- Registered Teams Button -->
-                <div id="registeredTeamsBtn" class="rt-btn__wrapper">
-                    <div class="rt-btn__inner">
-                        <div class="rt-btn__bar"></div>
-                        <div class="rt-btn__content">
-                            <div class="rt-btn__numbers">
-                                <span class="rt-btn__current">{{ registered_teams }}</span>
-                                <span class="rt-btn__total">/ {{ max_slots }}</span>
-                            </div>
-                            <div class="rt-btn__text">
-                                ZOBACZ ZAREJESTROWANE DRUŻYNY →
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Registered Teams Link -->
+                <a id="registeredTeamsBtn" class="rt-link" href="#registeredTeamsModal" aria-label="Pokaż zarejestrowane drużyny">
+                    <span class="rt-link__numbers">
+                        <span class="rt-link__current">{{ registered_teams }}</span>
+                        <span class="rt-link__total">/ {{ max_slots }}</span>
+                    </span>
+                    <span class="rt-link__text" data-i18n="registered.cta">Zobacz zarejestrowane drużyny -></span>
+                </a>
 
                 <a href="{% url 'register' %}" class="btn-cta">
                     <span class="btn-cta__text" data-i18n="hero.cta">Secure Your Spot</span>
@@ -65,16 +58,16 @@
         <div class="rt-modal__content sports-scoreboard">
             <button id="registeredTeamsModalClose" class="rt-modal__close">&times;</button>
             <div class="rt-modal__header">
-                <h2 class="rt-modal__title">Zarejestrowane Drużyny</h2>
-                <div class="rt-modal__subtitle">POCKET ACES SPRING TOURNAMENT</div>
+                <h2 class="rt-modal__title" data-i18n="registered.modal_title">Zarejestrowane Drużyny</h2>
+                <div class="rt-modal__subtitle" data-i18n="registered.modal_subtitle">Pocket Aces Spring Tournament</div>
             </div>
             
             <div class="rt-modal__teams-list">
                 <div class="rt-table-header">
                     <span class="rt-col-rank">#</span>
-                    <span class="rt-col-team">Drużyna</span>
-                    <span class="rt-col-city">Miasto / Klub</span>
-                    <span class="rt-col-status">Status</span>
+                    <span class="rt-col-team" data-i18n="registered.col_team">Drużyna</span>
+                    <span class="rt-col-captain" data-i18n="registered.col_captain">Kapitan</span>
+                    <span class="rt-col-level" data-i18n="registered.col_level">Poziom</span>
                 </div>
                 
                 {% if teams %}
@@ -82,18 +75,12 @@
                         <div class="rt-team-row {% if forloop.counter <= max_slots %}rt-in-tournament{% else %}rt-reserve{% endif %}">
                             <span class="rt-col-rank">{{ forloop.counter }}</span>
                             <span class="rt-col-team">{{ team.name }}</span>
-                            <span class="rt-col-city">{{ team.city|default:"-" }}</span>
-                            <span class="rt-col-status">
-                                {% if team.payment_status == 1 %}
-                                    <span class="rt-badge rt-badge-paid">OPŁACONE</span>
-                                {% else %}
-                                    <span class="rt-badge rt-badge-waiting">OCZEKUJĄCE</span>
-                                {% endif %}
-                            </span>
+                            <span class="rt-col-captain">{{ team.cap_name }} {{ team.cap_surname }}</span>
+                            <span class="rt-col-level">{{ team.get_league_level_display }}</span>
                         </div>
                     {% endfor %}
                 {% else %}
-                    <div class="rt-no-teams">Brak zarejestrowanych drużyn.</div>
+                    <div class="rt-no-teams" data-i18n="registered.empty">Brak zarejestrowanych drużyn.</div>
                 {% endif %}
             </div>
         </div>
