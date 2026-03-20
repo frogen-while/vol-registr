@@ -25,6 +25,8 @@ jobs:
             cd "$PROJECT_DIR"
             git fetch --prune origin master
             git reset --hard origin/master
+            echo "DEPLOYED_COMMIT=$(git rev-parse --short HEAD)"
+            git --no-pager log -1 --pretty='format:DEPLOYED_SUBJECT=%s'
 
             chmod +x scripts/deploy-app.sh
             chmod +x scripts/stop-server.sh
@@ -48,4 +50,9 @@ jobs:
             sh scripts/start-server.sh
 
             sleep 2
-            curl -fsS http://127.0.0.1:8001 > /dev/null
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8001)
+            echo "HEALTHCHECK_HTTP_CODE=$HTTP_CODE"
+            if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 500 ]; then
+              echo "Health-check failed with HTTP code $HTTP_CODE"
+              exit 1
+            fi
