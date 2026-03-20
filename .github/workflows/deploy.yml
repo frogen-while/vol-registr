@@ -36,7 +36,8 @@ jobs:
             python manage.py collectstatic --noinput
 
             echo "Stopping old gunicorn processes..."
-            pkill -f "gunicorn.*vol_registr" || true
+            # Use pgrep to safely kill without killing the shell script itself
+            pgrep -f "gunicorn.*vol_registr" | xargs -r kill || true
             sleep 2
 
             setsid .venv/bin/gunicorn vol_registr.wsgi:application \
