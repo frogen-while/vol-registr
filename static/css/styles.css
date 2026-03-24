@@ -619,26 +619,22 @@ body {
   }
 
   .hero-btn-container {
-    display: grid;
-    grid-template-columns: auto auto;
-    grid-template-areas:
-      "price teams"
-      "teams-text teams-text"
-      "cta cta";
-    justify-content: center;
-    align-items: end;
-    row-gap: 0.7rem;
-    column-gap: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
     width: 100%;
   }
 
   .hero-price {
-    grid-area: price;
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-end;
     gap: 0.05rem;
     margin: 0;
-    width: auto;
+    width: 50%;
+    padding-right: 0.45rem;
+    box-sizing: border-box;
   }
 
   .hero-price__value {
@@ -648,33 +644,36 @@ body {
   .hero-price__label {
     font-size: 0.68rem;
     line-height: 1.1;
-    text-align: left;
+    text-align: right;
   }
 
   .rt-link {
-    grid-area: teams;
-    align-self: end;
-    width: auto;
-    align-items: flex-start;
-    margin-top: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -3.5rem; /* Поднимаем счетчик на уровень цены */
   }
 
   .rt-link__numbers {
-    width: auto;
+    width: 100%;
+    display: flex;
     justify-content: flex-start;
+    padding-left: 50%;
+    margin-left: 0.45rem;
+    box-sizing: border-box;
   }
 
   .rt-link__text {
-    grid-area: teams-text;
-    width: 100vw;
+    width: 100%;
     text-align: center;
     white-space: nowrap;
+    margin-top: 0.5rem;
   }
 
   .hero-btn-container .btn-cta {
-    grid-area: cta;
-    grid-column: 1 / -1;
     width: 100%;
+    margin-top: 0.5rem;
   }
 }
 .hero-counter__current {
