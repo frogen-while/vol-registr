@@ -101,42 +101,39 @@
 }
 
 @media (max-width: 767.98px) {
-  .rt-link {
-    border-left: none;
-    padding-left: 0;
-    width: auto;
-    margin-left: 0;
-    padding-right: 0;
-    box-sizing: border-box;
-    align-items: flex-start;
-    align-self: end;
-    margin-top: 0;
-    gap: 0.45rem;
+  .rt-link-text {
+    display: block;
+    width: 100%;
+    text-align: center;
   }
 
   .rt-link__numbers {
-    width: auto;
-    justify-content: flex-start;
-    text-align: left;
+    display: flex;
+    align-items: baseline;
+    gap: 0.1rem;
     line-height: 1;
   }
 
   .rt-link__current {
-    font-size: clamp(2.7rem, 12vw, 3.4rem);
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #ffffff;
   }
 
   .rt-link__total {
-    font-size: clamp(1.35rem, 6vw, 1.9rem);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #334155;
   }
 
   .rt-link__text {
-    width: 100vw;
+    width: 100%;
     text-align: center;
     white-space: nowrap;
-    font-size: clamp(0.58rem, 2.2vw, 0.72rem);
-    letter-spacing: 0.04em;
-    line-height: 1.2;
-    margin-left: calc(50% - 50vw);
+    font-size: clamp(0.6rem, 2.5vw, 0.75rem);
+    letter-spacing: 0.05em;
+    color: #475569;
+    text-transform: uppercase;
   }
 }
 
