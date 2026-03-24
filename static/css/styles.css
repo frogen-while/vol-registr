@@ -620,45 +620,52 @@ body {
 
   .hero-btn-container {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr;
     grid-template-areas:
-      "price teams"
-      "cta cta";
-    align-items: start;
-    column-gap: 0.9rem;
-    row-gap: 0.75rem;
+      "price"
+      "teams"
+      "cta";
+    align-items: stretch;
+    row-gap: 0.7rem;
     width: 100%;
   }
 
   .hero-price {
     grid-area: price;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.05rem;
     margin: 0;
+    width: 100%;
+  }
+
+  .hero-price__value {
+    white-space: nowrap;
   }
 
   .hero-price__label {
     font-size: 0.68rem;
     line-height: 1.1;
+    text-align: center;
   }
 
   .rt-link {
     grid-area: teams;
-    align-self: start;
+    align-self: stretch;
     width: 100%;
-    align-items: flex-end;
-    margin-top: -0.3rem;
+    align-items: center;
+    margin-top: 0;
   }
 
   .rt-link__numbers {
     width: 100%;
-    justify-content: flex-end;
+    justify-content: center;
   }
 
   .rt-link__text {
     width: 100%;
-    text-align: right;
+    text-align: center;
+    white-space: nowrap;
   }
 
   .hero-btn-container .btn-cta {
