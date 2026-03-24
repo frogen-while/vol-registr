@@ -104,20 +104,20 @@
   .rt-link {
     border-left: none;
     padding-left: 0;
-    width: 100%;
+    width: auto;
     margin-left: 0;
     padding-right: 0;
     box-sizing: border-box;
-    align-items: center;
-    align-self: stretch;
+    align-items: flex-start;
+    align-self: end;
     margin-top: 0;
     gap: 0.45rem;
   }
 
   .rt-link__numbers {
-    width: 100%;
-    justify-content: center;
-    text-align: center;
+    width: auto;
+    justify-content: flex-start;
+    text-align: left;
     line-height: 1;
   }
 
@@ -130,12 +130,13 @@
   }
 
   .rt-link__text {
-    width: 100%;
+    width: 100vw;
     text-align: center;
     white-space: nowrap;
     font-size: clamp(0.58rem, 2.2vw, 0.72rem);
     letter-spacing: 0.04em;
     line-height: 1.2;
+    margin-left: calc(50% - 50vw);
   }
 }
 
