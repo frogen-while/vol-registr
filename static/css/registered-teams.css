@@ -104,6 +104,22 @@
   .rt-link {
     border-left: none;
     padding-left: 0;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    padding-right: 1rem;
+    box-sizing: border-box;
+  }
+
+  .rt-link__numbers {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .rt-link__text {
+    width: 100%;
+    text-align: center;
+    white-space: nowrap;
+    letter-spacing: 0.12em;
   }
 }
 
