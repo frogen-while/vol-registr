@@ -11,7 +11,18 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import os
+import sys
+import importlib
 from pathlib import Path
+from urllib.parse import unquote, urlparse
+
+try:
+    import sqlite3  # noqa: F401
+except ModuleNotFoundError:
+    pysqlite3 = importlib.import_module('pysqlite3')
+
+    # Some build images compile Python without _sqlite3; route sqlite3 imports to pysqlite3.
+    sys.modules['sqlite3'] = pysqlite3
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -104,7 +115,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    },
 }
 
 
@@ -162,6 +173,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'pocketacesteam@gmail.com'         # <-- ваш Gmail
-EMAIL_HOST_PASSWORD = 'nhiq zhdv msql zprj'        # <-- app password, не обычный пароль!
+EMAIL_HOST_USER = 'pocketacesteam@gmail.com'     # <-- ваш Gmail
+EMAIL_HOST_PASSWORD = 'nhiq zhdv msql zprj'   # <-- app password, не обычный пароль!
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
