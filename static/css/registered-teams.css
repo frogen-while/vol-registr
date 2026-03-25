@@ -171,7 +171,7 @@
   border-radius: 0; /* Sharp corners for aggressive look */
   padding: 3rem 2rem;
   width: 95%;
-  max-width: 650px;
+  max-width: 550px; /* Narrowed from 650px */
   color: #e2e8f0;
   transform: skewX(-2deg) scale(0.95);
   opacity: 0;
@@ -278,14 +278,14 @@
   display: flex;
   align-items: center;
   background: linear-gradient(90deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.4) 100%);
-  padding: 1.5rem 1.5rem; /* Increased vertical padding */
+  padding: 0.75rem 1.25rem; /* Reduced height */
   border-radius: 0;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-left: 4px solid #1e293b;
   position: relative;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   overflow: hidden;
-  margin-bottom: 0.75rem; /* Increased gap between rows */
+  margin-bottom: 0.5rem; /* Reduced gap */
 }
 
 .rt-team-row::before {
@@ -321,8 +321,8 @@
 }
 
 .rt-col-rank {
-  width: 4.5rem;
-  font-size: 2.25rem;
+  width: 3rem; /* Reduced width */
+  font-size: 1.5rem; /* Reduced font size from 2.25rem */
   font-weight: 900;
   font-style: italic;
   color: #334155;
@@ -394,11 +394,11 @@
   .rt-team-row {
     flex-direction: column;
     align-items: flex-start;
-    padding: 1.5rem 1rem 1.5rem 3.5rem; /* Increased vertical padding */
+    padding: 0.8rem 1rem 0.8rem 3rem; /* Reduced height and left padding */
     gap: 0.2rem;
     position: relative;
     border-radius: 0;
-    margin-bottom: 0.75rem; /* More gap between blocks */
+    margin-bottom: 0.5rem; /* Reduced gap */
   }
 
   .rt-col-rank {
@@ -406,7 +406,7 @@
     top: 50%;
     left: 0.5rem;
     transform: translateY(-50%);
-    font-size: 3rem;
+    font-size: 2rem; /* Reduced from 3rem */
     opacity: 0.2;
     width: auto;
     font-weight: 950;
