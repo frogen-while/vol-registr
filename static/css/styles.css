@@ -517,39 +517,36 @@ body {
       "price divider numbers"
       "text  text    text";
     align-items: center;
-    justify-items: center;
     width: 100%;
-    gap: 0.5rem;
+    gap: 0; /* Убираем gap, чтобы разделитель был точно в центре */
   }
 
   .hero-price {
     grid-area: price;
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* Price to center */
-    padding-right: 0.5rem;
+    align-items: flex-start; /* Цена к левому краю */
+    padding-left: 1rem;
   }
 
   .hero-stats-divider {
     grid-area: divider;
-    height: 3.5rem;
-  }
-
-  .hero-counter-block {
-    display: contents; /* Children become direct grid items */
+    height: 4rem;
+    width: 2px;
   }
 
   .rt-link-numbers {
     grid-area: numbers;
-    padding-left: 0.5rem;
-    justify-self: start; /* Counter to center */
+    display: flex;
+    justify-content: flex-end; /* Счётчик к правому краю */
+    padding-right: 1rem;
   }
 
   .rt-link-text {
     grid-area: text;
     width: 100%;
     text-align: center;
-    margin-top: 0.5rem;
+    margin-top: 1rem;
   }
 
   .hero-price__value {
