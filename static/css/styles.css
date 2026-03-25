@@ -462,7 +462,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2.5rem;
+  gap: 1.5rem;
   opacity: 0;
   transform: translateY(1rem);
   padding-top: 0;
@@ -471,7 +471,7 @@ body {
   .hero-btn-container {
     flex-direction: column;
     align-items: flex-start;
-    gap: 2.5rem;
+    gap: 1.5rem;
   }
 }
 
@@ -479,13 +479,8 @@ body {
 .hero-stats-row {
   display: flex;
   align-items: center;
-  gap: 3rem;
-}
-
-.hero-registered-info {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
+  gap: 2.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .hero-stats-divider {

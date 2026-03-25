@@ -36,18 +36,17 @@
 
                     <div class="hero-stats-divider"></div>
 
-                    <div class="hero-registered-info">
-                        <a href="#registeredTeamsModal" class="rt-link-numbers rt-modal-trigger">
-                            <span class="rt-link__numbers">
-                                <span class="rt-link__current">{{ registered_teams }}</span>
-                                <span class="rt-link__total">/ {{ max_slots }}</span>
-                            </span>
-                        </a>
-                        <a id="registeredTeamsBtn" class="rt-link-text rt-modal-trigger" href="#registeredTeamsModal">
-                            <span class="rt-link__text" data-i18n="registered.cta">See registered teams -></span>
-                        </a>
-                    </div>
+                    <a href="#registeredTeamsModal" class="rt-link-numbers rt-modal-trigger">
+                        <span class="rt-link__numbers">
+                            <span class="rt-link__current">{{ registered_teams }}</span>
+                            <span class="rt-link__total">/ {{ max_slots }}</span>
+                        </span>
+                    </a>
                 </div>
+
+                <a id="registeredTeamsBtn" class="rt-link-text rt-modal-trigger" href="#registeredTeamsModal">
+                    <span class="rt-link__text" data-i18n="registered.cta">See registered teams -></span>
+                </a>
 
                 <a href="{% url 'register' %}" class="btn-cta">
                     <span class="btn-cta__text" data-i18n="hero.cta">Secure Your Spot</span>
