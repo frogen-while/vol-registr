@@ -471,53 +471,104 @@ body {
   .hero-btn-container {
     flex-direction: row;
     align-items: center;
-    flex-wrap: wrap;
-  }
-}
-@media (max-width: 767.98px) {
-  .hero-btn-container {
-    gap: 1rem;
-    width: 100%;
+    gap: 3.5rem;
   }
 }
 
-.hero-counter {
-  display: inline-flex;
+/* Global Shared Styles for Stats */
+.hero-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 2.25rem;
+}
+
+.hero-stats-divider {
+  width: 3px;
+  height: 4.5rem;
+  background-color: #0ea5e9;
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+}
+
+.hero-counter-block {
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
-  border-left: 4px solid #0ea5e9;
-  padding-left: 1.5rem;
+  gap: 0.35rem;
 }
+
+.rt-link-numbers, .rt-link-text {
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
 @media (max-width: 767.98px) {
-  .hero-counter {
-    border-left: none;
-    padding-left: 0;
+  .hero-btn-container {
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    margin-top: 2rem;
   }
-}
 
-.hero-counter__value {
-  font-size: clamp(1.5rem, 3vw, 3.75rem);
-  font-weight: 900;
-  color: #ffffff;
-  margin-bottom: 0.25rem;
-  line-height: 1;
-}
+  /* Mobile Grid Alignment */
+  .hero-stats-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas:
+      "price divider numbers"
+      "text  text    text";
+    align-items: center;
+    justify-items: center;
+    width: 100%;
+    gap: 0.5rem;
+  }
 
-.hero-counter__total {
-  color: #475569;
-  font-size: clamp(0.9rem, 1.5vw, 1.875rem);
-}
+  .hero-price {
+    grid-area: price;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Price to center */
+    padding-right: 0.5rem;
+  }
 
-.hero-counter__label {
-  font-size: 0.875rem;
-  color: #64748b;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-}
-@media (max-width: 767.98px) {
-  .hero-counter__label {
-    letter-spacing: 0.2em;
+  .hero-stats-divider {
+    grid-area: divider;
+    height: 3.5rem;
+  }
+
+  .hero-counter-block {
+    display: contents; /* Children become direct grid items */
+  }
+
+  .rt-link-numbers {
+    grid-area: numbers;
+    padding-left: 0.5rem;
+    justify-self: start; /* Counter to center */
+  }
+
+  .rt-link-text {
+    grid-area: text;
+    width: 100%;
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+
+  .hero-price__value {
+    font-size: 2.2rem;
+    line-height: 1;
+    font-weight: 900;
+    color: #38bdf8;
+  }
+
+  .hero-price__label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+  }
+
+  .hero-btn-container .btn-cta {
+    width: 100%;
+    margin-top: 0.5rem;
   }
 }
 
@@ -616,72 +667,6 @@ body {
     font-size: clamp(0.6rem, 2.5vw, 0.8rem);
     letter-spacing: 0.1em;
     padding: 0.4rem 0.75rem;
-  }
-
-  .hero-btn-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-    width: 100%;
-    margin-top: 1.5rem;
-  }
-
-  /* New row for price and numbers */
-  .hero-stats-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    width: 100%;
-  }
-
-  .hero-price {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.1rem;
-    margin: 0;
-  }
-
-  .hero-price__value {
-    font-size: 2.2rem;
-    line-height: 1;
-    font-weight: 900;
-    color: #0ea5e9;
-  }
-
-  .hero-price__label {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #94a3b8;
-  }
-
-  .hero-stats-divider {
-    width: 2px;
-    height: 3.2rem;
-    background: rgba(148, 163, 184, 0.2);
-  }
-
-  .hero-counter-trigger {
-    text-decoration: none;
-    display: flex;
-    align-items: baseline;
-  }
-
-  /* Reset link styles */
-  .rt-link-text {
-    width: 100%;
-    text-align: center;
-    text-decoration: none;
-    margin-top: 0.2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .hero-btn-container .btn-cta {
-    width: 100%;
-    margin-top: 0.5rem;
   }
 }
 .hero-counter__current {

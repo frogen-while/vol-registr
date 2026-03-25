@@ -28,7 +28,6 @@
                 The first official tournament by Pocket Aces Sports Club, organized by a team of over 20 members. Built around professional organization, a competitive format, and high standards.
             </p>
             <div class="hero-btn-container">
-                <!-- Top Row: Price & Numbers -->
                 <div class="hero-stats-row">
                     <div class="hero-price">
                         <span class="hero-price__value">400 PLN</span>
@@ -37,20 +36,19 @@
 
                     <div class="hero-stats-divider"></div>
 
-                    <a href="#registeredTeamsModal" class="hero-counter-trigger rt-modal-trigger">
-                        <span class="rt-link__numbers">
-                            <span class="rt-link__current">{{ registered_teams }}</span>
-                            <span class="rt-link__total">/ {{ max_slots }}</span>
-                        </span>
-                    </a>
+                    <div class="hero-counter-block">
+                        <a href="#registeredTeamsModal" class="rt-link-numbers rt-modal-trigger">
+                            <span class="rt-link__numbers">
+                                <span class="rt-link__current">{{ registered_teams }}</span>
+                                <span class="rt-link__total">/ {{ max_slots }}</span>
+                            </span>
+                        </a>
+                        <a id="registeredTeamsBtn" class="rt-link-text rt-modal-trigger" href="#registeredTeamsModal">
+                            <span class="rt-link__text" data-i18n="registered.cta">Zobacz zarejestrowane drużyny -></span>
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Middle Row: Text Link -->
-                <a id="registeredTeamsBtn" class="rt-link-text rt-modal-trigger" href="#registeredTeamsModal">
-                    <span class="rt-link__text" data-i18n="registered.cta">Zobacz zarejestrowane drużyny -></span>
-                </a>
-
-                <!-- Bottom Row: CTA Button -->
                 <a href="{% url 'register' %}" class="btn-cta">
                     <span class="btn-cta__text" data-i18n="hero.cta">Secure Your Spot</span>
                     <div class="btn-cta__shimmer"></div>

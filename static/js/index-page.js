@@ -297,18 +297,20 @@ function closeCardModal(overlay) {
  */
 function initRegisteredTeamsModal() {
     const modal = document.getElementById('registeredTeamsModal');
-    const openBtn = document.getElementById('registeredTeamsBtn');
+    const openBtns = document.querySelectorAll('.rt-modal-trigger');
     const closeBtn = document.getElementById('registeredTeamsModalClose');
 
-    if (!modal || !openBtn || !closeBtn) {
+    if (!modal || openBtns.length === 0 || !closeBtn) {
         return;
     }
 
     // Open modal
-    openBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+    openBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
     });
 
     // Close via button
