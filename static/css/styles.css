@@ -518,14 +518,14 @@ body {
       "text  text    text";
     align-items: center;
     width: 100%;
-    gap: 0; /* Убираем gap, чтобы разделитель был точно в центре */
+    gap: 0;
   }
 
   .hero-price {
     grid-area: price;
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Цена к левому краю */
+    align-items: flex-start;
     padding-left: 1rem;
   }
 
@@ -538,7 +538,7 @@ body {
   .rt-link-numbers {
     grid-area: numbers;
     display: flex;
-    justify-content: flex-end; /* Счётчик к правому краю */
+    justify-content: flex-end;
     padding-right: 1rem;
   }
 
@@ -547,25 +547,6 @@ body {
     width: 100%;
     text-align: center;
     margin-top: 1rem;
-  }
-
-  .hero-price__value {
-    font-size: 2.2rem;
-    line-height: 1;
-    font-weight: 900;
-    color: #38bdf8;
-  }
-
-  .hero-price__label {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #94a3b8;
-  }
-
-  .hero-btn-container .btn-cta {
-    width: 100%;
-    margin-top: 0.5rem;
   }
 }
 
@@ -711,14 +692,15 @@ body {
   }
 
   .hero-price__value {
-    font-size: 2.2rem;
+    font-size: 1.65rem;
     line-height: 1;
     font-weight: 900;
     color: #38bdf8;
+    white-space: nowrap;
   }
 
   .hero-price__label {
-    font-size: 0.85rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #94a3b8;
