@@ -462,16 +462,16 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2rem;
+  gap: 2.5rem;
   opacity: 0;
   transform: translateY(1rem);
   padding-top: 0;
 }
 @media (min-width: 768px) {
   .hero-btn-container {
-    flex-direction: row;
-    align-items: center;
-    gap: 3.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2.5rem;
   }
 }
 
@@ -479,7 +479,13 @@ body {
 .hero-stats-row {
   display: flex;
   align-items: center;
-  gap: 2.25rem;
+  gap: 3rem;
+}
+
+.hero-registered-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .hero-stats-divider {
@@ -499,55 +505,6 @@ body {
 .rt-link-numbers, .rt-link-text {
   text-decoration: none;
   transition: all 0.3s ease;
-}
-
-@media (max-width: 767.98px) {
-  .hero-btn-container {
-    align-items: center;
-    gap: 1.5rem;
-    width: 100%;
-    margin-top: 2rem;
-  }
-
-  /* Mobile Grid Alignment */
-  .hero-stats-row {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    grid-template-areas:
-      "price divider numbers"
-      "text  text    text";
-    align-items: center;
-    width: 100%;
-    gap: 0;
-  }
-
-  .hero-price {
-    grid-area: price;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding-left: 1rem;
-  }
-
-  .hero-stats-divider {
-    grid-area: divider;
-    height: 4rem;
-    width: 2px;
-  }
-
-  .rt-link-numbers {
-    grid-area: numbers;
-    display: flex;
-    justify-content: flex-end;
-    padding-right: 1rem;
-  }
-
-  .rt-link-text {
-    grid-area: text;
-    width: 100%;
-    text-align: center;
-    margin-top: 1rem;
-  }
 }
 
 .hero-player-container {
@@ -651,16 +608,18 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.25rem;
+    gap: 1.5rem;
     width: 100%;
     margin-top: 1rem;
   }
 
   .hero-stats-row {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    display: flex;
+    flex-direction: row;
     align-items: center;
+    justify-content: center;
     width: 100%;
+    gap: 1rem;
     margin-bottom: 0.5rem;
   }
 
@@ -668,27 +627,34 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding-left: 1.5rem;
+    padding-left: 0;
   }
 
   .hero-stats-divider {
-    height: 3.5rem;
+    height: 3rem;
     width: 2px;
     background: #0ea5e9;
     flex-shrink: 0;
   }
 
+  .hero-registered-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
   .rt-link-numbers {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    padding-right: 1.5rem;
+    justify-content: center;
+    padding-right: 0;
   }
 
   .rt-link-text {
-    width: 100%;
-    text-align: center;
-    margin-top: 0.5rem;
+    width: auto;
+    text-align: left;
+    margin-top: 0;
+    font-size: 0.85rem;
   }
 
   .hero-price__value {

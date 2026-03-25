@@ -102,9 +102,8 @@
 
 @media (max-width: 767.98px) {
   .rt-link-text {
-    display: block;
-    width: 100%;
-    text-align: center;
+    display: flex;
+    align-items: center;
   }
 
   .rt-link__numbers {
@@ -115,24 +114,23 @@
   }
 
   .rt-link__current {
-    font-size: 4.2rem;
+    font-size: 2.5rem;
     font-weight: 900;
     color: #ffffff;
     line-height: 0.8;
   }
 
   .rt-link__total {
-    font-size: 2rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: #334155;
   }
 
   .rt-link__text {
-    width: 100%;
-    text-align: center;
+    text-align: left;
     white-space: nowrap;
-    font-size: 0.825rem;
-    letter-spacing: 0.12em;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
     color: #475569;
     text-transform: uppercase;
   }
