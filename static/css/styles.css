@@ -125,18 +125,17 @@ body {
 
 .section-heading {
   text-align: center;
-  font-size: clamp(1.5rem, 4vw, 2.25rem);
-  font-weight: 900;
+  font-size: clamp(2.5rem, 5.5vw, 6rem);
+  font-weight: 950;
   text-transform: uppercase;
-  margin-bottom: clamp(2.5rem, 5vw, 5rem);
-  letter-spacing: 0.1em;
-  color: transparent;
-  background-clip: text;
-  -webkit-background-clip: text;
-  background-image: linear-gradient(45deg, #6366f1, #38bdf8);
+  font-style: italic;
+  margin-bottom: clamp(3rem, 6vw, 6rem);
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  text-shadow: 6px 6px 0px rgba(14, 165, 233, 0.4);
 }
 .section-heading--lg {
-  margin-bottom: clamp(3rem, 6vw, 6rem);
+  margin-bottom: clamp(4rem, 8vw, 8rem);
 }
 
 .divider {
@@ -174,32 +173,34 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem 3rem;
-  font-size: 1.125rem;
-  font-weight: 900;
+  padding: 1.5rem 3.5rem;
+  font-size: 1.25rem;
+  font-weight: 950;
   color: #ffffff;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  background-color: #0284c7;
-  overflow: hidden;
-  border-radius: 1.25rem;
-  border: none;
+  letter-spacing: 0.05em;
+  font-style: italic;
+  background-color: #0ea5e9;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 20px 25px -5px rgba(14, 165, 233, 0.3);
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: -10px 10px 30px rgba(14, 165, 233, 0.4);
 }
 .btn-cta:hover {
-  background-color: #0ea5e9;
-  transform: scale(1.05);
+  background-color: #ffffff;
+  color: #0ea5e9;
+  transform: translateX(10px) scale(1.02);
+  box-shadow: -15px 15px 40px rgba(14, 165, 233, 0.5);
 }
 @media (max-width: 767.98px) {
   .btn-cta {
     width: 100%;
     justify-content: center;
-    padding: 1.1rem 1.5rem;
-    font-size: clamp(0.75rem, 2.2vw, 0.9rem);
-    opacity: 1 !important;
-    background-color: #0284c7 !important;
+    padding: 1.25rem 2rem;
+    font-size: 1.1rem;
+    clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
+    background-color: #0ea5e9 !important;
   }
 }
 .btn-cta__text {
@@ -332,15 +333,16 @@ body {
 
 .hero-label {
   display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  background: rgba(14, 165, 233, 0.1);
-  border: 1px solid rgba(14, 165, 233, 0.2);
-  color: #38bdf8;
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
+  padding: 0.6rem 1.5rem;
+  background: rgba(14, 165, 233, 0.15);
+  border-left: 4px solid #0ea5e9;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
+  clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
   transform: translateY(100%);
   opacity: 0;
 }
@@ -354,7 +356,10 @@ body {
 }
 
 .hero-title__main {
-  font-size: clamp(3rem, 7vw, 13rem);
+  font-size: clamp(3.5rem, 8vw, 15rem);
+  font-style: italic;
+  letter-spacing: -0.02em;
+  filter: drop-shadow(10px 10px 0px rgba(0, 0, 0, 0.25));
 }
 @media (max-width: 600px) {
   .hero-title__main {
@@ -475,19 +480,75 @@ body {
   }
 }
 
-/* Global Shared Styles for Stats */
+/* Aggressive Sports Stats Row */
 .hero-stats-row {
   display: flex;
   align-items: center;
   gap: 2.5rem;
+  padding: 1rem 3rem;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(5px);
+  border-left: 6px solid #0ea5e9;
+  clip-path: polygon(0% 0%, 96% 0%, 100% 100%, 4% 100%);
   margin-bottom: 0.5rem;
+  border-radius: 0;
+  box-shadow: -10px 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 .hero-stats-divider {
-  width: 3px;
-  height: 4.5rem;
-  background-color: #0ea5e9;
-  box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+  width: 2px;
+  height: 3.5rem;
+  background-color: rgba(14, 165, 233, 0.3);
+  transform: rotate(15deg);
+}
+
+.hero-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.hero-price__value {
+  font-size: clamp(2.2rem, 3.5vw, 4rem);
+  font-weight: 950;
+  font-style: italic;
+  color: #0ea5e9;
+  line-height: 1;
+  text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.1);
+}
+
+.hero-price__label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.8;
+}
+
+.rt-link-numbers {
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.rt-link__numbers {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  font-style: italic;
+}
+
+.rt-link__current {
+  font-size: clamp(3.2rem, 5vw, 5.5rem);
+  font-weight: 950;
+  color: #ffffff;
+  line-height: 0.9;
+}
+
+.rt-link__total {
+  font-size: clamp(1.8rem, 2.8vw, 3rem);
+  font-weight: 800;
+  color: rgba(14, 165, 233, 0.6);
 }
 
 .hero-counter-block {
@@ -500,6 +561,26 @@ body {
 .rt-link-numbers, .rt-link-text {
   text-decoration: none;
   transition: all 0.3s ease;
+}
+
+/* See Registered Teams link improvement */
+#registeredTeamsBtn {
+  margin-top: -0.5rem;
+  padding-left: 2rem;
+}
+
+#registeredTeamsBtn .rt-link__text {
+  font-size: 1.25rem !important;
+  font-weight: 900 !important;
+  font-style: italic;
+  color: #ffffff !important;
+  letter-spacing: 0.05em !important;
+  text-shadow: 0 0 15px rgba(14, 165, 233, 0.6) !important;
+}
+
+#registeredTeamsBtn:hover .rt-link__text {
+  color: #0ea5e9 !important;
+  transform: translateX(10px);
 }
 
 .hero-player-container {
@@ -603,7 +684,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.25rem;
     width: 100%;
     margin-top: 1rem;
   }
@@ -613,64 +694,72 @@ body {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    gap: 1rem;
+    width: calc(100% - 1rem);
+    gap: 1.25rem;
+    padding: 1rem 1.5rem;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+    border-left: 4px solid #0ea5e9;
+    clip-path: polygon(0% 0%, 96% 0%, 100% 100%, 4% 100%);
     margin-bottom: 0.5rem;
+    box-shadow: -5px 5px 20px rgba(0, 0, 0, 0.4);
   }
 
   .hero-price {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding-left: 0;
   }
 
   .hero-stats-divider {
-    height: 3rem;
+    height: 2.5rem;
     width: 2px;
-    background: #0ea5e9;
-    flex-shrink: 0;
-  }
-
-  .hero-registered-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    background: rgba(14, 165, 233, 0.4);
+    transform: rotate(15deg);
   }
 
   .rt-link-numbers {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-right: 0;
   }
 
   .rt-link-text {
-    width: auto;
-    text-align: left;
-    margin-top: 0;
-    font-size: 1rem;
-    font-weight: 800;
+    width: 100%;
+    text-align: center;
+    margin-top: -0.25rem;
+  }
+
+  #registeredTeamsBtn .rt-link__text {
+    font-size: 0.95rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.05em !important;
   }
 
   .hero-price__value {
-    font-size: 1.65rem;
+    font-size: 1.8rem;
     line-height: 1;
-    font-weight: 900;
-    color: #38bdf8;
+    font-weight: 950;
+    font-style: italic;
+    color: #0ea5e9;
     white-space: nowrap;
   }
 
   .hero-price__label {
     font-size: 0.65rem;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #94a3b8;
+    color: #ffffff;
+    opacity: 0.7;
   }
 
   .hero-btn-container .btn-cta {
-    width: 100%;
-    margin-top: 0.5rem;
+    width: 90%;
+    margin-top: 0.25rem;
+    padding: 1.15rem 2rem;
+    font-size: 1.15rem;
+    clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
   }
 }
 .hero-counter__current {
@@ -1166,76 +1255,96 @@ body {
 }
 
 .location__title {
-  font-size: clamp(1.75rem, 4vw, 3rem);
-  font-weight: 900;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 950;
   text-transform: uppercase;
-  margin-bottom: 1.5rem;
+  font-style: italic;
+  margin-bottom: 2rem;
+  color: #ffffff;
+  text-shadow: 4px 4px 0px rgba(14, 165, 233, 0.3);
 }
 
 .location__text {
-  color: #cbd5e1;
-  margin-bottom: 1.5rem;
-  line-height: 1.625;
+  color: #94a3b8;
+  margin-bottom: 2rem;
+  line-height: 1.8;
+  font-size: 1.1rem;
+  border-left: 3px solid #0ea5e9;
+  padding-left: 1.5rem;
 }
 
 .location__info {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .location__info-item {
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem;
+  background: rgba(14, 165, 233, 0.05);
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  clip-path: polygon(0% 0%, 95% 0%, 100% 100%, 5% 100%);
 }
 
 .location__info-icon {
-  background: #1e293b;
-  padding: 0.75rem;
-  border-radius: 0.75rem;
-  color: #38bdf8;
+  background: #0ea5e9;
+  padding: 1rem;
+  color: #050a14;
   flex-shrink: 0;
+  font-weight: 900;
+  clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%);
 }
 
 .location__info-label {
-  font-weight: 700;
+  font-weight: 900;
   text-transform: uppercase;
-  font-size: 0.875rem;
-  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: #0ea5e9;
+  margin-bottom: 0.15rem;
 }
 
 .location__info-value {
-  color: #94a3b8;
-  font-size: 0.875rem;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 .location__link {
-  color: #38bdf8;
-  font-weight: 700;
+  color: #ffffff;
+  background: #0ea5e9;
+  font-weight: 900;
   text-transform: uppercase;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
+  font-style: italic;
   letter-spacing: 0.1em;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  min-height: 2.75rem;
-  padding: 0.75rem 0;
-  transition: color 0.3s ease;
+  gap: 0.75rem;
+  padding: 1rem 2.5rem;
+  clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+  transition: all 0.3s ease;
 }
 .location__link:hover {
-  color: #ffffff;
+  background: #ffffff;
+  color: #0ea5e9;
+  transform: scale(1.05) rotate(-1deg);
 }
 
 .location-map {
-  height: clamp(16rem, 40vw, 25rem);
+  height: clamp(20rem, 45vw, 30rem);
   width: 100%;
-  border-radius: 1.25rem;
+  border-radius: 0;
   overflow: hidden;
-  border: 1px solid #334155;
+  border: 4px solid #0ea5e9;
+  clip-path: polygon(2% 0%, 100% 0%, 98% 100%, 0% 100%);
   position: relative;
   order: 1;
+  box-shadow: -15px 15px 40px rgba(0, 0, 0, 0.5);
 }
 @media (min-width: 768px) {
   .location-map {
