@@ -222,10 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Required checkboxes
     const chkTerms   = document.getElementById('chkTerms');
-    const chkAge     = document.getElementById('chkAge');
     const chkPayment = document.getElementById('chkPayment');
 
-    if (!chkTerms.checked || !chkAge.checked || !chkPayment.checked) {
+    if (!chkTerms.checked || !chkPayment.checked) {
       setError('checks', '', 'err_checks');
       ok = false;
     }
