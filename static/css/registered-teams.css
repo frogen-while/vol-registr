@@ -278,13 +278,14 @@
   display: flex;
   align-items: center;
   background: linear-gradient(90deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.4) 100%);
-  padding: 0.75rem 1rem;
+  padding: 1.5rem 1.5rem; /* Increased vertical padding */
   border-radius: 0;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-left: 4px solid #1e293b;
   position: relative;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   overflow: hidden;
+  margin-bottom: 0.75rem; /* Increased gap between rows */
 }
 
 .rt-team-row::before {
@@ -393,11 +394,11 @@
   .rt-team-row {
     flex-direction: column;
     align-items: flex-start;
-    padding: 1.25rem 1rem 1.25rem 3.5rem;
+    padding: 1.5rem 1rem 1.5rem 3.5rem; /* Increased vertical padding */
     gap: 0.2rem;
     position: relative;
     border-radius: 0;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem; /* More gap between blocks */
   }
 
   .rt-col-rank {
@@ -413,8 +414,8 @@
   }
 
   .rt-col-team {
-    font-size: 1.25rem;
-    width: 100%;
+    font-size: 1.2rem;
+    width: calc(100% - 6.5rem); /* Leave space for LIGA badge on right */
     padding-left: 0;
     line-height: 1;
     font-weight: 950;
@@ -424,22 +425,24 @@
   }
 
   .rt-col-captain {
-    width: 100%;
+    width: calc(100% - 6.5rem); /* Same space for consistency */
     padding-left: 0;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #94a3b8;
     font-weight: 700;
     text-transform: uppercase;
   }
 
   .rt-col-level {
-    align-self: flex-start;
-    margin-left: 0;
-    margin-top: 0.35rem;
-    font-size: 0.75rem;
-    width: auto;
-    min-width: 6rem;
-    padding: 0.25rem 0.75rem;
+    position: absolute;
+    right: 3rem; /* Moved to the right */
+    top: 50%;
+    transform: translateY(-50%);
+    margin-top: 0;
+    font-size: 0.7rem;
+    width: 6.5rem; /* Fixed width for alignment */
+    padding: 0.25rem 0.5rem;
+    flex-shrink: 0;
   }
 
   .rt-col-action {
