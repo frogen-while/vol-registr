@@ -649,7 +649,8 @@ body {
     width: auto;
     text-align: left;
     margin-top: 0;
-    font-size: 0.85rem;
+    font-size: 1rem;
+    font-weight: 800;
   }
 
   .hero-price__value {

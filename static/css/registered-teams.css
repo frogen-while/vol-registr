@@ -55,10 +55,10 @@
   display: inline-block;
   position: relative;
   will-change: transform;
-  font-size: 0.875rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.2em;
   color: #475569;
   text-shadow: 0 0 0 rgba(125, 211, 252, 0);
   animation: rt-link-text-nudge 3s ease-in-out infinite;
