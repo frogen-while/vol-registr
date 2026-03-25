@@ -6,7 +6,7 @@
 {% block extra_head %}
 <style>
   .team-detail-section {
-    padding-top: 8rem;
+    padding-top: clamp(6rem, 12vh, 10rem);
     padding-bottom: 4rem;
     min-height: 100vh;
     color: #e2e8f0;
@@ -20,136 +20,171 @@
     z-index: 10;
   }
   
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.85rem;
+    margin-bottom: 3rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(14, 165, 233, 0.1);
+    border-left: 4px solid #0ea5e9;
+    clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  
+  .back-btn:hover {
+    background: #0ea5e9;
+    color: #050a14;
+    transform: translateX(-5px);
+  }
+  
+  .back-btn i {
+    margin-right: 0.75rem;
+  }
+  
   .team-header {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: clamp(3rem, 6vh, 5rem);
+    position: relative;
   }
   
   .team-name {
-    font-size: 3rem;
-    font-weight: 900;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 950;
     color: #ffffff;
     text-transform: uppercase;
-    margin-bottom: 0.5rem;
-    letter-spacing: 0.05em;
-    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    font-style: italic;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.02em;
+    text-shadow: 6px 6px 0px rgba(14, 165, 233, 0.4);
+    line-height: 0.9;
   }
   
   .team-level {
-    font-size: 1.25rem;
+    display: inline-block;
+    font-size: clamp(1rem, 2vw, 1.5rem);
     color: #0ea5e9;
-    font-weight: 600;
+    font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    font-style: italic;
+    letter-spacing: 0.15em;
+    margin-top: 0.5rem;
+    padding: 0.4rem 1.5rem;
+    background: rgba(14, 165, 233, 0.1);
+    clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
   }
 
   .team-grid {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 2rem;
-    max-width: 1000px;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 3rem;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 1.5rem;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 991px) {
     .team-grid {
       grid-template-columns: 1fr;
+      gap: 2rem;
     }
   }
 
   .team-card {
-    background-color: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0.75rem;
-    padding: 2rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     position: relative;
-    overflow: hidden;
-  }
-
-  .team-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+    background-color: #050a14;
+    background-image: 
+      linear-gradient(45deg, rgba(14, 165, 233, 0.03) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(14, 165, 233, 0.03) 25%, transparent 25%);
+    background-size: 4px 4px;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    border-left: 6px solid #0ea5e9;
+    border-radius: 0;
+    padding: 2.5rem 2rem;
+    box-shadow: -15px 15px 40px rgba(0, 0, 0, 0.6);
+    transform: skewX(-1deg);
   }
 
   .team-card-title {
     font-size: 1.5rem;
-    font-weight: 700;
-    color: #f8fafc;
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid rgba(51, 65, 85, 0.5);
-    padding-bottom: 0.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-style: italic;
+    color: #ffffff;
+    margin-bottom: 2rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid rgba(14, 165, 233, 0.2);
     display: flex;
     align-items: center;
+    letter-spacing: 0.05em;
   }
 
   .team-card-title i {
     color: #0ea5e9;
-    margin-right: 0.75rem;
-    font-size: 1.25rem;
+    margin-right: 1rem;
+    font-size: 1.4rem;
+    filter: drop-shadow(0 0 5px rgba(14, 165, 233, 0.5));
   }
 
   /* Captain Info */
   .cap-info-item {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     display: flex;
     flex-direction: column;
+    transform: skewX(1deg); /* Counter-skew for text readability */
   }
 
   .cap-info-label {
-    font-size: 0.85rem;
-    color: #94a3b8;
+    font-size: 0.75rem;
+    color: #0ea5e9;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.25rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.35rem;
   }
 
   .cap-info-value {
-    font-size: 1.1rem;
-    color: #e2e8f0;
-    font-weight: 500;
-  }
-
-  .cap-info-value a {
-    color: #38bdf8;
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-
-  .cap-info-value a:hover {
-    color: #7dd3fc;
+    font-size: 1.4rem;
+    color: #ffffff;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
   }
 
   .contact-link {
     display: inline-flex;
     align-items: center;
-    color: #38bdf8;
+    color: #ffffff;
+    background: #0ea5e9;
     text-decoration: none;
-    font-size: 1.1rem;
-    font-weight: 600;
-    transition: all 0.2s ease;
+    font-size: 1rem;
+    font-weight: 900;
+    font-style: italic;
+    padding: 0.5rem 1.5rem;
+    margin-top: 0.5rem;
+    clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+    transition: all 0.3s ease;
   }
 
   .contact-link i {
-    margin-left: 0.5rem;
+    margin-left: 0.75rem;
     font-size: 0.9rem;
     transition: transform 0.2s;
   }
 
   .contact-link:hover {
-    color: #7dd3fc;
+    background: #ffffff;
+    color: #0ea5e9;
+    transform: scale(1.05);
   }
 
   .contact-link:hover i {
-    transform: translateX(4px);
+    transform: translateX(5px);
   }
 
   /* Roster List */
@@ -162,69 +197,51 @@
   .roster-item {
     display: flex;
     align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid rgba(30, 41, 59, 0.5);
-    transition: background-color 0.2s;
-    border-radius: 0.25rem;
-  }
-
-  .roster-item:last-child {
-    border-bottom: none;
+    padding: 1.25rem;
+    background: rgba(15, 23, 42, 0.4);
+    margin-bottom: 0.75rem;
+    border-left: 4px solid transparent;
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    transform: skewX(1deg);
   }
 
   .roster-item:hover {
-    background-color: rgba(30, 41, 59, 0.8);
-    transform: translateX(4px);
-    transition: all 0.2s ease;
+    background: rgba(14, 165, 233, 0.1);
+    border-left-color: #0ea5e9;
+    transform: translateX(10px) skewX(1deg);
   }
 
   .player-number {
-    font-size: 1.5rem;
-    font-weight: 900;
-    color: #38bdf8;
-    width: 3rem;
+    font-size: 2rem;
+    font-weight: 950;
+    font-style: italic;
+    color: #0ea5e9;
+    width: 4rem;
     text-align: center;
-    margin-right: 1rem;
+    margin-right: 1.5rem;
+    line-height: 1;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
   }
 
   .player-name {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #f8fafc;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-transform: uppercase;
     flex: 1;
+    letter-spacing: 0.02em;
   }
 
   .player-icon {
-    color: #334155;
+    color: rgba(14, 165, 233, 0.3);
     font-size: 1.25rem;
-    opacity: 0.5;
+    transition: all 0.3s ease;
   }
   
   .roster-item:hover .player-icon {
     color: #0ea5e9;
-    opacity: 1;
-  }
-  
-  .back-btn {
-    display: inline-flex;
-    align-items: center;
-    color: #94a3b8;
-    text-decoration: none;
-    font-weight: 600;
-    margin-bottom: 2rem;
-    transition: color 0.2s;
-  }
-  
-  .back-btn:hover {
-    color: #e2e8f0;
-  }
-  
-  .back-btn i {
-    margin-right: 0.5rem;
-  }
-  
-  .team-detail-watermark {
-    display: none;
+    transform: rotate(180deg) scale(1.2);
+    filter: drop-shadow(0 0 8px #0ea5e9);
   }
 
 </style>
