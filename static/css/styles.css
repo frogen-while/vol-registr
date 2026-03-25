@@ -645,14 +645,14 @@ body {
   }
 
   .hero-price__value {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     line-height: 1;
     font-weight: 900;
     color: #0ea5e9;
   }
 
   .hero-price__label {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #94a3b8;
@@ -660,7 +660,7 @@ body {
 
   .hero-stats-divider {
     width: 2px;
-    height: 2.5rem;
+    height: 3.2rem;
     background: rgba(148, 163, 184, 0.2);
   }
 
