@@ -10,7 +10,7 @@
       // Main page (index.html)
       hero: {
         label: 'April 11, 2026 • Rzgów, Szkolna 5',
-        title: { main: 'POCKET ACES', sub: 'SPRING TOURNAMENT 2026' },
+        title: { main: 'POCKET ACES', sub: 'SPRING TOURNAMENT' },
         text: 'The first official tournament by Pocket Aces Sports Club, organized by a team of over 20 members. Built around professional organization, a competitive format, and high standards.',
         price: { label: 'per team' },
         counter: { label: 'Teams Registered' },
