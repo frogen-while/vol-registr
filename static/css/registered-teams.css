@@ -377,6 +377,9 @@
     padding: 2.5rem 1rem 1.5rem;
     transform: none;
     border-left-width: 4px;
+    width: 95vw;
+    max-width: none;
+    border-radius: 0;
   }
 
   .rt-modal__overlay.active .rt-modal__content {
@@ -384,47 +387,59 @@
   }
 
   .rt-table-header {
-    display: none; /* Hide headers on mobile for cleaner look */
+    display: none;
   }
 
   .rt-team-row {
     flex-direction: column;
     align-items: flex-start;
-    padding: 1.25rem 1rem 1.25rem 4.5rem; /* Space for the large number */
-    gap: 0.4rem;
+    padding: 1.25rem 1rem 1.25rem 3.5rem;
+    gap: 0.2rem;
     position: relative;
+    border-radius: 0;
+    margin-bottom: 0.5rem;
   }
 
   .rt-col-rank {
     position: absolute;
     top: 50%;
-    left: 1rem;
+    left: 0.5rem;
     transform: translateY(-50%);
-    font-size: 3.5rem; /* Much larger number */
-    opacity: 0.15;
+    font-size: 3rem;
+    opacity: 0.2;
     width: auto;
-    font-weight: 900;
+    font-weight: 950;
     font-style: italic;
   }
 
   .rt-col-team {
-    font-size: 1.35rem;
+    font-size: 1.25rem;
     width: 100%;
     padding-left: 0;
-    line-height: 1.1;
+    line-height: 1;
+    font-weight: 950;
+    font-style: italic;
+    color: #ffffff;
+    text-transform: uppercase;
   }
 
   .rt-col-captain {
     width: 100%;
     padding-left: 0;
-    font-size: 0.9rem;
-    color: #64748b;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 700;
+    text-transform: uppercase;
   }
 
   .rt-col-level {
     align-self: flex-start;
     margin-left: 0;
-    margin-top: 0.25rem;
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+    width: auto;
+    min-width: 6rem;
+    padding: 0.25rem 0.75rem;
   }
 
   .rt-col-action {
@@ -432,11 +447,33 @@
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
+    width: 1.5rem;
+    opacity: 0.5;
+  }
+
+  .rt-modal__close {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.2rem;
+  }
+
+  .rt-modal__header {
+    margin-bottom: 2rem;
+    padding: 0 0 1rem;
+  }
+
+  .rt-modal__title {
+    font-size: 1.8rem;
   }
 }
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-right: 1rem;
+
+.rt-no-teams {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .rt-team-row .rt-col-captain,
@@ -470,151 +507,6 @@
   background-color: rgba(245, 158, 11, 0.15); /* amber bg */
   color: #fbbf24; /* amber text */
   border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.rt-no-teams {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: #64748b;
-  font-weight: 600;
-  font-size: 1rem;
-  font-family: 'Montserrat', sans-serif;
-}
-
-@media (max-width: 768px) {
-  .rt-modal__content.sports-scoreboard {
-    width: min(90vw, 430px);
-    padding: 1.1rem 0.85rem 1rem;
-    border-radius: 0.85rem;
-    max-height: 92vh;
-  }
-
-  .rt-modal__close {
-    top: 0.45rem;
-    right: 0.45rem;
-    width: 1.9rem;
-    height: 1.9rem;
-    z-index: 2;
-  }
-
-  .rt-modal__header {
-    margin-bottom: 1rem;
-    padding: 0 0.45rem 0.85rem;
-  }
-
-  .rt-modal__title {
-    font-size: 1.35rem;
-    letter-spacing: 0.03em;
-    margin-bottom: 0.25rem;
-  }
-
-  .rt-modal__subtitle {
-    font-size: 0.62rem;
-    letter-spacing: 0.16em;
-  }
-
-  .rt-table-header {
-    display: none;
-  }
-
-  .rt-modal__teams-list {
-    gap: 0.6rem;
-    padding: 0 0.1rem;
-  }
-
-  .rt-team-row {
-    display: grid;
-    grid-template-columns: 2.2rem 1fr auto;
-    grid-template-areas:
-      "rank team action"
-      "rank captain action"
-      "rank level action";
-    align-items: center;
-    column-gap: 0.65rem;
-    row-gap: 0.2rem;
-    padding: 0.78rem 0.72rem;
-    border-left-width: 2px;
-    border-radius: 0.75rem;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(17, 28, 48, 0.98) 100%);
-    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.09);
-  }
-
-  .rt-team-row .rt-col-rank {
-    grid-area: rank;
-    width: 2.2rem;
-    font-size: 1.05rem;
-    line-height: 1;
-    align-self: start;
-    margin-top: 0.08rem;
-  }
-
-  .rt-team-row .rt-col-team {
-    grid-area: team;
-    min-width: 0;
-    padding-right: 0.35rem;
-    font-size: 0.93rem;
-    letter-spacing: 0.01em;
-    text-transform: none;
-  }
-
-  .rt-team-row .rt-col-captain,
-  .rt-team-row .rt-col-level {
-    display: block;
-    min-width: 0;
-    padding-right: 0.35rem;
-    font-size: 0.72rem;
-    line-height: 1.25;
-    color: #94a3b8;
-  }
-
-  .rt-team-row .rt-col-captain {
-    grid-area: captain;
-  }
-
-  .rt-team-row .rt-col-level {
-    grid-area: level;
-    color: #7dd3fc;
-    font-weight: 700;
-  }
-
-  .rt-team-row .rt-col-action {
-    grid-area: action;
-    width: auto;
-    justify-self: end;
-    align-self: center;
-    opacity: 0.8;
-  }
-
-  .rt-team-row .rt-col-action svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .rt-team-row:hover {
-    transform: none;
-  }
-}
-
-@media (max-width: 420px) {
-  .rt-modal__content.sports-scoreboard {
-    width: min(88vw, 360px);
-    padding: 1rem 0.65rem 0.9rem;
-  }
-
-  .rt-modal__close {
-    top: 0.4rem;
-    right: 0.4rem;
-  }
-
-  .rt-team-row {
-    grid-template-columns: 2rem 1fr auto;
-    padding: 0.72rem 0.65rem;
-    column-gap: 0.55rem;
-  }
-
-  .rt-team-row .rt-col-team {
-    font-size: 0.88rem;
-  }
 }
 
 /* --- Sports Scoreboard Modal CRT Scanline Effect --- */

@@ -244,6 +244,71 @@
     filter: drop-shadow(0 0 8px #0ea5e9);
   }
 
+  /* Mobile Overrides */
+  @media (max-width: 600px) {
+    .team-detail-section {
+      padding-top: 5rem;
+      padding-bottom: 2rem;
+    }
+
+    .back-btn {
+      margin-bottom: 2rem;
+      padding: 0.6rem 1.25rem;
+      font-size: 0.75rem;
+    }
+
+    .team-name {
+      font-size: clamp(2.5rem, 12vw, 4rem);
+    }
+
+    .team-level {
+      font-size: 0.85rem;
+      padding: 0.35rem 1.25rem;
+    }
+
+    .team-grid {
+      padding: 0 0.75rem;
+      gap: 1.5rem;
+    }
+
+    .team-card {
+      padding: 1.5rem 1.25rem;
+      transform: none; /* Remove skew on mobile to prevent "cut off" feel */
+      border-left-width: 4px;
+    }
+
+    .cap-info-item, .roster-item {
+      transform: none;
+    }
+
+    .team-card-title {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cap-info-value {
+      font-size: 1.15rem;
+    }
+
+    .player-number {
+      font-size: 1.5rem;
+      width: 2.5rem;
+      margin-right: 1rem;
+    }
+
+    .player-name {
+      font-size: 1rem;
+    }
+
+    .roster-item {
+      padding: 1rem 0.75rem;
+    }
+
+    .roster-item:hover {
+      transform: translateX(5px);
+    }
+  }
+
 </style>
 {% endblock %}
 
