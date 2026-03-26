@@ -490,6 +490,43 @@
   padding-right: 1rem;
 }
 
+@media (max-width: 767.98px) {
+  .rt-team-row {
+    padding-right: 2.5rem;
+  }
+
+  .rt-team-row .rt-col-team,
+  .rt-team-row .rt-col-captain,
+  .rt-team-row .rt-col-level {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .rt-team-row .rt-col-team,
+  .rt-team-row .rt-col-captain {
+    width: 100%;
+    max-width: 100%;
+    padding-right: 2rem;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  .rt-team-row .rt-col-level {
+    position: static;
+    transform: none;
+    margin-top: 0.4rem;
+    width: auto;
+    clip-path: none;
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem;
+  }
+
+  .rt-team-row .rt-col-action {
+    right: 0.75rem;
+  }
+}
+
 .rt-badge {
   display: inline-block;
   padding: 0.25rem 0.5rem;
