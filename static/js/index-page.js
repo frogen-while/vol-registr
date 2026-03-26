@@ -309,7 +309,10 @@ function initRegisteredTeamsModal() {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             modal.classList.add('active');
+            document.body.classList.add('rt-modal-open');
+            document.documentElement.classList.add('rt-modal-open');
             document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
         });
     });
 
@@ -334,7 +337,10 @@ function initRegisteredTeamsModal() {
 
     function closeModal() {
         modal.classList.remove('active');
+        document.body.classList.remove('rt-modal-open');
+        document.documentElement.classList.remove('rt-modal-open');
         document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
         // Remove hash without scrolling
         if (window.location.hash === '#registeredTeamsModal') {
             history.replaceState(null, null, ' ');
@@ -344,6 +350,9 @@ function initRegisteredTeamsModal() {
     // Check if URL has hash to open modal on load
     if (window.location.hash === '#registeredTeamsModal') {
         modal.classList.add('active');
+        document.body.classList.add('rt-modal-open');
+        document.documentElement.classList.add('rt-modal-open');
         document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
     }
 }

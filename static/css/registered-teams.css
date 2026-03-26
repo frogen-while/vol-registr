@@ -2,6 +2,12 @@
    Registered Teams Link & Modal
 ==================================================================== */
 
+body.rt-modal-open,
+html.rt-modal-open {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
 /* --- Hero trigger shown as text link (not button) --- */
 .rt-link {
   display: inline-flex;
