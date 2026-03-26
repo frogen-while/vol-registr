@@ -49,11 +49,119 @@ def register(request):
     """Registration form page (renders the empty form + CSRF cookie)."""
     return render(request, "tournament/register.html")
 
+from django.contrib.admin.views.decorators import staff_member_required
+from .models import Match, GameSet, MatchEvent, Player
 
-@ensure_csrf_cookie
-def register(request):
-    """Registration form page (renders the empty form + CSRF cookie)."""
-    return render(request, "tournament/register.html")
+@staff_member_required
+def scorer_dashboard(request, match_id):
+    """Scorer Dashboard view. Requires staff permissions."""
+    match = get_object_or_404(Match, id=match_id)
+    # Get the active game set (if none, get the latest or create one)
+    active_set = match.sets.filter(is_completed=False).first()
+    if not active_set:
+        last_set = match.sets.order_by('-set_number').first()
+        next_set_num = 1 if not last_set else last_set.set_number + 1
+        active_set = GameSet.objects.create(match=match, set_number=next_set_num)
+        
+    context = {
+        'match': match,
+        'active_set': active_set,
+        'team_a': match.team_a,
+        'team_b': match.team_b,
+    }
+    return render(request, 'tournament/scorer_dashboard.html', context)
+
+@staff_member_required
+@require_POST
+def record_event(request, match_id):
+    """API endpoint to record an event from the scorer dashboard."""
+    try:
+        data = json.loads(request.body)
+        game_set_id = data.get('set_id')
+        team_id = data.get('team_id')
+        player_id = data.get('player_id')
+        category = data.get('category')
+        result = data.get('result')
+        affected_player_id = data.get('affected_player_id')
+        
+        game_set = get_object_or_404(GameSet, id=game_set_id, match_id=match_id)
+        team = get_object_or_404(Team, id=team_id)
+        player = get_object_or_404(Player, id=player_id)
+        affected_player = Player.objects.filter(id=affected_player_id).first() if affected_player_id else None
+
+        # Determine points:
+        point_awarded_to = None
+        if result in ['K', 'SA', 'BS', 'BA']: # point for attacking/serving/blocking team
+            point_awarded_to = team
+        elif result in ['E', 'SE', 'RE', 'BE']: # point for defending team
+            point_awarded_to = game_set.match.team_a if team == game_set.match.team_b else game_set.match.team_b
+
+        if point_awarded_to:
+            if point_awarded_to == game_set.match.team_a:
+                game_set.score_a += 1
+            else:
+                game_set.score_b += 1
+            game_set.save()
+
+        # Create the event
+        event = MatchEvent.objects.create(
+            match_id=match_id,
+            game_set=game_set,
+            team=team,
+            player=player,
+            category=category,
+            result=result,
+            affected_player=affected_player,
+            score_a_at_time=game_set.score_a,
+            score_b_at_time=game_set.score_b
+        )
+
+        return JsonResponse({
+            'status': 'success',
+            'new_score_a': game_set.score_a,
+            'new_score_b': game_set.score_b,
+            'event_id': event.id
+        })
+    except Exception as e:
+        logger.exception("Error recording match event")
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+@staff_member_required
+@require_POST
+def undo_event(request, match_id):
+    """Reverts the last match event and restores score."""
+    try:
+        data = json.loads(request.body)
+        event_id = data.get('event_id')
+        
+        event = get_object_or_404(MatchEvent, id=event_id, match_id=match_id)
+        game_set = event.game_set
+        
+        # We need to figure out who got the point in order to decrement it.
+        # Check if there is a previous event in the set:
+        previous_events = MatchEvent.objects.filter(
+            game_set=game_set, 
+            timestamp__lt=event.timestamp
+        ).order_by('-timestamp')
+        
+        if previous_events.exists():
+            prev = previous_events.first()
+            game_set.score_a = prev.score_a_at_time
+            game_set.score_b = prev.score_b_at_time
+        else:
+            game_set.score_a = 0
+            game_set.score_b = 0
+            
+        game_set.save()
+        event.delete()
+
+        return JsonResponse({
+            'status': 'success',
+            'new_score_a': game_set.score_a,
+            'new_score_b': game_set.score_b,
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 
 

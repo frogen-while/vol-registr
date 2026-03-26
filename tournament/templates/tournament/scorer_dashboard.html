@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Center - Scorer UI</title>
+    <style>
+        body { background-color: #050a14; color: #fff; font-family: 'Montserrat', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; user-select: none; }
+        .header { background: #0f172a; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0ea5e9; }
+        .score { font-size: 4rem; font-weight: 900; letter-spacing: 5px; text-shadow: 2px 2px 10px rgba(14, 165, 233, 0.5); }
+        .team-name { font-size: 1.5rem; font-weight: 900; color: #0ea5e9; text-transform: uppercase; font-style: italic; }
+        .main { display: flex; flex: 1; padding: 20px; gap: 20px; background-image: linear-gradient(45deg, rgba(14, 165, 233, 0.03) 25%, transparent 25%), linear-gradient(-45deg, rgba(14, 165, 233, 0.03) 25%, transparent 25%); background-size: 4px 4px; }
+        
+        .court { flex: 1; background: rgba(15, 23, 42, 0.8); border: 2px solid rgba(14, 165, 233, 0.3); border-radius: 10px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 15px; padding: 20px; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        .player-btn { background: #1e293b; border: 2px solid #334155; border-radius: 8px; color: #fff; font-size: 1.2rem; font-weight: 800; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; text-transform: uppercase; }
+        .player-btn:active { transform: scale(0.95); }
+        .player-num { font-size: 3rem; color: #0ea5e9; font-style: italic; font-weight: 900; line-height: 1; margin-bottom: 5px; text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5); }
+        
+        .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5, 10, 20, 0.95); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; display: none; backdrop-filter: blur(4px); }
+        .overlay.visible { display: flex; }
+        .action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 85%; }
+        
+        .action-btn { background: #0ea5e9; color: #050a14; border: none; padding: 25px; font-size: 1.3rem; font-weight: 900; border-radius: 8px; cursor: pointer; text-transform: uppercase; font-style: italic; transition: transform 0.1s; }
+        .action-btn:active { transform: scale(0.95); }
+        .action-btn.error { background: #ef4444; color: white; }
+        .action-btn.neutral { background: #3b82f6; color: white; }
+        
+        .log { height: 100px; background: #0f172a; border-top: 2px solid #334155; padding: 10px 20px; overflow-y: auto; font-family: monospace; font-size: 1.2rem; color: #94a3b8; display: flex; flex-direction: column-reverse; }
+        .log-entry { margin-bottom: 5px; border-bottom: 1px dashed #334155; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center;}
+        .log-entry span.highlight { color: #0ea5e9; font-weight: bold; }
+        
+        #courtB { border-color: rgba(239, 68, 68, 0.3); }
+        #courtB .player-num { color: #ef4444; }
+        .team-name.red { color: #ef4444; }
+
+        .btn-undo { background: #ef4444; border: none; padding: 5px 15px; border-radius: 5px; color: #fff; cursor: pointer; font-weight: bold;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="team-name">{{ team_a.name }}</div>
+        <div class="score"><span id="scoreA">{{ active_set.score_a }}</span> : <span id="scoreB">{{ active_set.score_b }}</span></div>
+        <div class="team-name red">{{ team_b.name }}</div>
+    </div>
+    
+    <div class="main">
+        <div class="court" id="courtA">
+            {% for p in team_a.players.all|slice:":6" %}
+                <button class="player-btn" onclick="selectPlayer('A', {{ p.id }}, '{{ p.first_name }}')">
+                    <span class="player-num">{{ p.jersey_number|default:"-" }}</span>{{ p.first_name }}
+                </button>
+            {% endfor %}
+            
+            <div class="overlay" id="overlayA">
+                <h2 style="margin-top: 0; font-size: 2rem; color: #0ea5e9;" id="titleA">Игрок выбран</h2>
+                <div class="action-grid" id="actionsA"></div>
+                <button style="margin-top: 30px; padding: 15px 30px; font-size: 1.2rem; font-weight: bold; background: transparent; border: 2px solid #475569; color: #94a3b8; cursor: pointer; border-radius: 8px;" onclick="cancelAction()">ОТМЕНА</button>
+            </div>
+        </div>
+
+        <div class="court" id="courtB">
+            {% for p in team_b.players.all|slice:":6" %}
+                <button class="player-btn" onclick="selectPlayer('B', {{ p.id }}, '{{ p.first_name }}')">
+                    <span class="player-num">{{ p.jersey_number|default:"-" }}</span>{{ p.first_name }}
+                </button>
+            {% endfor %}
+            
+            <div class="overlay" id="overlayB">
+                <h2 style="margin-top: 0; font-size: 2rem; color: #ef4444;" id="titleB">Игрок выбран</h2>
+                <div class="action-grid" id="actionsB"></div>
+                <button style="margin-top: 30px; padding: 15px 30px; font-size: 1.2rem; font-weight: bold; background: transparent; border: 2px solid #475569; color: #94a3b8; cursor: pointer; border-radius: 8px;" onclick="cancelAction()">ОТМЕНА</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="log" id="eventLog">
+        <div class="log-entry" id="initial-log">> Матч {{ match.id }}, Сет {{ active_set.set_number }}. Ожидание ввода...</div>
+    </div>
+
+    <!-- CSRF Token setup for Fetch API -->
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+    </script>
+
+    <script>
+        const MATCH_ID = {{ match.id }};
+        const SET_ID = {{ active_set.id }};
+        const TEAM_A_ID = {{ team_a.id }};
+        const TEAM_B_ID = {{ team_b.id }};
+
+        let state = { phase: 'IDLE', teamCode: null, teamId: null, playerId: null, playerName: null, action: null };
+
+        const defaultActions = [
+            { id: 'ATTACK', result: 'K', label: 'Атака (Очко)', class: '' },
+            { id: 'ATTACK', result: 'E', label: 'Ошибка (Своя)', class: 'error' },
+            { id: 'BLOCK', result: 'BS', label: 'Блок (Очко)', class: '' },
+            { id: 'SERVE', result: 'SA', label: 'Эйс (Очко)', class: '' },
+            { id: 'DEF', result: 'DIG', label: 'Защита (В игре)', class: 'neutral' }
+        ];
+
+        function selectPlayer(teamCode, playerId, playerName) {
+            if (state.phase === 'IDLE') {
+                state.teamCode = teamCode;
+                state.teamId = (teamCode === 'A') ? TEAM_A_ID : TEAM_B_ID;
+                state.playerId = playerId;
+                state.playerName = playerName;
+                state.phase = 'ACTION_SELECT';
+                showActions(teamCode, `Выбран: ${playerName}`);
+            } else if (state.phase === 'OPPONENT_SELECT' && state.teamCode !== teamCode) {
+                // Opponent selected
+                finishEvent(playerId, playerName);
+            }
+        }
+
+        function showActions(teamCode, titleText) {
+            document.getElementById(`overlay${teamCode}`).classList.add('visible');
+            document.getElementById(`title${teamCode}`).innerText = titleText;
+            
+            const grid = document.getElementById(`actions${teamCode}`);
+            grid.innerHTML = '';
+            
+            defaultActions.forEach(act => {
+                const btn = document.createElement('button');
+                btn.className = `action-btn ${act.class}`;
+                btn.innerText = act.label;
+                btn.onclick = () => handleAction(act);
+                grid.appendChild(btn);
+            });
+        }
+
+        function handleAction(action) {
+            state.action = action;
+            
+            if (['K', 'BS', 'SA'].includes(action.result)) {
+                state.phase = 'OPPONENT_SELECT';
+                const oppTeamCode = state.teamCode === 'A' ? 'B' : 'A';
+                
+                document.getElementById(`overlay${state.teamCode}`).classList.remove('visible');
+                document.getElementById(`overlay${oppTeamCode}`).classList.add('visible');
+                document.getElementById(`title${oppTeamCode}`).innerText = `Кого обыграли / Кто ошибся?`;
+                document.getElementById(`actions${oppTeamCode}`).innerHTML = '<p style="grid-column: span 2; text-align: center; font-size: 1.2rem; font-style: italic;">Выберите игрока на площадке сзади (или отмена, если неизвестно)</p>';
+            } else {
+                finishEvent(null, null);
+            }
+        }
+
+        async function finishEvent(oppPlayerId, oppPlayerName) {
+            const payload = {
+                set_id: SET_ID,
+                team_id: state.teamId,
+                player_id: state.playerId,
+                category: state.action.id,
+                result: state.action.result,
+                affected_player_id: oppPlayerId
+            };
+
+            try {
+                const res = await fetch(`/matches/${MATCH_ID}/event/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                
+                if (data.status === 'success') {
+                    document.getElementById('scoreA').innerText = data.new_score_a;
+                    document.getElementById('scoreB').innerText = data.new_score_b;
+                    
+                    let logMsg = `Команда ${state.teamCode} | Игрок <span class="highlight">${state.playerName}</span> -> ${state.action.label}`;
+                    if (oppPlayerName) logMsg += ` (Против: ${oppPlayerName})`;
+                    addLog(data.event_id, logMsg);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Ошибка связи с сервером");
+            }
+            resetState();
+        }
+
+        function addLog(eventId, message) {
+            const log = document.getElementById('eventLog');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.id = `log-${eventId}`;
+            
+            entry.innerHTML = `<div>> ${message}</div> 
+                               <button class="btn-undo" onclick="undoEvent(${eventId})">UNDO</button>`;
+            
+            log.insertBefore(entry, log.firstChild);
+        }
+
+        async function undoEvent(eventId) {
+            if(!confirm("Удалить это событие?")) return;
+            try {
+                const res = await fetch(`/matches/${MATCH_ID}/undo/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({event_id: eventId})
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    document.getElementById('scoreA').innerText = data.new_score_a;
+                    document.getElementById('scoreB').innerText = data.new_score_b;
+                    document.getElementById(`log-${eventId}`).remove();
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        function cancelAction() {
+            resetState();
+        }
+
+        function resetState() {
+            state = { phase: 'IDLE', teamCode: null, teamId: null, playerId: null, playerName: null, action: null };
+            document.getElementById('overlayA').classList.remove('visible');
+            document.getElementById('overlayB').classList.remove('visible');
+        }
+    </script>
+</body>
+</html>

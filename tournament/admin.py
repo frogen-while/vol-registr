@@ -38,3 +38,31 @@ class PlayerAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'team', 'jersey_number', 'date_of_birth')
     search_fields = ('first_name', 'last_name', 'team__name')
     list_filter = ('team__league_level', 'team')
+
+from .models import Sector, Match, GameSet, MatchEvent
+
+@admin.register(Sector)
+class SectorAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+class GameSetInline(admin.TabularInline):
+    model = GameSet
+    extra = 0
+
+@admin.register(Match)
+class MatchAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'status', 'start_time', 'sector')
+    list_filter = ('status', 'sector')
+    search_fields = ('team_a__name', 'team_b__name')
+    inlines = [GameSetInline]
+
+@admin.register(GameSet)
+class GameSetAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'match', 'score_a', 'score_b', 'is_completed')
+    list_filter = ('is_completed', 'match')
+
+@admin.register(MatchEvent)
+class MatchEventAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'match', 'game_set', 'team', 'category', 'result', 'timestamp')
+    list_filter = ('match', 'category', 'result')
+    search_fields = ('player__first_name', 'player__last_name', 'affected_player__first_name', 'affected_player__last_name')

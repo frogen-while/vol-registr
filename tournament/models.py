@@ -83,3 +83,89 @@ class Player(models.Model):
     def __str__(self) -> str:
         number = f" #{self.jersey_number}" if self.jersey_number else ""
         return f"{self.first_name} {self.last_name}{number}"
+
+
+class Sector(models.Model):
+    name = models.CharField(max_length=50, verbose_name="Sector Name")
+    camera_urls = models.JSONField(blank=True, null=True, verbose_name="Camera RTSP URLs")
+
+    class Meta:
+        verbose_name = "Sector"
+        verbose_name_plural = "Sectors"
+
+    def __str__(self):
+        return self.name
+
+
+class Match(models.Model):
+    STATUS_CHOICES = (
+        ('SCHEDULED', 'Запланирован'),
+        ('IN_PROGRESS', 'Идет'),
+        ('FINISHED', 'Завершен'),
+    )
+    team_a = models.ForeignKey(Team, related_name='matches_as_a', on_delete=models.CASCADE)
+    team_b = models.ForeignKey(Team, related_name='matches_as_b', on_delete=models.CASCADE)
+    start_time = models.DateTimeField(blank=True, null=True, verbose_name="Match Start Time")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='SCHEDULED', verbose_name="Status")
+    sector = models.ForeignKey(Sector, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Sector")
+
+    class Meta:
+        verbose_name = "Match"
+        verbose_name_plural = "Matches"
+
+    def __str__(self):
+        return f"{self.team_a.name} vs {self.team_b.name}"
+
+
+class GameSet(models.Model):
+    match = models.ForeignKey(Match, related_name='sets', on_delete=models.CASCADE)
+    set_number = models.IntegerField(verbose_name="Set Number")
+    score_a = models.IntegerField(default=0, verbose_name="Team A Score")
+    score_b = models.IntegerField(default=0, verbose_name="Team B Score")
+    is_completed = models.BooleanField(default=False, verbose_name="Is Completed")
+
+    class Meta:
+        ordering = ['set_number']
+        verbose_name = "Game Set"
+        verbose_name_plural = "Game Sets"
+
+    def __str__(self):
+        return f"{self.match} - Set {self.set_number}"
+
+
+class MatchEvent(models.Model):
+    CATEGORY_CHOICES = (
+        ('ATTACK', 'Атака'), ('SET', 'Передача'), ('SERVE', 'Подача'),
+        ('PASS', 'Прием'), ('DEF', 'Защита'), ('BLOCK', 'Блок'),
+    )
+    RESULT_CHOICES = (
+        ('K', 'Kill (Очко)'), ('E', 'Error (Ошибка)'), ('TA', 'Attempt (В игре)'),
+        ('A', 'Assist'), ('SA', 'Service Ace'), ('SE', 'Service Error'),
+        ('RE', 'Reception Error'), ('DIG', 'Dig'), 
+        ('BS', 'Block Solo'), ('BA', 'Block Assist'), ('BE', 'Block Error'),
+    )
+
+    match = models.ForeignKey(Match, related_name='events', on_delete=models.CASCADE)
+    game_set = models.ForeignKey(GameSet, related_name='events', on_delete=models.CASCADE)
+    
+    # Who did the main action
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, verbose_name="Initiating Team")
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Initiating Player")
+    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, verbose_name="Action Category")
+    result = models.CharField(max_length=5, choices=RESULT_CHOICES, verbose_name="Action Result")
+    
+    # Follow-up: Who was affected (e.g. who got blocked, who made reception error)
+    affected_player = models.ForeignKey(Player, related_name='affected_events', null=True, blank=True, on_delete=models.SET_NULL, verbose_name="Affected Player")
+
+    # State tracking
+    score_a_at_time = models.IntegerField(default=0)
+    score_b_at_time = models.IntegerField(default=0)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+        verbose_name = "Match Event"
+        verbose_name_plural = "Match Events"
+
+    def __str__(self):
+        return f"Set {self.game_set.set_number}: {self.player} ({self.get_result_display()})"
