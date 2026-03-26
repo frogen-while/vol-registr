@@ -372,3 +372,17 @@
     flex: 1;
   }
 }
+
+/* Disable hover animation on touch devices (phones/tablets) */
+@media (hover: none) {
+  .rt-team-row {
+    transition: none;
+  }
+  .rt-team-row:hover {
+    background-color: #0f172a;
+    transform: none;
+  }
+  .rt-team-row:hover .rt-col-action {
+    color: #cbd5e1;
+  }
+}
