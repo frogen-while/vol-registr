@@ -299,15 +299,17 @@
   transition: left 0.5s;
 }
 
-.rt-team-row:hover {
-  background: rgba(30, 41, 59, 0.8);
-  border-color: rgba(14, 165, 233, 0.4);
-  transform: translateX(10px) skewX(-1deg);
-  box-shadow: -5px 5px 20px rgba(0, 0, 0, 0.4);
-}
+@media (min-width: 768px) {
+  .rt-team-row:hover {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(14, 165, 233, 0.4);
+    transform: translateX(10px) skewX(-1deg);
+    box-shadow: -5px 5px 20px rgba(0, 0, 0, 0.4);
+  }
 
-.rt-team-row:hover::before {
-  left: 100%;
+  .rt-team-row:hover::before {
+    left: 100%;
+  }
 }
 
 .rt-in-tournament {
