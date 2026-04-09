@@ -530,13 +530,15 @@ class TestDemoViewsSmoke(TestCase):
         self.client = Client()
 
     def test_tournament_hub(self):
-        from unittest.mock import patch
-        import datetime
-        future = datetime.datetime(2026, 4, 12, tzinfo=datetime.timezone.utc)
-        with patch("django.utils.timezone.now", return_value=future):
-            r = self.client.get(reverse("tournament_hub"))
+        r = self.client.get(reverse("tournament_hub"))
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, "sp-page")
+
+    def test_tournament_demo(self):
+        r = self.client.get(reverse("tournament_demo"))
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, "Coming Soon")
+        self.assertContains(r, "cs-countdown")
 
     def test_tournament_teams(self):
         r = self.client.get(reverse("tournament_teams"))
@@ -600,22 +602,14 @@ class TestDBViewsSmoke(TestCase):
         r = self.client.get(reverse("tournament_match", args=[9999]))
         self.assertEqual(r.status_code, 404)
 
-    def test_hub_coming_soon_before_unlock(self):
-        from unittest.mock import patch
-        import datetime
-        before = datetime.datetime(2026, 4, 10, tzinfo=datetime.timezone.utc)
-        with patch("django.utils.timezone.now", return_value=before):
-            r = self.client.get(reverse("tournament_hub"))
+    def test_tournament_demo_coming_soon(self):
+        r = self.client.get(reverse("tournament_demo"))
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, "Coming Soon")
         self.assertContains(r, "cs-countdown")
 
-    def test_hub_accessible_after_unlock(self):
-        from unittest.mock import patch
-        import datetime
-        future = datetime.datetime(2026, 4, 12, tzinfo=datetime.timezone.utc)
-        with patch("django.utils.timezone.now", return_value=future):
-            r = self.client.get(reverse("tournament_hub"))
+    def test_hub_accessible(self):
+        r = self.client.get(reverse("tournament_hub"))
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, "Tournament Hub")
 

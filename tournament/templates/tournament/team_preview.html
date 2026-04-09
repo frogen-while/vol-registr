@@ -4,17 +4,192 @@
 {% block title %}{% if page_title %}{{ page_title }}{% else %}{{ team_profile.name }} — Pocket Aces Tournament{% endif %}{% endblock %}
 
 {% block extra_head %}
-<meta name="description" content="{{ page_description|default:'Roster, match history and team stats.' }}">
+<meta name="description" content="{{ page_description|default:'Roster and team stats.' }}">
 <link rel="canonical" href="{{ request.build_absolute_uri }}">
 <meta property="og:title" content="{{ page_title|default:'Team — Pocket Aces Tournament' }}">
-<meta property="og:description" content="{{ page_description|default:'Roster, match history and team stats.' }}">
+<meta property="og:description" content="{{ page_description|default:'Roster and team stats.' }}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 {% if team_profile.logo %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ team_profile.logo|asset_url }}">{% endif %}
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="{{ page_title|default:'Team — Pocket Aces Tournament' }}">
-<meta name="twitter:description" content="{{ page_description|default:'Roster, match history and team stats.' }}">
+<meta name="twitter:description" content="{{ page_description|default:'Roster and team stats.' }}">
 <link rel="stylesheet" href="{% static_v 'css/arena-editorial.css' %}" />
+<style>
+/* ── Team Stats Dashboard ─────────────────────────── */
+.ts-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+@media (max-width: 767px) {
+  .ts-dashboard { grid-template-columns: 1fr; }
+}
+
+/* Radar chart card */
+.ts-radar-card {
+  background: rgba(15,23,42,.65);
+  border: 1px solid rgba(56,189,248,.12);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ts-radar-card__title {
+  font-family: var(--font-display, sans-serif);
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: rgba(148,163,184,.7);
+  margin-bottom: 1.5rem;
+}
+.ts-radar-svg { width: 100%; max-width: 320px; }
+.ts-radar-poly {
+  fill: rgba(56,189,248,.12);
+  stroke: #38bdf8;
+  stroke-width: 2;
+  transition: fill .3s;
+}
+.ts-radar-svg:hover .ts-radar-poly { fill: rgba(56,189,248,.22); }
+.ts-radar-grid { fill: none; stroke: rgba(148,163,184,.12); stroke-width: 1; }
+.ts-radar-axis { stroke: rgba(148,163,184,.08); stroke-width: 1; }
+.ts-radar-label {
+  fill: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.ts-radar-dot {
+  fill: #38bdf8;
+  filter: drop-shadow(0 0 4px rgba(56,189,248,.6));
+}
+
+/* Ring gauge cards */
+.ts-rings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 480px) { .ts-rings { grid-template-columns: 1fr; } }
+
+.ts-ring-card {
+  background: rgba(15,23,42,.65);
+  border: 1px solid rgba(56,189,248,.12);
+  border-radius: 16px;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.ts-ring-svg { width: 90px; height: 90px; margin-bottom: .75rem; }
+.ts-ring-track { fill: none; stroke: rgba(148,163,184,.1); stroke-width: 6; }
+.ts-ring-fill {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset .8s cubic-bezier(.4,0,.2,1);
+}
+.ts-ring-fill--attack { stroke: #38bdf8; }
+.ts-ring-fill--serve  { stroke: #a78bfa; }
+.ts-ring-fill--block  { stroke: #34d399; }
+.ts-ring-fill--reception { stroke: #fbbf24; }
+.ts-ring-value {
+  font-family: var(--font-display, sans-serif);
+  font-size: 16px;
+  font-weight: 800;
+  fill: #fff;
+}
+.ts-ring-card__label {
+  font-size: .8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #94a3b8;
+  margin-bottom: .2rem;
+}
+.ts-ring-card__desc {
+  font-size: .72rem;
+  color: rgba(148,163,184,.55);
+  line-height: 1.35;
+}
+
+/* Summary stat tiles */
+.ts-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+.ts-tile {
+  background: rgba(15,23,42,.55);
+  border: 1px solid rgba(56,189,248,.08);
+  border-radius: 14px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+}
+.ts-tile__value {
+  font-family: var(--font-display, sans-serif);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: .35rem;
+}
+.ts-tile__label {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: #94a3b8;
+}
+
+/* Horizontal bar chart */
+.ts-bars { margin-bottom: 2rem; }
+.ts-bar {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: .65rem;
+}
+.ts-bar__label {
+  width: 90px;
+  flex-shrink: 0;
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #94a3b8;
+  text-align: right;
+}
+.ts-bar__track {
+  flex: 1;
+  height: 22px;
+  background: rgba(15,23,42,.6);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+.ts-bar__fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #38bdf8, #a78bfa);
+  min-width: 2px;
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+.ts-bar__val {
+  width: 50px;
+  flex-shrink: 0;
+  font-family: var(--font-display, sans-serif);
+  font-size: .95rem;
+  font-weight: 800;
+  color: #fff;
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -24,82 +199,32 @@
 
     {% if empty %}
     <div class="page-hero">
-      <a href="{% url 'tournament_teams' %}" class="page-hero__crumb"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> All Teams</a>
-      <p class="page-hero__eyebrow">Team Stats</p>
-      <h1 class="page-hero__title">Team Stats</h1>
+      <a href="{% url 'tournament_teams' %}" class="page-hero__crumb"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> <span data-i18n="tp.all_teams">All Teams</span></a>
+      <p class="page-hero__eyebrow" data-i18n="tp.eyebrow">Team Stats</p>
+      <h1 class="page-hero__title" data-i18n="tp.eyebrow">Team Stats</h1>
     </div>
     <div class="ae-empty-state ae-reveal">
-      <p>No team stats available yet. Data will appear here after matches are played.</p>
+      <p data-i18n="tp.empty">No team stats available yet. Data will appear here after matches are played.</p>
     </div>
     {% else %}
 
-    <div class="page-hero">
-      <a href="{% url 'tournament_teams' %}" class="page-hero__crumb"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> All Teams</a>
-      <div class="page-hero__accent" aria-hidden="true"></div>
-      <p class="page-hero__eyebrow">{{ team_profile.group }} · {{ team_profile.league_level }}</p>
-      <h1 class="page-hero__title">{{ team_profile.name }}</h1>
-    </div>
-
-    {# ── HERO ── #}
-    <header class="ae-hero ae-hero--dark ae-hero--team ae-reveal">
-      <div class="ae-hero__crest">
-        {% if team_profile.logo %}<img src="{{ team_profile.logo|asset_url }}" alt="{{ team_profile.name }}">{% else %}{{ team_profile.short }}{% endif %}
+    <header class="ae-hero ae-hero--dark ae-hero--team ae-reveal" style="text-align:center; flex-direction:column; align-items:center;">
+      <a href="{% url 'tournament_teams' %}" class="page-hero__crumb" style="align-self:flex-start;"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> <span data-i18n="tp.all_teams">All Teams</span></a>
+      {% if team_profile.logo %}
+      <div class="ae-hero__crest" style="margin:1.5rem auto 1rem;">
+        <img src="{{ team_profile.logo|asset_url }}" alt="{{ team_profile.name }}">
       </div>
-      <div class="ae-hero__identity">
-        <span class="ae-eyebrow">{{ team_profile.group }} · {{ team_profile.league_level }}</span>
-        <div class="ae-title-hero">{{ team_profile.name }}</div>
-        <span class="ae-hero__captain">Captain: {{ team_profile.captain }}</span>
-
-        {% if form_strip %}
-        <div class="ae-hero__form-row">
-          <span class="ae-meta" style="color:var(--ae-sand-300);">Form</span>
-          <div class="ae-form-strip">
-            {% for f in form_strip %}
-            <span class="ae-form-strip__dot ae-form-strip__dot--{{ f.result|lower }}" title="{{ f.opponent_short }} {{ f.score }}"></span>
-            {% endfor %}
-          </div>
-        </div>
-        {% endif %}
-
-        <div class="ae-hero-stats">
-          {% for item in team_meta %}
-          {% if item.label_key != "team_page.meta_captain" %}
-          <div class="ae-hero-stat">
-            <strong class="ae-hero-stat__value">{{ item.value }}</strong>
-            <span class="ae-hero-stat__label">{{ item.label }}</span>
-          </div>
-          {% endif %}
-          {% endfor %}
-          <div class="ae-hero-stat">
-            <strong class="ae-hero-stat__value">{{ team_profile.attack_eff }}</strong>
-            <span class="ae-hero-stat__label">Att Eff</span>
-          </div>
-          <div class="ae-hero-stat">
-            <strong class="ae-hero-stat__value">{{ team_profile.points_won }}</strong>
-            <span class="ae-hero-stat__label">Points</span>
-          </div>
-        </div>
-      </div>
+      {% endif %}
+      <h1 class="ae-title-hero" style="margin:0 auto;">{{ team_profile.name }}</h1>
     </header>
 
-    {# ── ANCHOR NAV ── #}
-    <nav class="ae-anchor-nav ae-reveal" aria-label="Team sections">
-      <a href="#roster" class="ae-anchor-nav__link is-active" data-ae-target="roster">Roster</a>
-      <a href="#identity" class="ae-anchor-nav__link" data-ae-target="identity">Identity</a>
-      <a href="#team-matches" class="ae-anchor-nav__link" data-ae-target="team-matches">Matches</a>
-      {% if team_leaders %}<a href="#leaders" class="ae-anchor-nav__link" data-ae-target="leaders">Leaders</a>{% endif %}
-    </nav>
-
-    {# ══════════════════════════════════════════════════════════════
-       SECTION — Roster Wall
-       ══════════════════════════════════════════════════════════════ #}
     <section class="ae-section ae-reveal" id="roster" data-ae-section>
       <div class="ae-section__head">
         <div class="ae-section__cluster">
-          <span class="ae-eyebrow">Line-up</span>
-          <h2 class="ae-title-section">Roster</h2>
+          <span class="ae-eyebrow" data-i18n="tp.roster_eyebrow">Line-up</span>
+          <h2 class="ae-title-section" data-i18n="tp.roster_title">Roster</h2>
         </div>
-        {% if team_roster %}<span class="ae-badge ae-badge--status">{{ team_roster|length }} players</span>{% endif %}
+        {% if team_roster %}<span class="ae-badge ae-badge--status">{{ team_roster|length }} <span data-i18n="tp.players">players</span></span>{% endif %}
       </div>
 
       {% if team_roster %}
@@ -108,7 +233,9 @@
         <article class="ae-roster__card" tabindex="0" role="button" aria-expanded="false"{% if player.player_id %} data-player-id="{{ player.player_id }}"{% endif %}>
           <span class="ae-roster__expand-icon" aria-hidden="true">＋</span>
           <div class="ae-roster__media">
+            {% if player.image and player.image != "assets/team/vol/team.png" %}
             <img src="{{ player.image|asset_url }}" alt="{{ player.name }}" loading="lazy">
+            {% endif %}
           </div>
           <div class="ae-roster__caption">
             <div class="ae-roster__name">
@@ -121,16 +248,16 @@
             <div class="ae-roster__detail__inner">
               <div class="ae-roster__detail__content">
                 <div class="ae-roster__stat-grid">
-                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Points</span><span class="ae-roster__stat__value">{{ player.points_won }}</span></div>
-                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Kills</span><span class="ae-roster__stat__value">{{ player.kills }}</span></div>
-                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Aces</span><span class="ae-roster__stat__value">{{ player.aces }}</span></div>
-                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Blocks</span><span class="ae-roster__stat__value">{{ player.blocks }}</span></div>
-                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Att Eff</span><span class="ae-roster__stat__value">{{ player.attack_eff }}</span></div>
-                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">3P%</span><span class="ae-roster__stat__value">{{ player.three_pass_pct }}</span></div>
-                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Assists</span><span class="ae-roster__stat__value">{{ player.assists }}</span></div>
-                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Srv Att</span><span class="ae-roster__stat__value">{{ player.serve_attempts }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_points">Points</span><span class="ae-roster__stat__value">{{ player.points_won }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_kills">Kills</span><span class="ae-roster__stat__value">{{ player.kills }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_aces">Aces</span><span class="ae-roster__stat__value">{{ player.aces }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_blocks">Blocks</span><span class="ae-roster__stat__value">{{ player.blocks }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_att_eff">Att Eff</span><span class="ae-roster__stat__value">{{ player.attack_eff }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_3p">3P%</span><span class="ae-roster__stat__value">{{ player.three_pass_pct }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_assists">Assists</span><span class="ae-roster__stat__value">{{ player.assists }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_srv_att">Srv Att</span><span class="ae-roster__stat__value">{{ player.serve_attempts }}</span></div>
                 </div>
-                {% if player.player_id %}<a href="{% url 'tournament_player' player.player_id %}" class="ae-roster__cta">View Profile →</a>{% endif %}
+                {% if player.player_id %}<a href="{% url 'tournament_player' player.player_id %}" class="ae-roster__cta" data-i18n="tp.view_profile">View Profile →</a>{% endif %}
               </div>
             </div>
           </div>
@@ -138,172 +265,159 @@
         {% endfor %}
       </div>
       {% else %}
-      <p class="ae-body ae-body--muted">No roster data yet.</p>
+      <p class="ae-body ae-body--muted" data-i18n="tp.no_roster">No roster data yet.</p>
       {% endif %}
     </section>
 
-    {# ══════════════════════════════════════════════════════════════
-       SECTION — Team Identity Stats + Breakdown
-       ══════════════════════════════════════════════════════════════ #}
-    <section class="ae-section ae-reveal" id="identity" data-ae-section>
+    <section class="ae-section ae-reveal" id="stats" data-ae-section>
       <div class="ae-section__head">
         <div class="ae-section__cluster">
-          <span class="ae-eyebrow">Detailed team read</span>
-          <h2 class="ae-title-section">Team Identity</h2>
+          <span class="ae-eyebrow" data-i18n="tp.stats_eyebrow">Overview</span>
+          <h2 class="ae-title-section" data-i18n="tp.stats_title">Team Stats</h2>
         </div>
       </div>
 
-      <div class="ae-summary-pills">
-        <span class="ae-summary-pill">{{ team_profile.record }} record</span>
-        <span class="ae-summary-pill">{{ team_profile.set_ratio }} sets</span>
-        <span class="ae-summary-pill">{{ team_profile.points_won }} points</span>
-      </div>
-
-      {% if identity_stats %}
-      <div class="ae-identity-stats" style="margin-bottom:1.5rem;">
-        {% for stat in identity_stats %}
-        <div class="ae-identity-band ae-identity-band--{{ stat.key }}">
-          <div class="ae-identity-band__icon">
-            {% if stat.key == "attack" %}<i class="fas fa-bolt"></i>
-            {% elif stat.key == "serve" %}<i class="fas fa-paper-plane"></i>
-            {% elif stat.key == "block" %}<i class="fas fa-shield-halved"></i>
-            {% elif stat.key == "reception" %}<i class="fas fa-hands"></i>
-            {% endif %}
-          </div>
-          <div class="ae-identity-band__body">
-            <span class="ae-identity-band__label">{{ stat.label }}</span>
-            <span class="ae-identity-band__copy">{{ stat.copy }}</span>
-          </div>
-          <span class="ae-identity-band__value">{{ stat.value }}</span>
+      <div class="ts-tiles">
+        {% for card in team_summary_cards %}
+        <div class="ts-tile">
+          <div class="ts-tile__value">{{ card.value }}</div>
+          <div class="ts-tile__label" data-i18n="{{ card.label_key }}">{{ card.label }}</div>
         </div>
         {% endfor %}
       </div>
-      {% else %}
-      <p class="ae-body ae-body--muted">Detailed identity stats will appear after matches are played.</p>
-      {% endif %}
 
-      <div class="ae-card">
-        <div class="ae-card__title-row">
-          <span class="ae-card__headline">Volume Breakdown</span>
+      <div class="ts-dashboard">
+        <div class="ts-radar-card">
+          <span class="ts-radar-card__title" data-i18n="tp.skill_profile">Skill Profile</span>
+          <svg class="ts-radar-svg" viewBox="0 0 300 300" id="ts-radar">
+            {% for i in "0123" %}
+            <polygon class="ts-radar-grid" points="" data-ring="{{ forloop.counter }}"/>
+            {% endfor %}
+            {% for stat in identity_stats %}
+            <line class="ts-radar-axis" x1="150" y1="150" x2="0" y2="0" data-axis="{{ forloop.counter0 }}"/>
+            {% endfor %}
+            <polygon class="ts-radar-poly" points="" id="ts-radar-shape"/>
+            {% for stat in identity_stats %}
+            <circle class="ts-radar-dot" r="4" cx="0" cy="0" data-dot="{{ forloop.counter0 }}"/>
+            <text class="ts-radar-label" x="0" y="0" text-anchor="middle" data-lbl="{{ forloop.counter0 }}">{{ stat.label }}</text>
+            {% endfor %}
+          </svg>
         </div>
-        <div class="ae-breakdown-bars">
-          {% for item in team_breakdown_bars %}
-          <div class="ae-breakdown-bar ae-breakdown-bar--{{ item.tone }}">
-            <div class="ae-breakdown-bar__head">
-              <span>{{ item.label }}</span>
-              <strong>{{ item.value }}</strong>
-            </div>
-            <div class="ae-breakdown-bar__track">
-              <span style="width: {{ item.percentage }}%;"></span>
-            </div>
+
+        <div class="ts-rings">
+          {% for stat in identity_stats %}
+          <div class="ts-ring-card">
+            <svg class="ts-ring-svg" viewBox="0 0 100 100">
+              <circle class="ts-ring-track" cx="50" cy="50" r="40"/>
+              <circle class="ts-ring-fill ts-ring-fill--{{ stat.key }}" cx="50" cy="50" r="40"
+                stroke-dasharray="251.33"
+                stroke-dashoffset="251.33"
+                data-target-pct="{{ stat.raw }}"
+                transform="rotate(-90 50 50)"/>
+              <text class="ts-ring-value" x="50" y="54" text-anchor="middle">{{ stat.value }}</text>
+            </svg>
+            <span class="ts-ring-card__label" data-i18n="{{ stat.label_key }}">{{ stat.label }}</span>
+            <span class="ts-ring-card__desc" data-i18n="{{ stat.copy_key }}">{{ stat.copy }}</span>
           </div>
           {% endfor %}
         </div>
       </div>
-    </section>
 
-    {# ══════════════════════════════════════════════════════════════
-       SECTION — Match History
-       ══════════════════════════════════════════════════════════════ #}
-    <section class="ae-section ae-reveal" id="team-matches" data-ae-section>
-      <div class="ae-section__head">
-        <div class="ae-section__cluster">
-          <span class="ae-eyebrow">Results</span>
-          <h2 class="ae-title-section">Match History</h2>
-        </div>
-      </div>
-
-      {% if team_matches %}
-
-      {# Quick-glance horizontal strip #}
-      <div class="ae-match-strip" style="margin-bottom:1.25rem;">
-        {% for item in team_matches %}
-        {% if item.match_id %}<a href="{% url 'tournament_match' item.match_id %}" class="ae-match-strip__item ae-match-strip__item--{{ item.result_class }}">{% else %}<div class="ae-match-strip__item ae-match-strip__item--{{ item.result_class }}">{% endif %}
-          <span class="ae-match-strip__stage">{{ item.stage }}</span>
-          <span class="ae-match-strip__opponent">
-            <span class="ae-match-strip__crest">{% if item.opponent_logo %}<img src="{{ item.opponent_logo|asset_url }}" alt="{{ item.opponent_short }}">{% endif %}</span>
-            {{ item.opponent_short }}
-          </span>
-          <span class="ae-match-strip__score">{{ item.result }}</span>
-          {% if item.result_class == 'win' %}<span class="ae-badge ae-badge--win" style="align-self:flex-start;">W</span>{% else %}<span class="ae-badge ae-badge--loss" style="align-self:flex-start;">L</span>{% endif %}
-        {% if item.match_id %}</a>{% else %}</div>{% endif %}
-        {% endfor %}
-      </div>
-
-      {# Full table (desktop) #}
-      <div class="ae-card">
-        <div class="ae-table-wrap">
-          <table class="ae-table" data-ae-sortable>
-            <thead>
-              <tr>
-                <th scope="col" data-ae-sort-key="stage" data-ae-sort-type="string">Stage</th>
-                <th scope="col" data-ae-sort-key="opponent" data-ae-sort-type="string">Opponent</th>
-                <th scope="col" data-ae-sort-key="result" data-ae-sort-type="string">Score</th>
-                <th scope="col" data-ae-sort-key="wl" data-ae-sort-type="string">W/L</th>
-                <th scope="col">Info</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in team_matches %}
-              <tr>
-                <td>{{ item.stage }}</td>
-                <td>
-                  <span style="display:inline-flex; align-items:center; gap:0.35rem;">
-                    <span class="ae-match-strip__crest">{% if item.opponent_logo %}<img src="{{ item.opponent_logo|asset_url }}" alt="{{ item.opponent }}">{% endif %}</span>
-                    {% if item.match_id %}<a href="{% url 'tournament_match' item.match_id %}">{{ item.opponent }}</a>{% else %}{{ item.opponent }}{% endif %}
-                  </span>
-                </td>
-                <td><strong>{{ item.result }}</strong></td>
-                <td>
-                  {% if item.result_class == 'win' %}<span class="ae-badge ae-badge--win">W</span>{% else %}<span class="ae-badge ae-badge--loss">L</span>{% endif %}
-                </td>
-                <td><span class="ae-badge ae-badge--finished">{{ item.status }}</span></td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {% else %}
-      <p class="ae-body ae-body--muted">No matches played yet.</p>
-      {% endif %}
-    </section>
-
-    {# ══════════════════════════════════════════════════════════════
-       SECTION — Team Leaders
-       ══════════════════════════════════════════════════════════════ #}
-    {% if team_leaders %}
-    <section class="ae-section ae-reveal" id="leaders" data-ae-section>
-      <div class="ae-section__head">
-        <div class="ae-section__cluster">
-          <span class="ae-eyebrow">Standout performers</span>
-          <h2 class="ae-title-section">Team Leaders</h2>
-        </div>
-      </div>
-
-      <div class="ae-leaders">
-        {% for ldr in team_leaders %}
-        {% if ldr.player_id %}<a href="{% url 'tournament_player' ldr.player_id %}" class="ae-leader-card">{% else %}<div class="ae-leader-card">{% endif %}
-          <div class="ae-leader-card__photo">
-            <img src="{{ ldr.image|asset_url }}" alt="{{ ldr.name }}" loading="lazy">
+      <div class="ts-bars">
+        {% for item in team_breakdown_bars %}
+        <div class="ts-bar">
+          <span class="ts-bar__label" data-i18n="{{ item.label_key }}">{{ item.label }}</span>
+          <div class="ts-bar__track">
+            <div class="ts-bar__fill" style="width:0%" data-target-width="{{ item.percentage }}%"></div>
           </div>
-          <div class="ae-leader-card__body">
-            <span class="ae-leader-card__category">{{ ldr.category }}</span>
-            <span class="ae-leader-card__name">{{ ldr.name }}</span>
-          </div>
-          <span class="ae-leader-card__value">{{ ldr.value }}</span>
-        {% if ldr.player_id %}</a>{% else %}</div>{% endif %}
+          <span class="ts-bar__val">{{ item.value }}</span>
+        </div>
         {% endfor %}
       </div>
     </section>
+
     {% endif %}
-
-    {% endif %}{# end empty check #}
   </div>
 </section>
 {% endblock %}
 
 {% block scripts %}
 <script src="{% static_v 'js/arena-editorial.js' %}"></script>
+<script>
+(function(){
+  /* ── Radar chart ── */
+  const svg = document.getElementById('ts-radar');
+  if (!svg) return;
+
+  const rawData = [
+    {% for stat in identity_stats %}{ raw: {{ stat.raw }}, key: "{{ stat.key }}" }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  const cx = 150, cy = 150, R = 110, N = rawData.length;
+  if (N < 3) return;
+
+  const maxVals = { attack: 60, serve: 30, block: 30, reception: 80 };
+  const angleStep = (2 * Math.PI) / N;
+  const startAngle = -Math.PI / 2;
+
+  function polar(i, r) {
+    const a = startAngle + i * angleStep;
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  }
+
+  /* Grid rings */
+  [0.25, 0.5, 0.75, 1].forEach(function(frac, ri) {
+    const pts = [];
+    for (let i = 0; i < N; i++) pts.push(polar(i, R * frac).join(','));
+    const ring = svg.querySelector('[data-ring="' + (ri + 1) + '"]');
+    if (ring) ring.setAttribute('points', pts.join(' '));
+  });
+
+  /* Axis lines */
+  for (let i = 0; i < N; i++) {
+    const [ex, ey] = polar(i, R);
+    const axis = svg.querySelector('[data-axis="' + i + '"]');
+    if (axis) { axis.setAttribute('x2', ex); axis.setAttribute('y2', ey); }
+  }
+
+  /* Data polygon + dots */
+  const dataPts = [];
+  rawData.forEach(function(d, i) {
+    const maxV = maxVals[d.key] || 100;
+    const norm = Math.max(0, Math.min(1, Math.abs(d.raw) / maxV));
+    const [px, py] = polar(i, R * norm);
+    dataPts.push(px + ',' + py);
+
+    const dot = svg.querySelector('[data-dot="' + i + '"]');
+    if (dot) { dot.setAttribute('cx', px); dot.setAttribute('cy', py); }
+  });
+  document.getElementById('ts-radar-shape').setAttribute('points', dataPts.join(' '));
+
+  /* Labels */
+  rawData.forEach(function(_, i) {
+    const [lx, ly] = polar(i, R + 22);
+    const lbl = svg.querySelector('[data-lbl="' + i + '"]');
+    if (lbl) { lbl.setAttribute('x', lx); lbl.setAttribute('y', ly + 4); }
+  });
+
+  /* ── Ring gauge animation ── */
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (!e.isIntersecting) return;
+      e.target.querySelectorAll('.ts-ring-fill').forEach(function(c) {
+        var pct = Math.min(Math.abs(parseFloat(c.dataset.targetPct) || 0), 100);
+        var circ = 2 * Math.PI * 40;
+        c.style.strokeDashoffset = circ - (circ * pct / 100);
+      });
+      e.target.querySelectorAll('.ts-bar__fill').forEach(function(b) {
+        b.style.width = b.dataset.targetWidth;
+      });
+      io.unobserve(e.target);
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('#stats').forEach(function(el) { io.observe(el); });
+})();
+</script>
 {% endblock %}

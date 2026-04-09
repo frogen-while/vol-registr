@@ -728,10 +728,10 @@ def get_team_detail(team_id: int) -> dict | None:
     ]
 
     team_breakdown_bars = [
-        {"label": "Points Won", "value": totals.get("points_won", 0), "tone": "net"},
-        {"label": "Kills", "value": totals.get("kills", 0), "tone": "net"},
-        {"label": "Aces", "value": totals.get("aces", 0), "tone": "serve"},
-        {"label": "Blocks", "value": totals.get("blocks", 0), "tone": "serve"},
+        {"label_key": "tp.bar_points", "label": "Points Won", "value": totals.get("points_won", 0), "tone": "net"},
+        {"label_key": "tp.bar_kills", "label": "Kills", "value": totals.get("kills", 0), "tone": "net"},
+        {"label_key": "tp.bar_aces", "label": "Aces", "value": totals.get("aces", 0), "tone": "serve"},
+        {"label_key": "tp.bar_blocks", "label": "Blocks", "value": totals.get("blocks", 0), "tone": "serve"},
     ]
     max_bar_value = max((item["value"] for item in team_breakdown_bars), default=1) or 1
     for item in team_breakdown_bars:
@@ -782,6 +782,8 @@ def get_team_detail(team_id: int) -> dict | None:
         {
             "key": "attack",
             "label": "Attack Conversion",
+            "label_key": "tp.id_attack_label",
+            "copy_key": "tp.id_attack_copy",
             "value": totals.get("attack_eff", "-"),
             "raw": totals.get("attack_eff_value", 0),
             "copy": "Efficiency of turning attacks into points after errors.",
@@ -789,6 +791,8 @@ def get_team_detail(team_id: int) -> dict | None:
         {
             "key": "serve",
             "label": "Serve Pressure",
+            "label_key": "tp.id_serve_label",
+            "copy_key": "tp.id_serve_copy",
             "value": _pct_label(serve_pressure_val),
             "raw": serve_pressure_val or 0,
             "copy": "Ace rate minus serve errors as a share of total attempts.",
@@ -796,6 +800,8 @@ def get_team_detail(team_id: int) -> dict | None:
         {
             "key": "block",
             "label": "Block Presence",
+            "label_key": "tp.id_block_label",
+            "copy_key": "tp.id_block_copy",
             "value": str(totals.get("blocks", 0)),
             "raw": totals.get("blocks", 0),
             "copy": "Total blocks won across all matches.",
@@ -803,6 +809,8 @@ def get_team_detail(team_id: int) -> dict | None:
         {
             "key": "reception",
             "label": "Reception Stability",
+            "label_key": "tp.id_reception_label",
+            "copy_key": "tp.id_reception_copy",
             "value": totals.get("three_pass_pct", "-"),
             "raw": totals.get("three_pass_value", 0),
             "copy": "Share of perfect passes from total reception attempts.",

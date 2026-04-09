@@ -182,10 +182,98 @@
   }
   .cs-back:hover svg { transform: translateX(-3px); }
 
+  /* roster + actions */
+  .cs-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .cs-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.4rem;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .cs-btn:hover {
+    border-color: var(--brand-blue);
+    background: rgba(56, 189, 248, 0.08);
+  }
+  .cs-btn i {
+    color: var(--brand-blue);
+  }
+
   /* done state */
   .cs-done { display: none; }
   .cs-stage.is-unlocked .cs-countdown { display: none; }
   .cs-stage.is-unlocked .cs-done { display: block; }
+
+  /* ── Groups section ─────────────────────────────── */
+  .cs-groups {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 720px;
+    position: relative;
+    z-index: 1;
+  }
+  .cs-groups__heading {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .cs-groups__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .cs-group-card {
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    text-align: left;
+  }
+  .cs-group-card__title {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--brand-blue);
+    margin-bottom: 0.75rem;
+  }
+  .cs-group-card__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .cs-group-card__list li {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--brand-text-sec, #cbd5e1);
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.06);
+  }
+  .cs-group-card__list li:last-child {
+    border-bottom: none;
+  }
 </style>
 {% endblock %}
 
@@ -205,38 +293,81 @@
         </svg>
       </div>
 
-      <h1 class="cs-heading">Coming Soon</h1>
-      <p class="cs-sub">Tournament Hub is being prepared. Standings, schedule, match stats and highlights go live on <strong>April 11 at 9:00&nbsp;AM</strong>.</p>
+      <h1 class="cs-heading" data-i18n="cs.heading">Coming Soon</h1>
+      <p class="cs-sub" data-i18n="cs.sub">Tournament Hub is being prepared. Standings, schedule, match stats and highlights go live on <strong>April 11 at 9:00&nbsp;AM</strong>.</p>
 
       <div class="cs-countdown" id="cs-countdown">
         <div class="cs-unit">
           <span class="cs-unit__value" id="cs-days">--</span>
-          <span class="cs-unit__label">Days</span>
+          <span class="cs-unit__label" data-i18n="cs.days">Days</span>
         </div>
         <span class="cs-sep">:</span>
         <div class="cs-unit">
           <span class="cs-unit__value" id="cs-hours">--</span>
-          <span class="cs-unit__label">Hours</span>
+          <span class="cs-unit__label" data-i18n="cs.hours">Hours</span>
         </div>
         <span class="cs-sep">:</span>
         <div class="cs-unit">
           <span class="cs-unit__value" id="cs-mins">--</span>
-          <span class="cs-unit__label">Min</span>
+          <span class="cs-unit__label" data-i18n="cs.min">Min</span>
         </div>
         <span class="cs-sep">:</span>
         <div class="cs-unit">
           <span class="cs-unit__value" id="cs-secs">--</span>
-          <span class="cs-unit__label">Sec</span>
+          <span class="cs-unit__label" data-i18n="cs.sec">Sec</span>
         </div>
       </div>
 
       <p class="cs-done cs-sub" style="margin-bottom:1.5rem">
-        <strong style="color:var(--brand-blue)">The page is now live!</strong> Reloading&hellip;
+        <strong style="color:var(--brand-blue)" data-i18n="cs.live">The page is now live!</strong> <span data-i18n="cs.reloading">Reloading&hellip;</span>
       </p>
+
+      {# ── Groups ──────────────────────────────────────── #}
+      <div class="cs-groups">
+        <h2 class="cs-groups__heading" data-i18n="cs.groups_heading">Groups</h2>
+        <div class="cs-groups__grid">
+
+          <div class="cs-group-card">
+            <h3 class="cs-group-card__title">Grupa A</h3>
+            <ul class="cs-group-card__list">
+              <li>Chłopaki nie skaczą</li>
+              <li>Trident V.T</li>
+              <li>Volley Tomaszów</li>
+            </ul>
+          </div>
+
+          <div class="cs-group-card">
+            <h3 class="cs-group-card__title">Grupa B</h3>
+            <ul class="cs-group-card__list">
+              <li>AIR FORCE</li>
+              <li>Third eye nepal</li>
+              <li>Kto Przyszedł Ten Gra</li>
+              <li>PTC Pabianice</li>
+            </ul>
+          </div>
+
+          <div class="cs-group-card">
+            <h3 class="cs-group-card__title">Grupa C</h3>
+            <ul class="cs-group-card__list">
+              <li>MKS Volley Żelazny Opoczno</li>
+              <li>Sharkvolley</li>
+              <li>STM</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="cs-actions">
+        <a href="{% url 'roster_update' %}" class="cs-btn">
+          <i class="fas fa-users-cog"></i>
+          <span data-i18n="cs.roster_btn">Update Roster</span>
+        </a>
+      </div>
 
       <a href="{% url 'index' %}" class="cs-back">
         <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Back to Home
+        <span data-i18n="cs.back">Back to Home</span>
       </a>
     </div>
   </div>

@@ -53,16 +53,6 @@ def index(request):
 
 def tournament_hub(request):
     """Tournament hub page — standings, schedule, highlights."""
-    from django.utils import timezone
-    import datetime
-
-    unlock_at = datetime.datetime(2026, 4, 11, 9, 0, 0, tzinfo=datetime.timezone.utc)
-    if timezone.now() < unlock_at:
-        return render(request, "tournament/match_coming_soon.html", {
-            "unlock_iso": unlock_at.isoformat(),
-            "page_title": "Tournament Hub — Coming Soon",
-        })
-
     context = {
         "active": "hub",
         "standings": get_standings("groups"),
@@ -73,6 +63,17 @@ def tournament_hub(request):
         "page_description": "Live standings, schedule, and highlights from the Pocket Aces Spring Volleyball Tournament.",
     }
     return render(request, "tournament/tournament_preview.html", context)
+
+
+def tournament_demo(request):
+    """Temporary tournament placeholder page."""
+    import datetime
+
+    unlock_at = datetime.datetime(2026, 4, 11, 9, 0, 0, tzinfo=datetime.timezone.utc)
+    return render(request, "tournament/match_coming_soon.html", {
+        "unlock_iso": unlock_at.isoformat(),
+        "page_title": "Tournament Hub — Coming Soon",
+    })
 
 
 def tournament_teams(request):
@@ -322,11 +323,15 @@ def roster_update_view(request):
 
     teams = Team.objects.order_by("name")
     error = ""
+    error_key = ""
     success = ""
+    success_key = ""
     authenticated_team = None
     players = None
     # Which team was selected (to show code-entry step)
     code_sent_team = None
+    # Language from frontend (localStorage synced via hidden field)
+    ui_lang = request.POST.get("lang", "en") if request.method == "POST" else "en"
 
     if request.method == "POST":
         action = request.POST.get("action", "")
@@ -336,11 +341,13 @@ def roster_update_view(request):
             # â”€â”€ Step 1: Generate code and email it to captain â”€â”€
             if not team_id:
                 error = "Please select a team."
+                error_key = "rp.msg_select_team"
             else:
                 try:
                     team = Team.objects.get(pk=int(team_id))
                 except (Team.DoesNotExist, ValueError):
                     error = "Team not found."
+                    error_key = "rp.msg_team_not_found"
                     team = None
 
                 if team:
@@ -349,29 +356,47 @@ def roster_update_view(request):
                     )
                     team.roster_code = code
                     team.save(update_fields=["roster_code"])
+
+                    # Build email in the user's language
+                    if ui_lang == "pl":
+                        email_subject = "Pocket Aces \u2014 Kod dost\u0119pu do sk\u0142adu"
+                        email_body = (
+                            f"Cze\u015b\u0107 {team.cap_name},\n\n"
+                            f"Tw\u00f3j kod dost\u0119pu do sk\u0142adu dru\u017cyny "
+                            f"\u201e{team.name}\u201d to: {code}\n\n"
+                            "Wpisz ten kod na stronie Aktualizacji Sk\u0142adu, "
+                            "aby edytowa\u0107 numery koszulek i pozycje.\n\n"
+                            "\u2014 Pocket Aces Invitational"
+                        )
+                    else:
+                        email_subject = "Pocket Aces \u2014 Roster Access Code"
+                        email_body = (
+                            f"Hi {team.cap_name},\n\n"
+                            f"Your roster access code for team "
+                            f'"{team.name}" is: {code}\n\n'
+                            "Enter this code on the Roster Update page "
+                            "to edit jersey numbers and positions.\n\n"
+                            "\u2014 Pocket Aces Invitational"
+                        )
+
                     try:
                         send_mail(
-                            subject="Pocket Aces — Roster Access Code",
-                            message=(
-                                f"Hi {team.cap_name},\n\n"
-                                f"Your roster access code for team "
-                                f'"{team.name}" is: {code}\n\n'
-                                "Enter this code on the Roster Update page "
-                                "to edit jersey numbers and positions.\n\n"
-                                "— Pocket Aces Invitational"
-                            ),
+                            subject=email_subject,
+                            message=email_body,
                             from_email=None,  # uses DEFAULT_FROM_EMAIL
                             recipient_list=[team.cap_email],
                         )
                     except Exception:
                         logger.exception("Failed to send roster code email")
                         error = "Failed to send email. Please try again or contact the organizer."
+                        error_key = "rp.msg_email_fail"
                     else:
                         # Mask email: s****@gmail.com
                         email = team.cap_email
                         at = email.index("@")
                         masked = email[0] + "****" + email[at:]
                         success = f"Code sent to {masked}"
+                        success_key = "rp.msg_code_sent"
                         code_sent_team = team
                         request.session["_roster_team_id"] = team.pk
 
@@ -381,20 +406,25 @@ def roster_update_view(request):
             sess_team_id = request.session.get("_roster_team_id")
             if not sess_team_id:
                 error = "Session expired. Please start over."
+                error_key = "rp.msg_session_expired"
             elif not code:
                 error = "Please enter the access code."
+                error_key = "rp.msg_enter_code"
             else:
                 try:
                     team = Team.objects.get(pk=int(sess_team_id))
                 except (Team.DoesNotExist, ValueError):
                     error = "Team not found."
+                    error_key = "rp.msg_team_not_found"
                     team = None
 
                 if team:
                     if not team.roster_code:
                         error = "No code has been generated. Please start over."
+                        error_key = "rp.msg_no_code"
                     elif team.roster_code != code:
                         error = "Incorrect code. Please check your email and try again."
+                        error_key = "rp.msg_wrong_code"
                         code_sent_team = team  # stay on code-entry step
                     else:
                         authenticated_team = team
@@ -407,15 +437,18 @@ def roster_update_view(request):
             sess_code = request.session.get("_roster_code")
             if not sess_team_id or not sess_code:
                 error = "Session expired. Please authenticate again."
+                error_key = "rp.msg_session_expired"
             else:
                 try:
                     team = Team.objects.get(pk=sess_team_id)
                 except Team.DoesNotExist:
                     error = "Team not found."
+                    error_key = "rp.msg_team_not_found"
                     team = None
 
                 if team and team.roster_code != sess_code:
                     error = "Session invalid. Please authenticate again."
+                    error_key = "rp.msg_session_invalid"
                     team = None
 
                 if team:
@@ -441,6 +474,7 @@ def roster_update_view(request):
                     authenticated_team = team
                     players = team.players.all().order_by("pk")
                     success = "Roster updated successfully!"
+                    success_key = "rp.msg_roster_saved"
 
         elif action == "upload_logo":
             # â”€â”€ Upload team logo â”€â”€
@@ -450,27 +484,33 @@ def roster_update_view(request):
             sess_code = request.session.get("_roster_code")
             if not sess_team_id or not sess_code:
                 error = "Session expired. Please authenticate again."
+                error_key = "rp.msg_session_expired"
             else:
                 try:
                     team = Team.objects.get(pk=sess_team_id)
                 except Team.DoesNotExist:
                     error = "Team not found."
+                    error_key = "rp.msg_team_not_found"
                     team = None
 
                 if team and team.roster_code != sess_code:
                     error = "Session invalid. Please authenticate again."
+                    error_key = "rp.msg_session_invalid"
                     team = None
 
                 if team:
                     logo_file = request.FILES.get("logo")
                     if not logo_file:
                         error = "Please select an image file."
+                        error_key = "rp.msg_select_file"
                     elif logo_file.size > 5 * 1024 * 1024:
                         error = "File too large. Maximum size is 5 MB."
+                        error_key = "rp.msg_file_too_large"
                     elif logo_file.content_type not in (
                         "image/png", "image/jpeg", "image/webp",
                     ):
                         error = "Only PNG, JPEG, or WebP images are allowed."
+                        error_key = "rp.msg_file_type"
                     else:
                         ext = os.path.splitext(logo_file.name)[1].lower()
                         if ext not in (".png", ".jpg", ".jpeg", ".webp"):
@@ -487,14 +527,24 @@ def roster_update_view(request):
                         team.logo_path = f"team_logos/{filename}"
                         team.save(update_fields=["logo_path"])
                         success = "Logo uploaded successfully!"
+                        success_key = "rp.msg_logo_saved"
 
                     authenticated_team = team
                     players = team.players.all().order_by("pk")
 
+    # For "code sent" message, pass the masked email for interpolation
+    masked_email = ""
+    if success_key == "rp.msg_code_sent" and success:
+        # Extract masked email from the success string
+        masked_email = success.replace("Code sent to ", "")
+
     return render(request, "tournament/roster_update.html", {
         "teams": teams,
         "error": error,
+        "error_key": error_key,
         "success": success,
+        "success_key": success_key,
+        "masked_email": masked_email,
         "authenticated_team": authenticated_team,
         "code_sent_team": code_sent_team,
         "players": players,

@@ -12,17 +12,17 @@
 
 <div class="roster-page" style="position:relative;z-index:10;">
   <div class="roster-container">
-    <h1 class="roster-title">Roster Update</h1>
-    <p class="roster-subtitle">Captains: set jersey numbers and positions for your team.</p>
+    <h1 class="roster-title" data-i18n="rp.title">Roster Update</h1>
+    <p class="roster-subtitle" data-i18n="rp.subtitle">Captains: set jersey numbers and positions for your team.</p>
 
     {# ── Error / Success ─────────────────────────────── #}
     {% if error %}
-    <div class="roster-alert roster-alert--error">
+    <div class="roster-alert roster-alert--error"{% if error_key %} data-i18n="{{ error_key }}"{% endif %}>
       <i class="fas fa-exclamation-triangle"></i> {{ error }}
     </div>
     {% endif %}
     {% if success %}
-    <div class="roster-alert roster-alert--success">
+    <div class="roster-alert roster-alert--success"{% if success_key %} data-i18n="{{ success_key }}"{% endif %}{% if masked_email %} data-i18n-email="{{ masked_email }}"{% endif %}>
       <i class="fas fa-check-circle"></i> {{ success }}
     </div>
     {% endif %}
@@ -31,7 +31,7 @@
     {# ── Team Logo Upload ────────────────────────────── #}
     <div class="roster-card" style="margin-bottom:20px;">
       <h2 class="roster-card__title">
-        <i class="fas fa-image"></i> Team Logo
+        <i class="fas fa-image"></i> <span data-i18n="rp.logo_title">Team Logo</span>
       </h2>
       <div class="roster-logo-section">
         {% if authenticated_team.logo_path %}
@@ -41,18 +41,19 @@
         {% endif %}
         <form method="post" enctype="multipart/form-data">
           {% csrf_token %}
+          <input type="hidden" name="lang" class="js-lang-field" value="en">
           <input type="hidden" name="action" value="upload_logo">
           <div class="roster-field">
             <label for="logo" class="roster-btn roster-btn--browse" tabindex="0">
-              <i class="fas fa-folder-open"></i> Choose File
+              <i class="fas fa-folder-open"></i> <span data-i18n="rp.choose_file">Choose File</span>
             </label>
             <input type="file" name="logo" id="logo" accept="image/png,image/jpeg,image/webp"
                    class="roster-input roster-file-hidden" required>
-            <span class="roster-file-name">No file chosen</span>
+            <span class="roster-file-name" data-i18n="rp.no_file">No file chosen</span>
           </div>
           <div class="roster-actions">
             <button type="submit" class="roster-btn roster-btn--primary">
-              <i class="fas fa-upload"></i> Upload Logo
+              <i class="fas fa-upload"></i> <span data-i18n="rp.upload_logo">Upload Logo</span>
             </button>
           </div>
         </form>
@@ -66,6 +67,7 @@
       </h2>
       <form method="post">
         {% csrf_token %}
+        <input type="hidden" name="lang" class="js-lang-field" value="en">
         <input type="hidden" name="action" value="save">
         <input type="hidden" name="team_id" value="{{ authenticated_team.pk }}">
 
@@ -73,9 +75,9 @@
           <table class="roster-table">
             <thead>
               <tr>
-                <th>Player</th>
-                <th>Jersey #</th>
-                <th>Position</th>
+                <th data-i18n="rp.col_player">Player</th>
+                <th data-i18n="rp.col_jersey">Jersey #</th>
+                <th data-i18n="rp.col_position">Position</th>
               </tr>
             </thead>
             <tbody>
@@ -109,9 +111,9 @@
 
         <div class="roster-actions">
           <button type="submit" class="roster-btn roster-btn--primary">
-            <i class="fas fa-save"></i> Save Roster
+            <i class="fas fa-save"></i> <span data-i18n="rp.save">Save Roster</span>
           </button>
-          <a href="{% url 'roster_update' %}" class="roster-btn">Cancel</a>
+          <a href="{% url 'roster_update' %}" class="roster-btn" data-i18n="rp.cancel">Cancel</a>
         </div>
       </form>
     </div>
@@ -120,28 +122,29 @@
     {# ── Step 2: Enter code from email ───────────────── #}
     <div class="roster-card">
       <h2 class="roster-card__title">
-        <i class="fas fa-envelope-open-text"></i> Enter Access Code
+        <i class="fas fa-envelope-open-text"></i> <span data-i18n="rp.enter_code">Enter Access Code</span>
       </h2>
-      <p class="roster-hint">
+      <p class="roster-hint" data-i18n="rp.code_hint">
         A 6-digit code was sent to the captain's email for
         <strong>{{ code_sent_team.name }}</strong>. Check your inbox and enter it below.
       </p>
       <form method="post">
         {% csrf_token %}
+        <input type="hidden" name="lang" class="js-lang-field" value="en">
         <input type="hidden" name="action" value="auth">
 
         <div class="roster-field">
-          <label for="code">Access code</label>
+          <label for="code" data-i18n="rp.access_code_label">Access code</label>
           <input type="text" name="code" id="code" class="roster-input"
                  maxlength="10" required autocomplete="off"
-                 placeholder="Enter 6-digit code" inputmode="numeric">
+                 placeholder="Enter 6-digit code" data-i18n-ph="rp.code_ph" inputmode="numeric">
         </div>
 
         <div class="roster-actions">
           <button type="submit" class="roster-btn roster-btn--primary">
-            <i class="fas fa-sign-in-alt"></i> Verify Code
+            <i class="fas fa-sign-in-alt"></i> <span data-i18n="rp.verify">Verify Code</span>
           </button>
-          <a href="{% url 'roster_update' %}" class="roster-btn">Back</a>
+          <a href="{% url 'roster_update' %}" class="roster-btn" data-i18n="rp.back">Back</a>
         </div>
       </form>
     </div>
@@ -150,19 +153,20 @@
     {# ── Step 1: Select team ─────────────────────────── #}
     <div class="roster-card">
       <h2 class="roster-card__title">
-        <i class="fas fa-volleyball-ball"></i> Select Your Team
+        <i class="fas fa-volleyball-ball"></i> <span data-i18n="rp.select_team">Select Your Team</span>
       </h2>
-      <p class="roster-hint">
+      <p class="roster-hint" data-i18n="rp.select_hint">
         Choose your team below. A verification code will be sent to the captain's email.
       </p>
       <form method="post">
         {% csrf_token %}
+        <input type="hidden" name="lang" class="js-lang-field" value="en">
         <input type="hidden" name="action" value="select_team">
 
         <div class="roster-field">
-          <label for="team_id">Team</label>
+          <label for="team_id" data-i18n="rp.team_label">Team</label>
           <select name="team_id" id="team_id" class="roster-input" required>
-            <option value="">— Choose team —</option>
+            <option value="" data-i18n="rp.choose_team">— Choose team —</option>
             {% for t in teams %}
             <option value="{{ t.pk }}">{{ t.name }}</option>
             {% endfor %}
@@ -171,7 +175,7 @@
 
         <div class="roster-actions">
           <button type="submit" class="roster-btn roster-btn--primary">
-            <i class="fas fa-paper-plane"></i> Send Code
+            <i class="fas fa-paper-plane"></i> <span data-i18n="rp.send_code">Send Code</span>
           </button>
         </div>
       </form>
@@ -419,6 +423,40 @@ document.addEventListener('DOMContentLoaded', function() {
       if (span) span.textContent = inp.files.length ? inp.files[0].name : 'No file chosen';
     });
   }
+
+  // ── Sync localStorage language into hidden form fields ──
+  var paLang = localStorage.getItem('pa_lang') || 'en';
+  document.querySelectorAll('.js-lang-field').forEach(function(f) { f.value = paLang; });
+  window.addEventListener('pa_lang_change', function(e) {
+    document.querySelectorAll('.js-lang-field').forEach(function(f) { f.value = e.detail; });
+  });
+
+  // ── Translate alert messages using i18n keys ──
+  function translateAlerts() {
+    var lang = localStorage.getItem('pa_lang') || 'en';
+    document.querySelectorAll('.roster-alert[data-i18n]').forEach(function(el) {
+      var key = el.dataset.i18n;
+      var T = window.__PA_T;
+      if (!T) return;
+      var t = T[lang] || T.en;
+      var val = key.split('.').reduce(function(a, k) { return a && a[k] !== undefined ? a[k] : undefined; }, t);
+      if (val !== undefined) {
+        // Handle {email} placeholder for code_sent message
+        var emailData = el.dataset.i18nEmail;
+        if (emailData) val = val.replace('{email}', emailData);
+        var icon = el.querySelector('i');
+        el.textContent = '';
+        if (icon) { el.appendChild(icon); el.appendChild(document.createTextNode(' ')); }
+        el.appendChild(document.createTextNode(val));
+      }
+    });
+  }
+
+  // Run once translations are loaded, and on lang switch
+  if (window.__PA_T) { translateAlerts(); }
+  window.addEventListener('pa_lang_change', translateAlerts);
+  // Also try after a short delay in case T loads after this script
+  setTimeout(function() { if (window.__PA_T) translateAlerts(); }, 100);
 });
 </script>
 {% endblock %}
