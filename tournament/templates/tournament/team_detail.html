@@ -9,8 +9,8 @@
     padding-top: clamp(6rem, 12vh, 10rem);
     padding-bottom: 4rem;
     min-height: 100vh;
-    color: #e2e8f0;
-    font-family: 'Montserrat', sans-serif;
+    color: var(--brand-text);
+    font-family: var(--font-body);
     position: relative;
     overflow: hidden;
   }
@@ -23,7 +23,7 @@
   .back-btn {
     display: inline-flex;
     align-items: center;
-    color: #ffffff;
+    color: #fff;
     text-decoration: none;
     font-weight: 900;
     text-transform: uppercase;
@@ -31,15 +31,15 @@
     font-size: 0.85rem;
     margin-bottom: 3rem;
     padding: 0.75rem 1.5rem;
-    background: rgba(14, 165, 233, 0.1);
-    border-left: 4px solid #0ea5e9;
-    clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+    background: rgba(56, 189, 248, 0.10);
+    border-left: 4px solid var(--brand-blue);
+    border-radius: 8px;
     transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
   }
   
   .back-btn:hover {
-    background: #0ea5e9;
-    color: #050a14;
+    background: var(--brand-blue);
+    color: var(--brand-bg);
     transform: translateX(-5px);
   }
   
@@ -54,29 +54,28 @@
   }
   
   .team-name {
+    font-family: var(--font-display);
     font-size: clamp(3rem, 8vw, 6rem);
-    font-weight: 950;
-    color: #ffffff;
+    font-weight: 800;
+    color: #fff;
     text-transform: uppercase;
-    font-style: italic;
     margin-bottom: 0.25rem;
     letter-spacing: -0.02em;
-    text-shadow: 6px 6px 0px rgba(14, 165, 233, 0.4);
+    text-shadow: 6px 6px 0px rgba(56, 189, 248, 0.15);
     line-height: 0.9;
   }
   
   .team-level {
     display: inline-block;
     font-size: clamp(1rem, 2vw, 1.5rem);
-    color: #0ea5e9;
+    color: var(--brand-blue);
     font-weight: 900;
     text-transform: uppercase;
-    font-style: italic;
     letter-spacing: 0.15em;
     margin-top: 0.5rem;
     padding: 0.4rem 1.5rem;
-    background: rgba(14, 165, 233, 0.1);
-    clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+    background: rgba(56, 189, 248, 0.10);
+    border-radius: 100px;
   }
 
   .team-grid {
@@ -97,38 +96,33 @@
 
   .team-card {
     position: relative;
-    background-color: #050a14;
-    background-image: 
-      linear-gradient(45deg, rgba(14, 165, 233, 0.03) 25%, transparent 25%),
-      linear-gradient(-45deg, rgba(14, 165, 233, 0.03) 25%, transparent 25%);
-    background-size: 4px 4px;
-    border: 1px solid rgba(14, 165, 233, 0.2);
-    border-left: 6px solid #0ea5e9;
-    border-radius: 0;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-left: 4px solid var(--brand-blue);
+    border-radius: 12px;
     padding: 2.5rem 2rem;
-    box-shadow: -15px 15px 40px rgba(0, 0, 0, 0.6);
-    transform: skewX(-1deg);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
   }
 
   .team-card-title {
+    font-family: var(--font-display);
     font-size: 1.5rem;
-    font-weight: 900;
+    font-weight: 700;
     text-transform: uppercase;
-    font-style: italic;
-    color: #ffffff;
+    color: #fff;
     margin-bottom: 2rem;
     padding-bottom: 0.75rem;
-    border-bottom: 2px solid rgba(14, 165, 233, 0.2);
+    border-bottom: 1px solid var(--brand-border);
     display: flex;
     align-items: center;
     letter-spacing: 0.05em;
   }
 
   .team-card-title i {
-    color: #0ea5e9;
+    color: var(--brand-blue);
     margin-right: 1rem;
     font-size: 1.4rem;
-    filter: drop-shadow(0 0 5px rgba(14, 165, 233, 0.5));
+    filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.3));
   }
 
   /* Captain Info */
@@ -136,12 +130,11 @@
     margin-bottom: 1.5rem;
     display: flex;
     flex-direction: column;
-    transform: skewX(1deg); /* Counter-skew for text readability */
   }
 
   .cap-info-label {
     font-size: 0.75rem;
-    color: #0ea5e9;
+    color: var(--brand-blue);
     text-transform: uppercase;
     font-weight: 900;
     letter-spacing: 0.15em;
@@ -150,7 +143,7 @@
 
   .cap-info-value {
     font-size: 1.4rem;
-    color: #ffffff;
+    color: #fff;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.02em;
@@ -159,15 +152,14 @@
   .contact-link {
     display: inline-flex;
     align-items: center;
-    color: #ffffff;
-    background: #0ea5e9;
+    color: #fff;
+    background: var(--brand-blue);
     text-decoration: none;
-    font-size: 1rem;
-    font-weight: 900;
-    font-style: italic;
+    font-size: 0.88rem;
+    font-weight: 700;
     padding: 0.5rem 1.5rem;
     margin-top: 0.5rem;
-    clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+    border-radius: 8px;
     transition: all 0.3s ease;
   }
 
@@ -178,8 +170,8 @@
   }
 
   .contact-link:hover {
-    background: #ffffff;
-    color: #0ea5e9;
+    background: #fff;
+    color: var(--brand-blue);
     transform: scale(1.05);
   }
 
@@ -198,50 +190,49 @@
     display: flex;
     align-items: center;
     padding: 1.25rem;
-    background: rgba(15, 23, 42, 0.4);
-    margin-bottom: 0.75rem;
-    border-left: 4px solid transparent;
+    background: rgba(13, 26, 42, 0.5);
+    margin-bottom: 0.5rem;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
     transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-    transform: skewX(1deg);
   }
 
   .roster-item:hover {
-    background: rgba(14, 165, 233, 0.1);
-    border-left-color: #0ea5e9;
-    transform: translateX(10px) skewX(1deg);
+    background: rgba(56, 189, 248, 0.08);
+    border-left-color: var(--brand-blue);
+    transform: translateX(6px);
   }
 
   .player-number {
+    font-family: var(--font-display);
     font-size: 2rem;
-    font-weight: 950;
-    font-style: italic;
-    color: #0ea5e9;
+    font-weight: 800;
+    color: var(--brand-blue);
     width: 4rem;
     text-align: center;
     margin-right: 1.5rem;
     line-height: 1;
-    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
   }
 
   .player-name {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
     text-transform: uppercase;
     flex: 1;
     letter-spacing: 0.02em;
   }
 
   .player-icon {
-    color: rgba(14, 165, 233, 0.3);
+    color: rgba(56, 189, 248, 0.25);
     font-size: 1.25rem;
     transition: all 0.3s ease;
   }
   
   .roster-item:hover .player-icon {
-    color: #0ea5e9;
+    color: var(--brand-blue);
     transform: rotate(180deg) scale(1.2);
-    filter: drop-shadow(0 0 8px #0ea5e9);
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
   }
 
   /* Mobile Overrides */
@@ -273,12 +264,7 @@
 
     .team-card {
       padding: 1.5rem 1.25rem;
-      transform: none; /* Remove skew on mobile to prevent "cut off" feel */
-      border-left-width: 4px;
-    }
-
-    .cap-info-item, .roster-item {
-      transform: none;
+      border-left-width: 3px;
     }
 
     .team-card-title {
@@ -305,7 +291,7 @@
     }
 
     .roster-item:hover {
-      transform: translateX(5px);
+      transform: translateX(3px);
     }
   }
 
@@ -372,7 +358,7 @@
         <ul class="roster-list">
           {% for player in team.players.all %}
           <li class="roster-item">
-            <div class="player-number">{% if player.jersey_number %}{{ player.jersey_number }}{% else %}-{% endif %}</div>
+            <div class="player-number">{% if player.jersey_number != "" and player.jersey_number is not None %}{{ player.jersey_number }}{% else %}-{% endif %}</div>
             <div class="player-name">{{ player.first_name }} {{ player.last_name }}</div>
             <div class="player-icon"><i class="fas fa-volleyball-ball"></i></div>
           </li>

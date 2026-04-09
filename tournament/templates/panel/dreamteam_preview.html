@@ -1,0 +1,79 @@
+{% extends 'panel/base.html' %}
+
+{% block title %}Auto-fill Preview — Dream Team — Panel{% endblock %}
+
+{% block content %}
+<section class="pnl-dt-preview">
+  <h2 class="pnl-rk-heading">
+    <i class="fas fa-magic"></i> Auto-fill Preview
+    {% if changes_count %}
+    <span class="pnl-badge pnl-badge--warning">{{ changes_count }} change{{ changes_count|pluralize }}</span>
+    {% else %}
+    <span class="pnl-badge pnl-badge--success">No changes</span>
+    {% endif %}
+  </h2>
+
+  <p class="pnl-dt-preview__hint">
+    Review the changes below before applying. This shows what <strong>Auto-fill</strong> will do.
+  </p>
+
+  <table class="pnl-table pnl-table--compact pnl-dt-preview__table">
+    <thead>
+      <tr>
+        <th>Slot</th>
+        <th>Position</th>
+        <th>Current Player</th>
+        <th></th>
+        <th>New Player</th>
+        <th>Metric</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in preview %}
+      <tr class="{% if p.changed %}pnl-dt-preview__row--changed{% endif %}">
+        <td>{{ p.label }}</td>
+        <td class="pnl-mono">{{ p.position }}</td>
+        <td>
+          {% if p.current_player %}
+            {{ p.current_player }}
+            {% if p.current_is_auto %}<span class="pnl-dt-marker pnl-dt-marker--auto" title="Auto-filled">🤖</span>
+            {% else %}<span class="pnl-dt-marker pnl-dt-marker--manual" title="Manual pick">✏️</span>{% endif %}
+          {% else %}
+            <span class="pnl-muted">— empty —</span>
+          {% endif %}
+        </td>
+        <td class="pnl-dt-preview__arrow">
+          {% if p.changed %}<i class="fas fa-arrow-right"></i>{% else %}={% endif %}
+        </td>
+        <td>
+          {% if p.new_player %}{{ p.new_player }}{% else %}<span class="pnl-muted">— empty —</span>{% endif %}
+        </td>
+        <td class="pnl-mono">{{ p.new_metric|default:"—" }}</td>
+        <td>
+          {% if p.changed %}
+            <span class="pnl-badge pnl-badge--warning">will change</span>
+          {% else %}
+            <span class="pnl-badge pnl-badge--muted">no change</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="pnl-form-actions" style="margin-top:1.5rem; gap:.75rem; display:flex;">
+    {% if changes_count %}
+    <form method="post" action="{% url 'panel:dreamteam_autofill' %}" style="display:inline">
+      {% csrf_token %}
+      <button type="submit" class="pnl-btn pnl-btn--primary">
+        <i class="fas fa-check"></i> Apply Auto-fill ({{ changes_count }} change{{ changes_count|pluralize }})
+      </button>
+    </form>
+    {% endif %}
+    <a href="{% url 'panel:dreamteam' %}" class="pnl-btn pnl-btn--outline">
+      <i class="fas fa-arrow-left"></i> Back to Dream Team
+    </a>
+  </div>
+</section>
+{% endblock %}

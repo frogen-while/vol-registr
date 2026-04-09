@@ -1,0 +1,31 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-form-page">
+
+  <div class="pnl-card" style="max-width:600px;">
+    <div class="pnl-card__header">
+      <h2>{% if form.instance.pk %}Edit Highlight{% else %}New Highlight{% endif %}</h2>
+    </div>
+    <form method="post" class="pnl-form">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="pnl-form-group{% if field.errors %} pnl-form-group--error{% endif %}">
+        <label class="pnl-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% for err in field.errors %}
+        <span class="pnl-error">{{ err }}</span>
+        {% endfor %}
+      </div>
+      {% endfor %}
+      <div class="pnl-form-actions">
+        <button type="submit" class="pnl-btn pnl-btn--primary">
+          <i class="fas fa-save"></i> {% if form.instance.pk %}Save{% else %}Create{% endif %}
+        </button>
+        <a href="{% url 'panel:highlights' %}" class="pnl-btn pnl-btn--outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

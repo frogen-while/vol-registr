@@ -1,0 +1,159 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-cr">
+
+  {# ── Alert rail ────────────────────────────────────── #}
+  {% if alerts %}
+  <div class="pnl-cr-alerts">
+    {% for a in alerts %}
+    <a href="{{ a.url }}" class="pnl-cr-alert pnl-cr-alert--{{ a.level }}">
+      <i class="{{ a.icon }}"></i>
+      <span>{{ a.text }}</span>
+      <i class="fas fa-arrow-right pnl-cr-alert__arrow"></i>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {# ── KPI strip ────────────────────────────────────── #}
+  <div class="pnl-kpi-grid">
+    <div class="pnl-kpi">
+      <div class="pnl-kpi__icon"><i class="fas fa-users"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value pnl-mono">{{ teams_total }}</span>
+        <span class="pnl-kpi__label">Teams</span>
+      </div>
+    </div>
+    <div class="pnl-kpi">
+      <div class="pnl-kpi__icon"><i class="fas fa-running"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value pnl-mono">{{ players_total }}</span>
+        <span class="pnl-kpi__label">Players</span>
+      </div>
+    </div>
+    <div class="pnl-kpi">
+      <div class="pnl-kpi__icon"><i class="fas fa-volleyball-ball"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value pnl-mono">{{ matches_finished }} / {{ matches_total }}</span>
+        <span class="pnl-kpi__label">Matches Played</span>
+      </div>
+    </div>
+    <div class="pnl-kpi">
+      <div class="pnl-kpi__icon"><i class="fas fa-calendar-alt"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value pnl-mono">{{ matches_remaining }}</span>
+        <span class="pnl-kpi__label">Remaining</span>
+      </div>
+    </div>
+    <div class="pnl-kpi">
+      <div class="pnl-kpi__icon"><i class="fas fa-clipboard-check"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value pnl-mono">{{ checkin_count }} / {{ checkin_of }}</span>
+        <span class="pnl-kpi__label">Check-ins</span>
+      </div>
+    </div>
+    <div class="pnl-kpi">
+      <div class="pnl-kpi__icon"><i class="fas fa-images"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value pnl-mono">{{ gallery_count }}</span>
+        <span class="pnl-kpi__label">Media Items</span>
+      </div>
+    </div>
+  </div>
+
+  {# ── Three-column operational layout ──────────────── #}
+  <div class="pnl-cr-grid">
+
+    {# ── Left: Queue column ──────────────────────────── #}
+    <section class="pnl-cr-col pnl-cr-col--queue">
+      <h3 class="pnl-cr-col__title"><i class="fas fa-list-check"></i> Action Queue</h3>
+      {% if queues %}
+        {% for q in queues %}
+        <a href="{{ q.url }}" class="pnl-cr-queue pnl-cr-queue--{{ q.urgency }}">
+          <div class="pnl-cr-queue__icon"><i class="{{ q.icon }}"></i></div>
+          <div class="pnl-cr-queue__body">
+            <span class="pnl-cr-queue__title">{{ q.title }}</span>
+            <span class="pnl-cr-queue__detail">{{ q.detail }}</span>
+          </div>
+          <i class="fas fa-chevron-right pnl-cr-queue__arrow"></i>
+        </a>
+        {% endfor %}
+      {% else %}
+        <div class="pnl-cr-empty">
+          <i class="fas fa-check-circle"></i>
+          <span>All clear — no pending actions</span>
+        </div>
+      {% endif %}
+    </section>
+
+    {# ── Center: Live timeline ───────────────────────── #}
+    <section class="pnl-cr-col pnl-cr-col--timeline">
+      <h3 class="pnl-cr-col__title"><i class="fas fa-clock"></i> Next 2 Hours</h3>
+      {% if timeline_matches %}
+        <div class="pnl-cr-tl">
+          {% for m in timeline_matches %}
+          <div class="pnl-cr-tl__item">
+            <div class="pnl-cr-tl__time pnl-mono">{{ m.start_time|date:"H:i" }}</div>
+            <div class="pnl-cr-tl__dot"></div>
+            <div class="pnl-cr-tl__card">
+              <span class="pnl-cr-tl__match">M{{ m.match_number }}</span>
+              <span class="pnl-cr-tl__teams">{{ m.team_a|default:"TBD" }} vs {{ m.team_b|default:"TBD" }}</span>
+              <span class="pnl-cr-tl__court pnl-mono">{{ m.court }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="pnl-cr-empty">
+          <i class="fas fa-calendar-check"></i>
+          <span>No matches in the next 2 hours</span>
+        </div>
+      {% endif %}
+    </section>
+
+    {# ── Right: Intelligence column ──────────────────── #}
+    <section class="pnl-cr-col pnl-cr-col--intel">
+      <h3 class="pnl-cr-col__title"><i class="fas fa-chart-line"></i> Intelligence</h3>
+
+      {# Check-in progress #}
+      <div class="pnl-cr-stat">
+        <div class="pnl-cr-stat__header">
+          <span>Check-in Progress</span>
+          <span class="pnl-mono">{{ checkin_pct }}%</span>
+        </div>
+        <div class="pnl-cr-progress">
+          <div class="pnl-cr-progress__fill" style="width: {{ checkin_pct }}%"></div>
+        </div>
+        <span class="pnl-cr-stat__sub">{{ checkin_count }} of {{ checkin_of }} approved teams</span>
+      </div>
+
+      {# Stats completion #}
+      <div class="pnl-cr-stat">
+        <div class="pnl-cr-stat__header">
+          <span>Stats Completion</span>
+          <span class="pnl-mono">{{ stats_pct }}%</span>
+        </div>
+        <div class="pnl-cr-progress">
+          <div class="pnl-cr-progress__fill pnl-cr-progress__fill--accent" style="width: {{ stats_pct }}%"></div>
+        </div>
+        <span class="pnl-cr-stat__sub">{{ stats_done }} of {{ stats_total }} finished matches</span>
+      </div>
+
+      {# Recent registrations #}
+      <div class="pnl-cr-recent">
+        <h4 class="pnl-cr-recent__title">Recent Teams</h4>
+        {% for t in recent_teams %}
+        <div class="pnl-cr-recent__row">
+          <span class="pnl-cr-recent__name">{{ t.name }}</span>
+          <span class="pnl-badge pnl-badge--{% if t.status == 'APPROVED' %}green{% elif t.status == 'PAID' %}blue{% elif t.status == 'AWAITING_PAYMENT' %}yellow{% else %}gray{% endif %}">
+            {{ t.get_status_display }}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+  </div>
+</div>
+{% endblock %}

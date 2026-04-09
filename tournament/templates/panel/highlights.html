@@ -1,0 +1,144 @@
+{% extends "panel/base.html" %}
+
+{% block topbar_actions %}
+<div class="pnl-topbar__actions">
+  <a href="{% url 'panel:highlight_add' %}" class="pnl-btn pnl-btn--primary">
+    <i class="fas fa-plus"></i> Add Highlight
+  </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="pnl-highlights">
+
+  {# ── Filters ──────────────────────────────────────── #}
+  <div class="pnl-filter-bar" style="margin-bottom:1rem;">
+    <form method="get" class="pnl-filter-bar__form" style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;">
+      <select name="match" class="pnl-input pnl-input--sm" onchange="this.form.submit()">
+        <option value="">All Matches</option>
+        {% for m in matches %}
+        <option value="{{ m.pk }}" {% if current_match == m.pk|stringformat:"d" %}selected{% endif %}>
+          M{{ m.match_number }} — {{ m.team_a|default:"TBD" }} vs {{ m.team_b|default:"TBD" }}
+        </option>
+        {% endfor %}
+      </select>
+      <select name="featured" class="pnl-input pnl-input--sm" onchange="this.form.submit()">
+        <option value="">All</option>
+        <option value="1" {% if current_featured == "1" %}selected{% endif %}>⭐ Featured only</option>
+      </select>
+      {% if current_match or current_featured %}
+      <a href="{% url 'panel:highlights' %}" class="pnl-btn pnl-btn--outline pnl-btn--sm">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+
+  {# ── Highlights Grid ──────────────────────────────── #}
+  {% if highlights %}
+  <div class="pnl-hl-grid" id="highlightsGrid">
+    {% for hl in highlights %}
+    <div class="pnl-hl-card{% if hl.is_featured %} pnl-hl-card--featured{% endif %}" data-id="{{ hl.pk }}" draggable="true">
+      <div class="pnl-hl-card__header">
+        {% if hl.is_featured %}
+        <span class="pnl-badge pnl-badge--warning" title="Featured"><i class="fas fa-star"></i> Featured</span>
+        {% endif %}
+        {% if hl.match %}
+        <span class="pnl-badge pnl-badge--muted">M{{ hl.match.match_number }}</span>
+        {% endif %}
+      </div>
+
+      {% if hl.thumbnail_url %}
+      <div class="pnl-hl-card__thumb">
+        <img src="{{ hl.thumbnail_url }}" alt="{{ hl.title }}" loading="lazy">
+      </div>
+      {% endif %}
+
+      <div class="pnl-hl-card__body">
+        <h3 class="pnl-hl-card__title">{{ hl.title }}</h3>
+        {% if hl.description %}
+        <p class="pnl-hl-card__desc">{{ hl.description|truncatewords:20 }}</p>
+        {% endif %}
+        {% if hl.media_url %}
+        <a href="{{ hl.media_url }}" target="_blank" rel="noopener" class="pnl-hl-card__link">
+          <i class="fas fa-external-link-alt"></i> Media
+        </a>
+        {% endif %}
+      </div>
+
+      <div class="pnl-hl-card__actions">
+        <form method="post" action="{% url 'panel:highlight_toggle_featured' hl.pk %}" style="display:inline">
+          {% csrf_token %}
+          <button type="submit" class="pnl-btn pnl-btn--sm pnl-btn--outline" title="{% if hl.is_featured %}Unfeature{% else %}Feature{% endif %}">
+            <i class="fas fa-star{% if not hl.is_featured %}-half-alt{% endif %}"></i>
+          </button>
+        </form>
+        <a href="{% url 'panel:highlight_edit' hl.pk %}" class="pnl-btn pnl-btn--sm pnl-btn--outline" title="Edit">
+          <i class="fas fa-pen"></i>
+        </a>
+        <form method="post" action="{% url 'panel:highlight_delete' hl.pk %}"
+              onsubmit="return confirm('Delete this highlight?')" style="display:inline">
+          {% csrf_token %}
+          <button type="submit" class="pnl-btn pnl-btn--sm pnl-btn--danger-outline" title="Delete">
+            <i class="fas fa-trash"></i>
+          </button>
+        </form>
+      </div>
+      <div class="pnl-gallery__drag-handle" title="Drag to reorder">
+        <i class="fas fa-grip-vertical"></i>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <p class="pnl-muted-text" style="margin-top:12px;">
+    <i class="fas fa-info-circle"></i>
+    Drag cards to reorder. {{ highlights|length }} highlight{{ highlights|length|pluralize }}.
+  </p>
+  {% else %}
+  <div class="pnl-empty">
+    <i class="fas fa-film" style="font-size:2rem;opacity:.3;margin-bottom:8px;"></i>
+    <p>No highlights yet.</p>
+    <a href="{% url 'panel:highlight_add' %}" class="pnl-btn pnl-btn--primary" style="margin-top:12px;">
+      <i class="fas fa-plus"></i> Add First Highlight
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  const grid = document.getElementById('highlightsGrid');
+  if (!grid) return;
+  let dragSrc = null;
+  grid.addEventListener('dragstart', function(e) {
+    const card = e.target.closest('.pnl-hl-card');
+    if (!card) return;
+    dragSrc = card;
+    card.classList.add('pnl-hl-card--dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', card.dataset.id);
+  });
+  grid.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const card = e.target.closest('.pnl-hl-card');
+    if (!card || card === dragSrc) return;
+    const rect = card.getBoundingClientRect();
+    const mid = rect.left + rect.width / 2;
+    if (e.clientX < mid) grid.insertBefore(dragSrc, card);
+    else grid.insertBefore(dragSrc, card.nextSibling);
+  });
+  grid.addEventListener('dragend', function(e) {
+    const card = e.target.closest('.pnl-hl-card');
+    if (card) card.classList.remove('pnl-hl-card--dragging');
+    const ids = Array.from(grid.querySelectorAll('.pnl-hl-card')).map(c => parseInt(c.dataset.id));
+    fetch('{% url "panel:highlight_reorder" %}', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+      body: JSON.stringify(ids),
+    });
+  });
+})();
+</script>
+{% endblock %}

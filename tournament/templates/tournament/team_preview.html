@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% load static static_v %}
+
+{% block title %}{% if page_title %}{{ page_title }}{% else %}{{ team_profile.name }} — Pocket Aces Tournament{% endif %}{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="{{ page_description|default:'Roster, match history and team stats.' }}">
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+<meta property="og:title" content="{{ page_title|default:'Team — Pocket Aces Tournament' }}">
+<meta property="og:description" content="{{ page_description|default:'Roster, match history and team stats.' }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% if team_profile.logo %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ team_profile.logo|asset_url }}">{% endif %}
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ page_title|default:'Team — Pocket Aces Tournament' }}">
+<meta name="twitter:description" content="{{ page_description|default:'Roster, match history and team stats.' }}">
+<link rel="stylesheet" href="{% static_v 'css/arena-editorial.css' %}" />
+{% endblock %}
+
+{% block content %}
+<section class="ae-page">
+  <div class="ae-page__court-grid" aria-hidden="true"></div>
+  <div class="ae-container">
+
+    {% if empty %}
+    <div class="page-hero">
+      <a href="{% url 'tournament_teams' %}" class="page-hero__crumb"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> All Teams</a>
+      <p class="page-hero__eyebrow">Team Stats</p>
+      <h1 class="page-hero__title">Team Stats</h1>
+    </div>
+    <div class="ae-empty-state ae-reveal">
+      <p>No team stats available yet. Data will appear here after matches are played.</p>
+    </div>
+    {% else %}
+
+    <div class="page-hero">
+      <a href="{% url 'tournament_teams' %}" class="page-hero__crumb"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> All Teams</a>
+      <div class="page-hero__accent" aria-hidden="true"></div>
+      <p class="page-hero__eyebrow">{{ team_profile.group }} · {{ team_profile.league_level }}</p>
+      <h1 class="page-hero__title">{{ team_profile.name }}</h1>
+    </div>
+
+    {# ── HERO ── #}
+    <header class="ae-hero ae-hero--dark ae-hero--team ae-reveal">
+      <div class="ae-hero__crest">
+        {% if team_profile.logo %}<img src="{{ team_profile.logo|asset_url }}" alt="{{ team_profile.name }}">{% else %}{{ team_profile.short }}{% endif %}
+      </div>
+      <div class="ae-hero__identity">
+        <span class="ae-eyebrow">{{ team_profile.group }} · {{ team_profile.league_level }}</span>
+        <div class="ae-title-hero">{{ team_profile.name }}</div>
+        <span class="ae-hero__captain">Captain: {{ team_profile.captain }}</span>
+
+        {% if form_strip %}
+        <div class="ae-hero__form-row">
+          <span class="ae-meta" style="color:var(--ae-sand-300);">Form</span>
+          <div class="ae-form-strip">
+            {% for f in form_strip %}
+            <span class="ae-form-strip__dot ae-form-strip__dot--{{ f.result|lower }}" title="{{ f.opponent_short }} {{ f.score }}"></span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="ae-hero-stats">
+          {% for item in team_meta %}
+          {% if item.label_key != "team_page.meta_captain" %}
+          <div class="ae-hero-stat">
+            <strong class="ae-hero-stat__value">{{ item.value }}</strong>
+            <span class="ae-hero-stat__label">{{ item.label }}</span>
+          </div>
+          {% endif %}
+          {% endfor %}
+          <div class="ae-hero-stat">
+            <strong class="ae-hero-stat__value">{{ team_profile.attack_eff }}</strong>
+            <span class="ae-hero-stat__label">Att Eff</span>
+          </div>
+          <div class="ae-hero-stat">
+            <strong class="ae-hero-stat__value">{{ team_profile.points_won }}</strong>
+            <span class="ae-hero-stat__label">Points</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    {# ── ANCHOR NAV ── #}
+    <nav class="ae-anchor-nav ae-reveal" aria-label="Team sections">
+      <a href="#roster" class="ae-anchor-nav__link is-active" data-ae-target="roster">Roster</a>
+      <a href="#identity" class="ae-anchor-nav__link" data-ae-target="identity">Identity</a>
+      <a href="#team-matches" class="ae-anchor-nav__link" data-ae-target="team-matches">Matches</a>
+      {% if team_leaders %}<a href="#leaders" class="ae-anchor-nav__link" data-ae-target="leaders">Leaders</a>{% endif %}
+    </nav>
+
+    {# ══════════════════════════════════════════════════════════════
+       SECTION — Roster Wall
+       ══════════════════════════════════════════════════════════════ #}
+    <section class="ae-section ae-reveal" id="roster" data-ae-section>
+      <div class="ae-section__head">
+        <div class="ae-section__cluster">
+          <span class="ae-eyebrow">Line-up</span>
+          <h2 class="ae-title-section">Roster</h2>
+        </div>
+        {% if team_roster %}<span class="ae-badge ae-badge--status">{{ team_roster|length }} players</span>{% endif %}
+      </div>
+
+      {% if team_roster %}
+      <div class="ae-roster">
+        {% for player in team_roster %}
+        <article class="ae-roster__card" tabindex="0" role="button" aria-expanded="false"{% if player.player_id %} data-player-id="{{ player.player_id }}"{% endif %}>
+          <span class="ae-roster__expand-icon" aria-hidden="true">＋</span>
+          <div class="ae-roster__media">
+            <img src="{{ player.image|asset_url }}" alt="{{ player.name }}" loading="lazy">
+          </div>
+          <div class="ae-roster__caption">
+            <div class="ae-roster__name">
+              {{ player.name }}
+              {% if player.is_captain %}<span class="ae-badge ae-badge--captain">C</span>{% endif %}
+            </div>
+            <span class="ae-roster__sub">{{ player.position }}{% if player.number %} · #{{ player.number }}{% endif %}</span>
+          </div>
+          <div class="ae-roster__detail">
+            <div class="ae-roster__detail__inner">
+              <div class="ae-roster__detail__content">
+                <div class="ae-roster__stat-grid">
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Points</span><span class="ae-roster__stat__value">{{ player.points_won }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Kills</span><span class="ae-roster__stat__value">{{ player.kills }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Aces</span><span class="ae-roster__stat__value">{{ player.aces }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Blocks</span><span class="ae-roster__stat__value">{{ player.blocks }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Att Eff</span><span class="ae-roster__stat__value">{{ player.attack_eff }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">3P%</span><span class="ae-roster__stat__value">{{ player.three_pass_pct }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Assists</span><span class="ae-roster__stat__value">{{ player.assists }}</span></div>
+                  <div class="ae-roster__stat"><span class="ae-roster__stat__label">Srv Att</span><span class="ae-roster__stat__value">{{ player.serve_attempts }}</span></div>
+                </div>
+                {% if player.player_id %}<a href="{% url 'tournament_player' player.player_id %}" class="ae-roster__cta">View Profile →</a>{% endif %}
+              </div>
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="ae-body ae-body--muted">No roster data yet.</p>
+      {% endif %}
+    </section>
+
+    {# ══════════════════════════════════════════════════════════════
+       SECTION — Team Identity Stats + Breakdown
+       ══════════════════════════════════════════════════════════════ #}
+    <section class="ae-section ae-reveal" id="identity" data-ae-section>
+      <div class="ae-section__head">
+        <div class="ae-section__cluster">
+          <span class="ae-eyebrow">Detailed team read</span>
+          <h2 class="ae-title-section">Team Identity</h2>
+        </div>
+      </div>
+
+      <div class="ae-summary-pills">
+        <span class="ae-summary-pill">{{ team_profile.record }} record</span>
+        <span class="ae-summary-pill">{{ team_profile.set_ratio }} sets</span>
+        <span class="ae-summary-pill">{{ team_profile.points_won }} points</span>
+      </div>
+
+      {% if identity_stats %}
+      <div class="ae-identity-stats" style="margin-bottom:1.5rem;">
+        {% for stat in identity_stats %}
+        <div class="ae-identity-band ae-identity-band--{{ stat.key }}">
+          <div class="ae-identity-band__icon">
+            {% if stat.key == "attack" %}<i class="fas fa-bolt"></i>
+            {% elif stat.key == "serve" %}<i class="fas fa-paper-plane"></i>
+            {% elif stat.key == "block" %}<i class="fas fa-shield-halved"></i>
+            {% elif stat.key == "reception" %}<i class="fas fa-hands"></i>
+            {% endif %}
+          </div>
+          <div class="ae-identity-band__body">
+            <span class="ae-identity-band__label">{{ stat.label }}</span>
+            <span class="ae-identity-band__copy">{{ stat.copy }}</span>
+          </div>
+          <span class="ae-identity-band__value">{{ stat.value }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="ae-body ae-body--muted">Detailed identity stats will appear after matches are played.</p>
+      {% endif %}
+
+      <div class="ae-card">
+        <div class="ae-card__title-row">
+          <span class="ae-card__headline">Volume Breakdown</span>
+        </div>
+        <div class="ae-breakdown-bars">
+          {% for item in team_breakdown_bars %}
+          <div class="ae-breakdown-bar ae-breakdown-bar--{{ item.tone }}">
+            <div class="ae-breakdown-bar__head">
+              <span>{{ item.label }}</span>
+              <strong>{{ item.value }}</strong>
+            </div>
+            <div class="ae-breakdown-bar__track">
+              <span style="width: {{ item.percentage }}%;"></span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    {# ══════════════════════════════════════════════════════════════
+       SECTION — Match History
+       ══════════════════════════════════════════════════════════════ #}
+    <section class="ae-section ae-reveal" id="team-matches" data-ae-section>
+      <div class="ae-section__head">
+        <div class="ae-section__cluster">
+          <span class="ae-eyebrow">Results</span>
+          <h2 class="ae-title-section">Match History</h2>
+        </div>
+      </div>
+
+      {% if team_matches %}
+
+      {# Quick-glance horizontal strip #}
+      <div class="ae-match-strip" style="margin-bottom:1.25rem;">
+        {% for item in team_matches %}
+        {% if item.match_id %}<a href="{% url 'tournament_match' item.match_id %}" class="ae-match-strip__item ae-match-strip__item--{{ item.result_class }}">{% else %}<div class="ae-match-strip__item ae-match-strip__item--{{ item.result_class }}">{% endif %}
+          <span class="ae-match-strip__stage">{{ item.stage }}</span>
+          <span class="ae-match-strip__opponent">
+            <span class="ae-match-strip__crest">{% if item.opponent_logo %}<img src="{{ item.opponent_logo|asset_url }}" alt="{{ item.opponent_short }}">{% endif %}</span>
+            {{ item.opponent_short }}
+          </span>
+          <span class="ae-match-strip__score">{{ item.result }}</span>
+          {% if item.result_class == 'win' %}<span class="ae-badge ae-badge--win" style="align-self:flex-start;">W</span>{% else %}<span class="ae-badge ae-badge--loss" style="align-self:flex-start;">L</span>{% endif %}
+        {% if item.match_id %}</a>{% else %}</div>{% endif %}
+        {% endfor %}
+      </div>
+
+      {# Full table (desktop) #}
+      <div class="ae-card">
+        <div class="ae-table-wrap">
+          <table class="ae-table" data-ae-sortable>
+            <thead>
+              <tr>
+                <th scope="col" data-ae-sort-key="stage" data-ae-sort-type="string">Stage</th>
+                <th scope="col" data-ae-sort-key="opponent" data-ae-sort-type="string">Opponent</th>
+                <th scope="col" data-ae-sort-key="result" data-ae-sort-type="string">Score</th>
+                <th scope="col" data-ae-sort-key="wl" data-ae-sort-type="string">W/L</th>
+                <th scope="col">Info</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in team_matches %}
+              <tr>
+                <td>{{ item.stage }}</td>
+                <td>
+                  <span style="display:inline-flex; align-items:center; gap:0.35rem;">
+                    <span class="ae-match-strip__crest">{% if item.opponent_logo %}<img src="{{ item.opponent_logo|asset_url }}" alt="{{ item.opponent }}">{% endif %}</span>
+                    {% if item.match_id %}<a href="{% url 'tournament_match' item.match_id %}">{{ item.opponent }}</a>{% else %}{{ item.opponent }}{% endif %}
+                  </span>
+                </td>
+                <td><strong>{{ item.result }}</strong></td>
+                <td>
+                  {% if item.result_class == 'win' %}<span class="ae-badge ae-badge--win">W</span>{% else %}<span class="ae-badge ae-badge--loss">L</span>{% endif %}
+                </td>
+                <td><span class="ae-badge ae-badge--finished">{{ item.status }}</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {% else %}
+      <p class="ae-body ae-body--muted">No matches played yet.</p>
+      {% endif %}
+    </section>
+
+    {# ══════════════════════════════════════════════════════════════
+       SECTION — Team Leaders
+       ══════════════════════════════════════════════════════════════ #}
+    {% if team_leaders %}
+    <section class="ae-section ae-reveal" id="leaders" data-ae-section>
+      <div class="ae-section__head">
+        <div class="ae-section__cluster">
+          <span class="ae-eyebrow">Standout performers</span>
+          <h2 class="ae-title-section">Team Leaders</h2>
+        </div>
+      </div>
+
+      <div class="ae-leaders">
+        {% for ldr in team_leaders %}
+        {% if ldr.player_id %}<a href="{% url 'tournament_player' ldr.player_id %}" class="ae-leader-card">{% else %}<div class="ae-leader-card">{% endif %}
+          <div class="ae-leader-card__photo">
+            <img src="{{ ldr.image|asset_url }}" alt="{{ ldr.name }}" loading="lazy">
+          </div>
+          <div class="ae-leader-card__body">
+            <span class="ae-leader-card__category">{{ ldr.category }}</span>
+            <span class="ae-leader-card__name">{{ ldr.name }}</span>
+          </div>
+          <span class="ae-leader-card__value">{{ ldr.value }}</span>
+        {% if ldr.player_id %}</a>{% else %}</div>{% endif %}
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% endif %}{# end empty check #}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static_v 'js/arena-editorial.js' %}"></script>
+{% endblock %}

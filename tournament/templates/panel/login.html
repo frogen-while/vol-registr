@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Panel</title>
+  <link rel="stylesheet" href="{% static 'css/panel.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="pnl pnl-login-page">
+
+  <div class="pnl-login">
+    <div class="pnl-login__card">
+      <img src="{% static 'assets/logo.png' %}" alt="Pocket Aces" class="pnl-login__logo">
+      <h1 class="pnl-login__title">Admin Panel</h1>
+
+      {% if error %}
+      <div class="pnl-alert pnl-alert--error">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" class="pnl-login__form">
+        {% csrf_token %}
+        <div class="pnl-field">
+          <label for="username"><i class="fas fa-user"></i> Username</label>
+          <input type="text" id="username" name="username" required autofocus>
+        </div>
+        <div class="pnl-field">
+          <label for="password"><i class="fas fa-lock"></i> Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="pnl-btn pnl-btn--primary pnl-btn--full">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

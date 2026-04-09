@@ -1,0 +1,121 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-gallery-form">
+
+  <a href="{% url 'panel:gallery' %}{% if video_form %}?tab=videos{% endif %}" class="pnl-back-link">
+    <i class="fas fa-arrow-left"></i> Back to Gallery
+  </a>
+
+  {% if video_form %}
+  {# ── Video add / edit ──────────────────────────────── #}
+  <div class="pnl-card" style="margin-top:16px;">
+    <h2 class="pnl-card__header">
+      <i class="fas fa-video"></i>
+      {% if video %}Edit Video{% else %}Add Video{% endif %}
+    </h2>
+    <form method="post" class="pnl-form">
+      {% csrf_token %}
+      <div class="pnl-field">
+        <label for="id_title">Title</label>
+        {{ video_form.title }}
+        {% for error in video_form.title.errors %}
+        <span class="pnl-field-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+      <div class="pnl-field">
+        <label for="id_drive_url">Google Drive URL</label>
+        {{ video_form.drive_url }}
+        {% for error in video_form.drive_url.errors %}
+        <span class="pnl-field-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+      <div class="pnl-field">
+        <label for="id_description">Description <small class="pnl-help">(optional)</small></label>
+        {{ video_form.description }}
+        {% for error in video_form.description.errors %}
+        <span class="pnl-field-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+      {% if video_form.non_field_errors %}
+      <div class="pnl-alert pnl-alert--danger">
+        {% for error in video_form.non_field_errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div class="pnl-form-actions">
+        <button type="submit" class="pnl-btn pnl-btn--primary">
+          <i class="fas fa-save"></i> Save
+        </button>
+        <a href="{% url 'panel:gallery' %}?tab=videos" class="pnl-btn pnl-btn--outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  {% elif bulk_form %}
+  {# ── Bulk add photos ───────────────────────────────── #}
+  <div class="pnl-card" style="margin-top:16px;">
+    <h2 class="pnl-card__header"><i class="fas fa-layer-group"></i> Bulk Add Photos</h2>
+    <form method="post" class="pnl-form">
+      {% csrf_token %}
+      <div class="pnl-field">
+        <label for="id_urls">Google Drive URLs</label>
+        {{ bulk_form.urls }}
+        {% if bulk_form.urls.help_text %}
+        <small class="pnl-help">{{ bulk_form.urls.help_text }}</small>
+        {% endif %}
+        {% for error in bulk_form.urls.errors %}
+        <span class="pnl-field-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+      <div class="pnl-form-actions">
+        <button type="submit" class="pnl-btn pnl-btn--primary">
+          <i class="fas fa-upload"></i> Import All
+        </button>
+        <a href="{% url 'panel:gallery' %}" class="pnl-btn pnl-btn--outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  {% else %}
+  {# ── Single add photo ──────────────────────────────── #}
+  <div class="pnl-card" style="margin-top:16px;">
+    <h2 class="pnl-card__header"><i class="fas fa-plus"></i> Add Photo</h2>
+    <form method="post" class="pnl-form">
+      {% csrf_token %}
+      <div class="pnl-field">
+        <label for="id_title">Title <small class="pnl-help">(optional)</small></label>
+        {{ form.title }}
+        {% for error in form.title.errors %}
+        <span class="pnl-field-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+      <div class="pnl-field">
+        <label for="id_drive_url">Google Drive URL</label>
+        {{ form.drive_url }}
+        {% if form.drive_url.help_text %}
+        <small class="pnl-help">{{ form.drive_url.help_text }}</small>
+        {% endif %}
+        {% for error in form.drive_url.errors %}
+        <span class="pnl-field-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+      {% if form.non_field_errors %}
+      <div class="pnl-alert pnl-alert--danger">
+        {% for error in form.non_field_errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div class="pnl-form-actions">
+        <button type="submit" class="pnl-btn pnl-btn--primary">
+          <i class="fas fa-save"></i> Save
+        </button>
+        <a href="{% url 'panel:gallery' %}" class="pnl-btn pnl-btn--outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

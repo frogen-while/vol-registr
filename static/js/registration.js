@@ -122,7 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = {
                 teamName: document.getElementById('teamName').value,
                 division: document.getElementById('division').value,
-                city: document.getElementById('city').value,
                 capName: document.getElementById('capName').value,
                 phone: document.getElementById('phone').value,
                 email: document.getElementById('email').value,

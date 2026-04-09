@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static static_v %}
+
+{% block title %}Tournament Hub — Coming Soon{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="Tournament Hub opens on April 11, 2026 at 9:00 AM.">
+<link rel="stylesheet" href="{% static_v 'css/arena-editorial.css' %}" />
+<style>
+  .cs-stage {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* background pulse ring */
+  .cs-stage::before {
+    content: '';
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    border: 2px solid rgba(56, 189, 248, 0.06);
+    animation: cs-pulse 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .cs-stage::after {
+    content: '';
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    border: 1px solid rgba(56, 189, 248, 0.04);
+    animation: cs-pulse 4s ease-in-out infinite 1s;
+    pointer-events: none;
+  }
+  @keyframes cs-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50%      { transform: scale(1.15); opacity: 0.2; }
+  }
+
+  .cs-icon {
+    width: 72px;
+    height: 72px;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .cs-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: var(--brand-blue);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.3));
+  }
+
+  .cs-heading {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    color: #fff;
+    line-height: 0.95;
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cs-sub {
+    font-family: var(--font-body);
+    font-size: clamp(0.85rem, 1.5vw, 1rem);
+    color: var(--brand-muted);
+    max-width: 440px;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* countdown grid */
+  .cs-countdown {
+    display: flex;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    position: relative;
+    z-index: 1;
+    margin-bottom: 2.5rem;
+  }
+
+  .cs-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: clamp(60px, 12vw, 90px);
+    padding: 1rem 0.5rem;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: 8px;
+    position: relative;
+  }
+
+  .cs-unit::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    background: var(--brand-blue);
+    border-radius: 1px;
+    opacity: 0.35;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+  }
+
+  .cs-unit__value {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .cs-unit__label {
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--brand-muted);
+    margin-top: 0.4rem;
+  }
+
+  /* colon separators */
+  .cs-sep {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    color: var(--brand-blue);
+    align-self: center;
+    opacity: 0.5;
+    animation: cs-blink 1s steps(2, start) infinite;
+  }
+  @keyframes cs-blink {
+    to { opacity: 0.15; }
+  }
+
+  .cs-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--brand-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+  .cs-back:hover { color: var(--brand-blue); }
+  .cs-back svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.2s ease;
+  }
+  .cs-back:hover svg { transform: translateX(-3px); }
+
+  /* done state */
+  .cs-done { display: none; }
+  .cs-stage.is-unlocked .cs-countdown { display: none; }
+  .cs-stage.is-unlocked .cs-done { display: block; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="ae-page">
+  <div class="ae-page__court-grid" aria-hidden="true"></div>
+  <div class="ae-container">
+    <div class="cs-stage" id="cs-stage" data-unlock="{{ unlock_iso }}">
+
+      <div class="cs-icon">
+        <svg viewBox="0 0 64 64">
+          <circle cx="32" cy="36" r="22"/>
+          <path d="M32 14V8"/>
+          <path d="M26 8h12"/>
+          <path d="M32 24v12l8 6"/>
+          <path d="M48 20l4-4"/>
+        </svg>
+      </div>
+
+      <h1 class="cs-heading">Coming Soon</h1>
+      <p class="cs-sub">Tournament Hub is being prepared. Standings, schedule, match stats and highlights go live on <strong>April 11 at 9:00&nbsp;AM</strong>.</p>
+
+      <div class="cs-countdown" id="cs-countdown">
+        <div class="cs-unit">
+          <span class="cs-unit__value" id="cs-days">--</span>
+          <span class="cs-unit__label">Days</span>
+        </div>
+        <span class="cs-sep">:</span>
+        <div class="cs-unit">
+          <span class="cs-unit__value" id="cs-hours">--</span>
+          <span class="cs-unit__label">Hours</span>
+        </div>
+        <span class="cs-sep">:</span>
+        <div class="cs-unit">
+          <span class="cs-unit__value" id="cs-mins">--</span>
+          <span class="cs-unit__label">Min</span>
+        </div>
+        <span class="cs-sep">:</span>
+        <div class="cs-unit">
+          <span class="cs-unit__value" id="cs-secs">--</span>
+          <span class="cs-unit__label">Sec</span>
+        </div>
+      </div>
+
+      <p class="cs-done cs-sub" style="margin-bottom:1.5rem">
+        <strong style="color:var(--brand-blue)">The page is now live!</strong> Reloading&hellip;
+      </p>
+
+      <a href="{% url 'index' %}" class="cs-back">
+        <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to Home
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var stage = document.getElementById('cs-stage');
+  var unlock = new Date(stage.dataset.unlock).getTime();
+  var $d = document.getElementById('cs-days');
+  var $h = document.getElementById('cs-hours');
+  var $m = document.getElementById('cs-mins');
+  var $s = document.getElementById('cs-secs');
+
+  function pad(n){ return n < 10 ? '0' + n : String(n); }
+
+  function tick(){
+    var diff = unlock - Date.now();
+    if(diff <= 0){
+      stage.classList.add('is-unlocked');
+      setTimeout(function(){ location.reload(); }, 3000);
+      return;
+    }
+    var s = Math.floor(diff / 1000);
+    var d = Math.floor(s / 86400); s %= 86400;
+    var h = Math.floor(s / 3600);  s %= 3600;
+    var mm = Math.floor(s / 60);   s %= 60;
+    $d.textContent = pad(d);
+    $h.textContent = pad(h);
+    $m.textContent = pad(mm);
+    $s.textContent = pad(s);
+    requestAnimationFrame(function(){ setTimeout(tick, 1000); });
+  }
+  tick();
+})();
+</script>
+{% endblock %}

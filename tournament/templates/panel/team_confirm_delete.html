@@ -1,0 +1,26 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-form-page">
+  <a href="{% url 'panel:team_detail' pk=team.pk %}" class="pnl-btn" style="margin-bottom:16px;">
+    <i class="fas fa-arrow-left"></i> Back
+  </a>
+
+  <div class="pnl-dash-card">
+    <div class="pnl-alert pnl-alert--warning">
+      <i class="fas fa-exclamation-triangle"></i>
+      Are you sure you want to delete <strong>{{ team.name }}</strong>?
+      This will also remove all {{ team.players.count }} player{{ team.players.count|pluralize }} and related data.
+      This action cannot be undone.
+    </div>
+
+    <form method="post" style="margin-top:16px; display:flex; gap:12px;">
+      {% csrf_token %}
+      <button type="submit" class="pnl-btn pnl-btn--danger">
+        <i class="fas fa-trash"></i> Yes, Delete
+      </button>
+      <a href="{% url 'panel:team_detail' pk=team.pk %}" class="pnl-btn">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

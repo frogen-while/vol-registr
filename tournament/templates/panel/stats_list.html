@@ -1,0 +1,121 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-list-page">
+
+  {# ── Filters ───────────────────────────────────────── #}
+  <form class="pnl-filters" method="get">
+    <select name="stage" onchange="this.form.submit()">
+      <option value="">All Stages</option>
+      {% for code, label in STAGE_CHOICES %}
+        <option value="{{ code }}" {% if stage_filter == code %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    {% if stage_filter %}
+      <a href="{% url 'panel:stats' %}" class="pnl-btn pnl-btn--sm">Clear</a>
+    {% endif %}
+    <span class="pnl-muted" style="margin-left:auto;">{{ total_matches }} match{{ total_matches|pluralize:"es" }}</span>
+  </form>
+
+  {# ── Saved views (quick jump) ──────────────────────── #}
+  <div class="pnl-saved-views">
+    <span class="pnl-saved-views__label">Jump to:</span>
+    {% for g in groups %}
+    {% if g.matches %}
+    <a href="#group-{{ g.key }}" class="pnl-saved-view pnl-saved-view--{{ g.color }}">
+      <i class="fas {{ g.icon }}"></i> {{ g.label }}
+      <span class="pnl-badge pnl-badge--{{ g.color }}">{{ g.matches|length }}</span>
+    </a>
+    {% endif %}
+    {% endfor %}
+  </div>
+
+  {# ── Inbox groups ──────────────────────────────────── #}
+  {% for g in groups %}
+  {% if g.matches %}
+  <details class="pnl-inbox-group" id="group-{{ g.key }}" {% if g.key == 'waiting' or g.key == 'needs_attn' %}open{% endif %}>
+    <summary class="pnl-inbox-group__header pnl-inbox-group__header--{{ g.color }}">
+      <i class="fas {{ g.icon }}"></i>
+      {{ g.label }}
+      <span class="pnl-badge pnl-badge--{{ g.color }}">{{ g.matches|length }}</span>
+    </summary>
+    <div class="pnl-inbox-group__body">
+      <table class="pnl-table pnl-table--compact">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Stage</th>
+            <th>Group</th>
+            <th>Team A</th>
+            <th></th>
+            <th>Team B</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Stats</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in g.matches %}
+          <tr>
+            <td class="pnl-mono">M{{ m.match_number }}</td>
+            <td>{{ m.get_stage_display }}</td>
+            <td>{{ m.group|default:"—" }}</td>
+            <td>{{ m.team_a|default:"TBD" }}</td>
+            <td class="pnl-vs">vs</td>
+            <td>{{ m.team_b|default:"TBD" }}</td>
+            <td class="pnl-mono">
+              {% if m.score_a is not None %}{{ m.score_a }}:{{ m.score_b }}{% else %}—{% endif %}
+            </td>
+            <td>
+              <span class="pnl-badge pnl-badge--{% if m.status == 'FINISHED' %}green{% elif m.status == 'LIVE' %}red{% elif m.status == 'SCHEDULED' %}cyan{% else %}yellow{% endif %}">
+                {{ m.get_status_display }}
+              </span>
+            </td>
+            <td>
+              {% if m.stats_imported %}
+                <span class="pnl-stats-indicator pnl-stats-indicator--yes" title="Imported {{ m.stats_imported_at|date:'d M H:i' }}">
+                  <i class="fas fa-check-circle"></i>
+                </span>
+              {% else %}
+                <span class="pnl-stats-indicator pnl-stats-indicator--no">
+                  <i class="fas fa-minus-circle"></i>
+                </span>
+              {% endif %}
+            </td>
+            <td>
+              {% if m.stats_imported %}
+              <a href="{% url 'panel:stats_detail' m.pk %}" class="pnl-btn pnl-btn--sm">
+                <i class="fas fa-chart-bar"></i> View
+              </a>
+              <a href="{% url 'panel:stats_edit' m.pk %}" class="pnl-btn pnl-btn--sm pnl-btn--outline">
+                <i class="fas fa-edit"></i> Edit
+              </a>
+              {% endif %}
+              <a href="{% url 'panel:stats_import' m.pk %}" class="pnl-btn pnl-btn--sm{% if m.stats_imported %} pnl-btn--outline{% endif %}">
+                {% if m.stats_imported %}
+                  <i class="fas fa-redo"></i> Re-import
+                {% else %}
+                  <i class="fas fa-upload"></i> Import
+                {% endif %}
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+  {% endif %}
+  {% endfor %}
+
+  {% if total_matches == 0 %}
+  <div class="pnl-stub" style="min-height:30vh;">
+    <div class="pnl-stub__icon"><i class="fas fa-chart-bar"></i></div>
+    <h2>No matches found</h2>
+    <p>Create matches first from the Schedule section.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

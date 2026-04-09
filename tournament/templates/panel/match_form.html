@@ -1,0 +1,135 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-form-page">
+
+  <a href="{% url 'panel:schedule' %}" class="pnl-btn" style="margin-bottom:16px;">
+    <i class="fas fa-arrow-left"></i> Back to Schedule
+  </a>
+
+  {% if form.non_field_errors %}
+    <div class="pnl-alert pnl-alert--error">
+      {% for err in form.non_field_errors %}
+        <p>{{ err }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" class="pnl-form">
+    {% csrf_token %}
+
+    <div class="pnl-dash-card">
+      <h3 class="pnl-dash-card__title">Match Details</h3>
+      <div class="pnl-form__grid">
+        {# match_number #}
+        <div class="pnl-field{% if form.match_number.errors %} pnl-field--error{% endif %}">
+          <label for="{{ form.match_number.id_for_label }}">Match #</label>
+          {{ form.match_number }}
+          {% if form.match_number.help_text %}<span class="pnl-field__help">{{ form.match_number.help_text }}</span>{% endif %}
+          {% for err in form.match_number.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+
+        {# stage #}
+        <div class="pnl-field{% if form.stage.errors %} pnl-field--error{% endif %}">
+          <label for="{{ form.stage.id_for_label }}">Stage</label>
+          {{ form.stage }}
+          {% for err in form.stage.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+
+        {# group — only relevant for GROUP stage #}
+        <div class="pnl-field{% if form.group.errors %} pnl-field--error{% endif %}" id="field-group">
+          <label for="{{ form.group.id_for_label }}">Group</label>
+          {{ form.group }}
+          {% for err in form.group.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+
+        {# court #}
+        <div class="pnl-field{% if form.court.errors %} pnl-field--error{% endif %}">
+          <label for="{{ form.court.id_for_label }}">Court</label>
+          {{ form.court }}
+          {% for err in form.court.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+
+        {# start_time #}
+        <div class="pnl-field{% if form.start_time.errors %} pnl-field--error{% endif %}">
+          <label for="{{ form.start_time.id_for_label }}">Start Time</label>
+          {{ form.start_time }}
+          {% for err in form.start_time.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+
+        {# status #}
+        <div class="pnl-field{% if form.status.errors %} pnl-field--error{% endif %}">
+          <label for="{{ form.status.id_for_label }}">Status</label>
+          {{ form.status }}
+          {% for err in form.status.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="pnl-dash-card" style="margin-top:20px;">
+      <h3 class="pnl-dash-card__title">Teams & Score</h3>
+      <div class="pnl-form__grid">
+        {# team_a #}
+        <div class="pnl-field{% if form.team_a.errors %} pnl-field--error{% endif %}">
+          <label for="{{ form.team_a.id_for_label }}">Team A</label>
+          {{ form.team_a }}
+          {% for err in form.team_a.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+
+        {# team_b #}
+        <div class="pnl-field{% if form.team_b.errors %} pnl-field--error{% endif %}">
+          <label for="{{ form.team_b.id_for_label }}">Team B</label>
+          {{ form.team_b }}
+          {% for err in form.team_b.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+
+        {# score_a #}
+        <div class="pnl-field{% if form.score_a.errors %} pnl-field--error{% endif %}">
+          <label for="{{ form.score_a.id_for_label }}">Score A</label>
+          {{ form.score_a }}
+          {% for err in form.score_a.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+
+        {# score_b #}
+        <div class="pnl-field{% if form.score_b.errors %} pnl-field--error{% endif %}">
+          <label for="{{ form.score_b.id_for_label }}">Score B</label>
+          {{ form.score_b }}
+          {% for err in form.score_b.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="pnl-form__actions" style="margin-top:20px;">
+      <button type="submit" class="pnl-btn pnl-btn--primary">
+        <i class="fas fa-save"></i> {% if match %}Save Changes{% else %}Create Match{% endif %}
+      </button>
+      <a href="{% url 'panel:schedule' %}" class="pnl-btn">Cancel</a>
+
+      {% if match %}
+      <button type="button" class="pnl-btn pnl-btn--danger" style="margin-left:auto;"
+              onclick="document.getElementById('delete-modal').showModal()">
+        <i class="fas fa-trash"></i> Delete
+      </button>
+      {% endif %}
+    </div>
+  </form>
+
+  {% if match %}
+  <dialog id="delete-modal" class="pnl-dialog">
+    <div class="pnl-dialog__body">
+      <h3>Delete Match #{{ match.match_number }}?</h3>
+      <p>{{ match.team_a|default:"TBD" }} vs {{ match.team_b|default:"TBD" }}</p>
+      <p class="pnl-muted">This action cannot be undone.</p>
+      <div class="pnl-dialog__actions">
+        <form method="post" action="{% url 'panel:match_delete' pk=match.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="pnl-btn pnl-btn--danger">Yes, delete</button>
+        </form>
+        <button type="button" class="pnl-btn" onclick="this.closest('dialog').close()">Cancel</button>
+      </div>
+    </div>
+  </dialog>
+  {% endif %}
+
+</div>
+{% endblock %}

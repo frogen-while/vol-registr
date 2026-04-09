@@ -1,0 +1,196 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-form-page">
+
+  <div class="pnl-detail-actions" style="margin-bottom:16px;">
+    <a href="{% url 'panel:stats' %}" class="pnl-btn">
+      <i class="fas fa-arrow-left"></i> Back to Statistics
+    </a>
+    {% if stats_a or stats_b %}
+    <a href="{% url 'panel:stats_edit' match.pk %}" class="pnl-btn pnl-btn--primary">
+      <i class="fas fa-edit"></i> Edit Stats
+    </a>
+    {% endif %}
+    <a href="{% url 'panel:stats_import' match.pk %}" class="pnl-btn pnl-btn--outline">
+      <i class="fas fa-upload"></i> {% if match.stats_imported %}Re-import{% else %}Import{% endif %} CSV
+    </a>
+  </div>
+
+  {# ── Match header ──────────────────────────────────── #}
+  <div class="pnl-dash-card" style="margin-bottom:20px;">
+    <h3 class="pnl-dash-card__title">
+      M{{ match.match_number }} — {{ match.get_stage_display }}
+      {% if match.group %} · Group {{ match.group }}{% endif %}
+      · Court {{ match.court }}
+    </h3>
+    <p style="margin:0;color:var(--pnl-muted);">
+      <strong>{{ match.team_a|default:"TBD" }}</strong>
+      <span style="color:var(--pnl-accent);margin:0 8px;">vs</span>
+      <strong>{{ match.team_b|default:"TBD" }}</strong>
+      {% if match.score_a is not None %} — {{ match.score_a }}:{{ match.score_b }}{% endif %}
+    </p>
+    {% if match.stats_imported %}
+    <p style="margin:4px 0 0;color:var(--pnl-muted);font-size:.85rem;">
+      <i class="fas fa-check-circle" style="color:#22c55e;"></i>
+      Stats imported on {{ match.stats_imported_at|date:"d M Y H:i" }}
+    </p>
+    {% endif %}
+  </div>
+
+  {% if not stats_a and not stats_b %}
+  <div class="pnl-alert pnl-alert--warning">
+    <i class="fas fa-info-circle"></i>
+    No stats imported for this match yet.
+    <a href="{% url 'panel:stats_import' match.pk %}" style="color:var(--pnl-accent);">Import CSV</a>
+  </div>
+  {% endif %}
+
+  {# ── Team A stats ──────────────────────────────────── #}
+  {% if stats_a %}
+  <div class="pnl-dash-card pnl-stats-team-card">
+    <h3 class="pnl-dash-card__title">{{ match.team_a }}</h3>
+    <div class="pnl-table-wrap">
+      <table class="pnl-table pnl-table--stats">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Player</th>
+            <th>Pos</th>
+            <th title="Kills">K</th>
+            <th title="Aces">A</th>
+            <th title="Blocks">B</th>
+            <th title="Points Won">Pts</th>
+            <th title="Attack Attempts">Att</th>
+            <th title="Attack Errors">AE</th>
+            <th title="Serve Attempts">SA</th>
+            <th title="Serve Errors">SE</th>
+            <th title="Pass Attempts">PA</th>
+            <th title="Perfect Passes">PP</th>
+            <th title="Pass Errors">PE</th>
+            <th title="Assists">Ast</th>
+            <th title="Setting Errors">StE</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in stats_a %}
+          <tr>
+            <td>{{ s.jersey_number }}</td>
+            <td>{{ s.player }}</td>
+            <td>{{ s.get_position_display }}</td>
+            <td><strong>{{ s.kills }}</strong></td>
+            <td>{{ s.aces }}</td>
+            <td>{{ s.blocks }}</td>
+            <td class="pnl-stat-highlight">{{ s.points_won }}</td>
+            <td>{{ s.attack_attempts }}</td>
+            <td>{{ s.attack_errors }}</td>
+            <td>{{ s.serve_attempts }}</td>
+            <td>{{ s.serve_errors }}</td>
+            <td>{{ s.pass_attempts }}</td>
+            <td>{{ s.perfect_passes }}</td>
+            <td>{{ s.pass_errors }}</td>
+            <td>{{ s.assists }}</td>
+            <td>{{ s.setting_errors }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% if team_stats_a %}
+        <tfoot>
+          <tr class="pnl-stats-total">
+            <td colspan="3"><strong>TOTAL</strong></td>
+            <td><strong>{{ team_stats_a.kills }}</strong></td>
+            <td>{{ team_stats_a.aces }}</td>
+            <td>{{ team_stats_a.blocks }}</td>
+            <td class="pnl-stat-highlight">—</td>
+            <td>{{ team_stats_a.attack_attempts }}</td>
+            <td>{{ team_stats_a.attack_errors }}</td>
+            <td>{{ team_stats_a.serve_attempts }}</td>
+            <td>{{ team_stats_a.serve_errors }}</td>
+            <td>{{ team_stats_a.pass_attempts }}</td>
+            <td>{{ team_stats_a.perfect_passes }}</td>
+            <td>{{ team_stats_a.pass_errors }}</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+        </tfoot>
+        {% endif %}
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  {# ── Team B stats ──────────────────────────────────── #}
+  {% if stats_b %}
+  <div class="pnl-dash-card pnl-stats-team-card">
+    <h3 class="pnl-dash-card__title">{{ match.team_b }}</h3>
+    <div class="pnl-table-wrap">
+      <table class="pnl-table pnl-table--stats">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Player</th>
+            <th>Pos</th>
+            <th title="Kills">K</th>
+            <th title="Aces">A</th>
+            <th title="Blocks">B</th>
+            <th title="Points Won">Pts</th>
+            <th title="Attack Attempts">Att</th>
+            <th title="Attack Errors">AE</th>
+            <th title="Serve Attempts">SA</th>
+            <th title="Serve Errors">SE</th>
+            <th title="Pass Attempts">PA</th>
+            <th title="Perfect Passes">PP</th>
+            <th title="Pass Errors">PE</th>
+            <th title="Assists">Ast</th>
+            <th title="Setting Errors">StE</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in stats_b %}
+          <tr>
+            <td>{{ s.jersey_number }}</td>
+            <td>{{ s.player }}</td>
+            <td>{{ s.get_position_display }}</td>
+            <td><strong>{{ s.kills }}</strong></td>
+            <td>{{ s.aces }}</td>
+            <td>{{ s.blocks }}</td>
+            <td class="pnl-stat-highlight">{{ s.points_won }}</td>
+            <td>{{ s.attack_attempts }}</td>
+            <td>{{ s.attack_errors }}</td>
+            <td>{{ s.serve_attempts }}</td>
+            <td>{{ s.serve_errors }}</td>
+            <td>{{ s.pass_attempts }}</td>
+            <td>{{ s.perfect_passes }}</td>
+            <td>{{ s.pass_errors }}</td>
+            <td>{{ s.assists }}</td>
+            <td>{{ s.setting_errors }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% if team_stats_b %}
+        <tfoot>
+          <tr class="pnl-stats-total">
+            <td colspan="3"><strong>TOTAL</strong></td>
+            <td><strong>{{ team_stats_b.kills }}</strong></td>
+            <td>{{ team_stats_b.aces }}</td>
+            <td>{{ team_stats_b.blocks }}</td>
+            <td class="pnl-stat-highlight">—</td>
+            <td>{{ team_stats_b.attack_attempts }}</td>
+            <td>{{ team_stats_b.attack_errors }}</td>
+            <td>{{ team_stats_b.serve_attempts }}</td>
+            <td>{{ team_stats_b.serve_errors }}</td>
+            <td>{{ team_stats_b.pass_attempts }}</td>
+            <td>{{ team_stats_b.perfect_passes }}</td>
+            <td>{{ team_stats_b.pass_errors }}</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+        </tfoot>
+        {% endif %}
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

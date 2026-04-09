@@ -1,0 +1,92 @@
+{# Match quick panel — loaded via AJAX into drawer #}
+{% load static %}
+
+<div class="pnl-mp">
+  {# ── Header ──────────────────────────────────────── #}
+  <div class="pnl-mp__header">
+    <span class="pnl-mp__number">#{{ m.match_number }}</span>
+    <span class="pnl-badge pnl-badge--{% if m.status == 'FINISHED' %}green{% elif m.status == 'LIVE' %}red{% elif m.status == 'SCHEDULED' %}cyan{% else %}yellow{% endif %}">
+      {{ m.get_status_display }}
+    </span>
+  </div>
+
+  {# ── Court + Time ────────────────────────────────── #}
+  <div class="pnl-mp__meta">
+    <span><i class="fas fa-map-marker-alt"></i> Court {{ m.court }}</span>
+    <span><i class="fas fa-clock"></i> {{ m.start_time|date:"d M H:i" }}</span>
+    <span><i class="fas fa-layer-group"></i> {{ m.get_stage_display }}{% if m.group %} · Group {{ m.group }}{% endif %}</span>
+  </div>
+
+  {# ── Teams ───────────────────────────────────────── #}
+  <div class="pnl-mp__teams">
+    <div class="pnl-mp__team">
+      {% if m.team_a %}
+        <a href="/panel/teams/{{ m.team_a.pk }}/" class="pnl-mp__team-link">{{ m.team_a.name }}</a>
+      {% else %}
+        <span class="pnl-muted">TBD</span>
+      {% endif %}
+    </div>
+    <span class="pnl-mp__vs">vs</span>
+    <div class="pnl-mp__team">
+      {% if m.team_b %}
+        <a href="/panel/teams/{{ m.team_b.pk }}/" class="pnl-mp__team-link">{{ m.team_b.name }}</a>
+      {% else %}
+        <span class="pnl-muted">TBD</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ── Score quick edit ────────────────────────────── #}
+  <div class="pnl-mp__section">
+    <h4 class="pnl-mp__section-title">Score</h4>
+    <div class="pnl-mp__score-edit">
+      <input type="number" class="pnl-mp__score-input" id="mpScoreA" value="{{ m.score_a }}" min="0">
+      <span class="pnl-mp__score-sep">:</span>
+      <input type="number" class="pnl-mp__score-input" id="mpScoreB" value="{{ m.score_b }}" min="0">
+      <button class="pnl-btn pnl-btn--xs pnl-btn--primary pnl-mp__score-save"
+              data-url="/panel/schedule/{{ m.pk }}/score/">Save</button>
+    </div>
+  </div>
+
+  {# ── Status controls ─────────────────────────────── #}
+  {% if transitions %}
+  <div class="pnl-mp__section">
+    <h4 class="pnl-mp__section-title">Change Status</h4>
+    <div class="pnl-mp__actions">
+      {% for status_val, status_label in transitions %}
+      <button class="pnl-btn pnl-btn--sm pnl-mp__status-btn"
+              data-url="/panel/schedule/{{ m.pk }}/status/"
+              data-to="{{ status_val }}">
+        → {{ status_label }}
+      </button>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# ── Stats indicator + jump ──────────────────────── #}
+  <div class="pnl-mp__section">
+    <h4 class="pnl-mp__section-title">Stats</h4>
+    {% if m.stats_imported %}
+      <span class="pnl-badge pnl-badge--green" style="margin-right:8px;">
+        <i class="fas fa-check"></i> Imported
+      </span>
+      <a href="/panel/stats/{{ m.pk }}/" class="pnl-btn pnl-btn--xs">View Stats</a>
+      <a href="/panel/stats/{{ m.pk }}/edit/" class="pnl-btn pnl-btn--xs">Edit Stats</a>
+    {% else %}
+      <span class="pnl-badge pnl-badge--yellow" style="margin-right:8px;">
+        <i class="fas fa-times"></i> Not imported
+      </span>
+      {% if m.status == 'FINISHED' %}
+        <a href="/panel/stats/{{ m.pk }}/import/" class="pnl-btn pnl-btn--xs pnl-btn--primary">Import Stats</a>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  {# ── Full edit link ──────────────────────────────── #}
+  <div class="pnl-mp__footer">
+    <a href="/panel/schedule/{{ m.pk }}/edit/" class="pnl-btn pnl-btn--sm">
+      <i class="fas fa-pencil-alt"></i> Full Edit
+    </a>
+  </div>
+</div>

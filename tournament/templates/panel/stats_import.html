@@ -1,0 +1,228 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-form-page">
+
+  <a href="{% url 'panel:stats' %}" class="pnl-btn" style="margin-bottom:16px;">
+    <i class="fas fa-arrow-left"></i> Back to Statistics
+  </a>
+
+  {# ── Match header ──────────────────────────────────── #}
+  <div class="pnl-dash-card" style="margin-bottom:20px;">
+    <h3 class="pnl-dash-card__title">
+      M{{ match.match_number }} — {{ match.get_stage_display }}
+      {% if match.group %} · Group {{ match.group }}{% endif %}
+      · Court {{ match.court }}
+    </h3>
+    <p style="margin:0;color:var(--pnl-muted);">
+      <strong>{{ match.team_a|default:"TBD" }}</strong>
+      <span style="color:var(--pnl-accent);margin:0 8px;">vs</span>
+      <strong>{{ match.team_b|default:"TBD" }}</strong>
+      {% if match.score_a is not None %} — {{ match.score_a }}:{{ match.score_b }}{% endif %}
+    </p>
+  </div>
+
+  {# ── Per-team import status ──────────────────────────── #}
+  <div class="pnl-recon-status" style="margin-bottom:20px;">
+    {% if match.team_a %}
+    <div class="pnl-recon-status__team">
+      {% if team_a_imported %}
+        <i class="fas fa-check-circle" style="color:var(--pnl-green);"></i>
+      {% else %}
+        <i class="fas fa-times-circle" style="color:var(--pnl-muted);"></i>
+      {% endif %}
+      <strong>{{ match.team_a }}</strong> — {{ team_a_imported|yesno:"imported,not imported" }}
+    </div>
+    {% endif %}
+    {% if match.team_b %}
+    <div class="pnl-recon-status__team">
+      {% if team_b_imported %}
+        <i class="fas fa-check-circle" style="color:var(--pnl-green);"></i>
+      {% else %}
+        <i class="fas fa-times-circle" style="color:var(--pnl-muted);"></i>
+      {% endif %}
+      <strong>{{ match.team_b }}</strong> — {{ team_b_imported|yesno:"imported,not imported" }}
+    </div>
+    {% endif %}
+  </div>
+
+  {# ── Errors ────────────────────────────────────────── #}
+  {% if errors %}
+  <div class="pnl-alert pnl-alert--error">
+    <h4><i class="fas fa-exclamation-triangle"></i> Errors</h4>
+    <ul>{% for err in errors %}<li>{{ err }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  {# ── Success ───────────────────────────────────────── #}
+  {% if imported_count is not None %}
+  <div class="pnl-alert pnl-alert--success">
+    <i class="fas fa-check-circle"></i>
+    Successfully imported <strong>{{ imported_count }}</strong> player stat rows
+    {% if selected_team %} for <strong>{{ selected_team }}</strong>{% endif %}
+    in M{{ match.match_number }}.
+  </div>
+  {% endif %}
+
+  {# ── 3-panel reconciliation preview ────────────────── #}
+  {% if preview_rows %}
+  <div class="pnl-recon">
+    {# Left: Parsed CSV rows (raw data) #}
+    <div class="pnl-recon__panel pnl-recon__panel--left">
+      <div class="pnl-recon__panel-header">
+        <i class="fas fa-file-csv"></i> Parsed CSV — {{ preview_rows|length }} row{{ preview_rows|length|pluralize:"s" }}
+        {% if selected_team %}<span class="pnl-muted">({{ selected_team }})</span>{% endif %}
+      </div>
+      <div class="pnl-recon__panel-body">
+        <table class="pnl-table pnl-table--compact pnl-table--stats-preview">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>#</th>
+              <th>Pos</th>
+              <th>Kills</th>
+              <th>Aces</th>
+              <th>Blk</th>
+              <th>Ast</th>
+              <th>Att</th>
+              <th>Pass</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in preview_rows %}
+            <tr>
+              <td>{{ r.player_name }}</td>
+              <td class="pnl-mono">{{ r.jersey_number }}</td>
+              <td>{{ r.position }}</td>
+              <td class="pnl-mono">{{ r.kills }}</td>
+              <td class="pnl-mono">{{ r.aces }}</td>
+              <td class="pnl-mono">{{ r.blocks }}</td>
+              <td class="pnl-mono">{{ r.assists }}</td>
+              <td class="pnl-mono">{{ r.attack_attempts }}</td>
+              <td class="pnl-mono">{{ r.pass_attempts }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {# Center: Import diff summary #}
+    <div class="pnl-recon__panel pnl-recon__panel--center">
+      <div class="pnl-recon__panel-header">
+        <i class="fas fa-exchange-alt"></i> Import Summary
+      </div>
+      <div class="pnl-recon__panel-body">
+        {% if import_diff %}
+        <ul class="pnl-recon__diff-list">
+          <li>
+            <i class="fas fa-plus-circle" style="color:var(--pnl-green);"></i>
+            <strong>{{ import_diff.new_rows }}</strong> player stat rows will be created
+          </li>
+          {% if import_diff.is_reimport %}
+          <li>
+            <i class="fas fa-sync" style="color:var(--pnl-yellow);"></i>
+            Replacing <strong>{{ import_diff.replacing }}</strong> existing rows for {{ selected_team }}
+          </li>
+          {% endif %}
+          {% if import_diff.will_mark_imported %}
+          <li>
+            <i class="fas fa-flag-checkered" style="color:var(--pnl-green);"></i>
+            Match will be marked as <strong>stats imported</strong>
+          </li>
+          {% endif %}
+          {% if import_diff.will_recalc_standings %}
+          <li>
+            <i class="fas fa-calculator" style="color:var(--pnl-accent);"></i>
+            Group standings will be <strong>recalculated</strong>
+          </li>
+          {% endif %}
+          {% if import_diff.will_refresh_dreamteam %}
+          <li>
+            <i class="fas fa-star" style="color:var(--pnl-accent);"></i>
+            Dream Team candidate pool will be <strong>refreshed</strong>
+          </li>
+          {% endif %}
+        </ul>
+        {% endif %}
+
+        <form method="post" style="margin-top:16px;">
+          {% csrf_token %}
+          <button type="submit" name="confirm" value="1" class="pnl-btn pnl-btn--primary" style="width:100%;">
+            <i class="fas fa-check"></i> Confirm Import ({{ preview_rows|length }} players)
+          </button>
+          <a href="{% url 'panel:stats_import' match.pk %}" class="pnl-btn" style="width:100%;margin-top:8px;text-align:center;">
+            Cancel
+          </a>
+        </form>
+      </div>
+    </div>
+
+    {# Right: Warnings rail #}
+    <div class="pnl-recon__panel pnl-recon__panel--right">
+      <div class="pnl-recon__panel-header">
+        <i class="fas fa-exclamation-triangle"></i> Warnings
+        {% if warnings %}<span class="pnl-badge pnl-badge--yellow">{{ warnings|length }}</span>{% endif %}
+      </div>
+      <div class="pnl-recon__panel-body">
+        {% if warnings %}
+        <ul class="pnl-recon__warnings">
+          {% for w in warnings %}
+          <li class="pnl-recon__warning-item">
+            <i class="fas fa-exclamation-circle" style="color:var(--pnl-yellow);"></i>
+            {{ w }}
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="pnl-muted" style="text-align:center;padding:20px 0;">
+          <i class="fas fa-check-circle" style="color:var(--pnl-green);"></i> No warnings
+        </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {# ── Upload form ───────────────────────────────────── #}
+  {% if not preview_rows %}
+  <div class="pnl-dash-card">
+    <h3 class="pnl-dash-card__title">Upload CSV File</h3>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="pnl-csv-upload" style="margin-bottom:12px;">
+        <label for="team_id">Import stats for team:</label>
+        <select name="team_id" id="team_id" class="pnl-input" required>
+          <option value="">— Select team —</option>
+          {% if match.team_a %}
+          <option value="{{ match.team_a.pk }}">
+            {{ match.team_a }}{% if team_a_imported %} (re-import){% endif %}
+          </option>
+          {% endif %}
+          {% if match.team_b %}
+          <option value="{{ match.team_b.pk }}">
+            {{ match.team_b }}{% if team_b_imported %} (re-import){% endif %}
+          </option>
+          {% endif %}
+        </select>
+      </div>
+      <div class="pnl-csv-upload">
+        <label for="csv_file">Select CSV file (SoloStats Live export):</label>
+        <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+      </div>
+      <div class="pnl-form__actions" style="margin-top:16px;">
+        <button type="submit" class="pnl-btn pnl-btn--primary">
+          <i class="fas fa-search"></i> Preview Import
+        </button>
+      </div>
+    </form>
+
+    <div class="pnl-code-block" style="margin-top:20px;">
+      <h4 style="margin-top:0;">Expected CSV format (SoloStats Live):</h4>
+      <code>Multi-section CSV — one file per team, sections separated by blank lines.</code>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

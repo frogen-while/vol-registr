@@ -1,0 +1,76 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-form-page">
+
+  <a href="{% if is_edit %}{% url 'panel:team_detail' pk=team.pk %}{% else %}{% url 'panel:teams' %}{% endif %}" class="pnl-btn" style="margin-bottom:16px;">
+    <i class="fas fa-arrow-left"></i> Back
+  </a>
+
+  <form method="post" class="pnl-form">
+    {% csrf_token %}
+
+    {# ── Team fields ─────────────────────────────────── #}
+    <div class="pnl-dash-card">
+      <h3 class="pnl-dash-card__title">Team Info</h3>
+      <div class="pnl-form__grid">
+        {% for field in form %}
+        <div class="pnl-field{% if field.errors %} pnl-field--error{% endif %}">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% for err in field.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {# ── Players inline formset ──────────────────────── #}
+    <div class="pnl-dash-card" style="margin-top:20px;">
+      <h3 class="pnl-dash-card__title">Players</h3>
+
+      {{ formset.management_form }}
+
+      <div id="player-forms">
+        {% for pf in formset %}
+        <div class="pnl-player-row{% if pf.errors %} pnl-player-row--error{% endif %}" data-index="{{ forloop.counter0 }}">
+          <div class="pnl-form__grid pnl-form__grid--4">
+            {% for hidden in pf.hidden_fields %}{{ hidden }}{% endfor %}
+            <div class="pnl-field">
+              <label>First Name</label>
+              {{ pf.first_name }}
+              {% for err in pf.first_name.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+            </div>
+            <div class="pnl-field">
+              <label>Last Name</label>
+              {{ pf.last_name }}
+              {% for err in pf.last_name.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+            </div>
+            <div class="pnl-field">
+              <label>Jersey #</label>
+              {{ pf.jersey_number }}
+            </div>
+
+          </div>
+          <div class="pnl-player-row__actions">
+            {% if pf.instance.pk %}
+              <label class="pnl-delete-check"><input type="checkbox" name="{{ pf.DELETE.html_name }}" {% if pf.DELETE.value %}checked{% endif %}> Delete</label>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <button type="button" id="add-player" class="pnl-btn" style="margin-top:12px;">
+        <i class="fas fa-plus"></i> Add Player
+      </button>
+    </div>
+
+    <div style="margin-top:24px; display:flex; gap:12px;">
+      <button type="submit" class="pnl-btn pnl-btn--primary">
+        <i class="fas fa-save"></i> {% if is_edit %}Save Changes{% else %}Create Team{% endif %}
+      </button>
+      <a href="{% if is_edit %}{% url 'panel:team_detail' pk=team.pk %}{% else %}{% url 'panel:teams' %}{% endif %}" class="pnl-btn">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

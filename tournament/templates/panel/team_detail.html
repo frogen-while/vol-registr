@@ -1,0 +1,224 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-detail">
+
+  {# ── Header bar ────────────────────────────────────── #}
+  <div class="pnl-detail__header">
+    <div>
+      <a href="{% url 'panel:teams' %}" class="pnl-btn" style="margin-bottom:12px;">
+        <i class="fas fa-arrow-left"></i> Back to Teams
+      </a>
+      <h2>{{ team.name }}</h2>
+    </div>
+    <div class="pnl-detail__actions">
+      <a href="{% url 'panel:team_edit' pk=team.pk %}" class="pnl-btn pnl-btn--primary">
+        <i class="fas fa-edit"></i> Edit
+      </a>
+      <a href="{% url 'panel:team_delete' pk=team.pk %}" class="pnl-btn pnl-btn--danger">
+        <i class="fas fa-trash"></i> Delete
+      </a>
+    </div>
+  </div>
+
+  {# ── Status workflow bar ───────────────────────────── #}
+  <div class="pnl-status-flow">
+    <span class="pnl-status-flow__label">Status workflow:</span>
+    {% for val, label in status_choices %}
+      {% if val == team.status %}
+        <span class="pnl-status-step pnl-status-step--current pnl-badge pnl-badge--{% if val == 'APPROVED' %}green{% elif val == 'PAID' %}blue{% elif val == 'AWAITING_PAYMENT' %}yellow{% else %}gray{% endif %}">
+          {{ label }}
+        </span>
+      {% elif val in next_statuses %}
+        <form method="post" action="{% url 'panel:team_status' pk=team.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="new_status" value="{{ val }}">
+          <button type="submit" class="pnl-status-step pnl-status-step--next pnl-badge pnl-badge--{% if val == 'APPROVED' %}green{% elif val == 'PAID' %}blue{% elif val == 'AWAITING_PAYMENT' %}yellow{% else %}gray{% endif %}" title="Change to {{ label }}">
+            {{ label }} →
+          </button>
+        </form>
+      {% else %}
+        <span class="pnl-status-step pnl-status-step--disabled pnl-badge">
+          {{ label }}
+        </span>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {# ── Readiness rail ────────────────────────────────── #}
+  <div class="pnl-readiness-rail">
+    <span class="pnl-readiness-rail__label">Readiness ({{ team.readiness_score }}/5):</span>
+    <div class="pnl-readiness-rail__items">
+      <span class="pnl-readiness-rail__item {% if team.is_payment_ok %}pnl-readiness-rail__item--ok{% else %}pnl-readiness-rail__item--fail{% endif %}">
+        <i class="fas fa-credit-card"></i> Payment
+      </span>
+      <span class="pnl-readiness-rail__item {% if team.is_roster_complete %}pnl-readiness-rail__item--ok{% else %}pnl-readiness-rail__item--fail{% endif %}">
+        <i class="fas fa-users"></i> Roster (6+)
+      </span>
+      <span class="pnl-readiness-rail__item {% if team.is_contacts_complete %}pnl-readiness-rail__item--ok{% else %}pnl-readiness-rail__item--fail{% endif %}">
+        <i class="fas fa-address-book"></i> Contacts
+      </span>
+      <span class="pnl-readiness-rail__item {% if team.is_logo_uploaded %}pnl-readiness-rail__item--ok{% else %}pnl-readiness-rail__item--fail{% endif %}">
+        <i class="fas fa-image"></i> Logo
+      </span>
+      <span class="pnl-readiness-rail__item {% if not team.has_duplicate_jerseys %}pnl-readiness-rail__item--ok{% else %}pnl-readiness-rail__item--fail{% endif %}">
+        <i class="fas fa-tshirt"></i> Jerseys
+      </span>
+    </div>
+  </div>
+
+  {# ── Info cards ────────────────────────────────────── #}
+  <div class="pnl-detail__grid">
+    <div class="pnl-dash-card">
+      <h3 class="pnl-dash-card__title">Team Info</h3>
+      <dl class="pnl-dl">
+        <dt>Name</dt><dd>{{ team.name }}</dd>
+        <dt>League Level</dt><dd>{{ team.get_league_level_display }}</dd>
+        <dt>Group</dt><dd>{{ team.group_name|default:"—" }}</dd>
+        <dt>Status</dt>
+        <dd>
+          <span class="pnl-badge pnl-badge--{% if team.status == 'APPROVED' %}green{% elif team.status == 'PAID' %}blue{% elif team.status == 'AWAITING_PAYMENT' %}yellow{% else %}gray{% endif %}">
+            {{ team.get_status_display }}
+          </span>
+        </dd>
+        <dt>Payment</dt>
+        <dd>
+          <span class="pnl-badge pnl-badge--{% if team.payment_status == 1 %}green{% elif team.payment_status == 2 %}red{% else %}gray{% endif %}">
+            {{ team.get_payment_status_display }}
+          </span>
+        </dd>
+        <dt>BLIK</dt><dd>{{ team.blik_number|default:"—" }}</dd>
+        <dt>Check-in</dt>
+        <dd>
+          {% if team.checked_in %}
+            <span class="pnl-badge pnl-badge--green">Yes</span>
+          {% else %}
+            <span class="pnl-badge pnl-badge--gray">No</span>
+          {% endif %}
+        </dd>
+        <dt>Created</dt><dd>{{ team.created_at|date:"d M Y H:i" }}</dd>
+      </dl>
+    </div>
+
+    <div class="pnl-dash-card">
+      <h3 class="pnl-dash-card__title">Captain</h3>
+      <dl class="pnl-dl">
+        <dt>Name</dt><dd>{{ team.cap_name }} {{ team.cap_surname }}</dd>
+        <dt>Email</dt><dd>{{ team.cap_email }}</dd>
+        <dt>Phone</dt><dd>{{ team.cap_phone|default:"—" }}</dd>
+      </dl>
+    </div>
+  </div>
+  {# ── Roster Access Code ───────────────────────────── #}
+  <div class="pnl-dash-card" style="margin-top:20px;">
+    <h3 class="pnl-dash-card__title">Roster Access Code</h3>
+    {% if team.roster_code %}
+    <p style="margin:8px 0;">
+      <span style="font-family:monospace;font-size:1.4em;letter-spacing:4px;background:var(--pnl-bg-alt);padding:6px 14px;border-radius:6px;">{{ team.roster_code }}</span>
+    </p>
+    <p style="margin:4px 0;color:var(--pnl-muted);font-size:.85em;">
+      Send this code to the captain so they can update the roster at <code>/roster/update/</code>
+    </p>
+    {% else %}
+    <p style="color:var(--pnl-muted);">No code generated yet.</p>
+    {% endif %}
+    <form method="post" action="{% url 'panel:generate_roster_code' pk=team.pk %}" style="margin-top:10px;">
+      {% csrf_token %}
+      <button type="submit" class="pnl-btn pnl-btn--primary">
+        <i class="fas fa-key"></i> {% if team.roster_code %}Regenerate Code{% else %}Generate Code{% endif %}
+      </button>
+    </form>
+  </div>
+  {# ── Players ───────────────────────────────────────── #}
+  <div class="pnl-dash-card" style="margin-top:20px;">
+    <h3 class="pnl-dash-card__title">Players ({{ players|length }})</h3>
+    {% if players %}
+    <div class="pnl-table-wrap">
+      <table class="pnl-table">
+        <thead>
+          <tr>
+            <th>#</th><th>First Name</th><th>Last Name</th><th>Jersey</th><th>Position</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in players %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ p.first_name }}</td>
+            <td>{{ p.last_name }}</td>
+            <td>{{ p.jersey_number|default:"—" }}</td>
+            <td>{{ p.get_position_display|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p class="pnl-muted">No players registered.</p>
+    {% endif %}
+  </div>
+
+  {# ── Match history ─────────────────────────────────── #}
+  <div class="pnl-dash-card" style="margin-top:20px;">
+    <h3 class="pnl-dash-card__title">Match History</h3>
+    {% if matches %}
+    <div class="pnl-table-wrap">
+      <table class="pnl-table">
+        <thead>
+          <tr><th>#</th><th>Stage</th><th>Opponent</th><th>Score</th><th>Status</th><th>Time</th></tr>
+        </thead>
+        <tbody>
+          {% for m in matches %}
+          <tr>
+            <td>{{ m.match_number }}</td>
+            <td>{{ m.get_stage_display }}</td>
+            <td>
+              {% if m.team_a_id == team.pk %}
+                {{ m.team_b|default:"TBD" }}
+              {% else %}
+                {{ m.team_a|default:"TBD" }}
+              {% endif %}
+            </td>
+            <td>{{ m.score_a }} : {{ m.score_b }}</td>
+            <td>
+              <span class="pnl-badge pnl-badge--{% if m.status == 'FINISHED' %}green{% elif m.status == 'LIVE' %}red{% elif m.status == 'SCHEDULED' %}cyan{% else %}gray{% endif %}">
+                {{ m.get_status_display }}
+              </span>
+            </td>
+            <td>{{ m.start_time|date:"d M H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p class="pnl-muted">No matches yet.</p>
+    {% endif %}
+  </div>
+
+  {# ── Audit Timeline ────────────────────────────────── #}
+  <div class="pnl-dash-card" style="margin-top:20px;">
+    <h3 class="pnl-dash-card__title"><i class="fas fa-history"></i> Recent Activity</h3>
+    {% if audit_log %}
+    <div class="pnl-audit-timeline">
+      {% for entry in audit_log %}
+      <div class="pnl-audit-entry">
+        <span class="pnl-audit-entry__time">{{ entry.timestamp|date:"d M H:i" }}</span>
+        <span class="pnl-audit-entry__action">{{ entry.action }}</span>
+        {% if entry.user %}
+        <span class="pnl-audit-entry__user">
+          <i class="fas fa-user"></i> {{ entry.user.username }}
+        </span>
+        {% endif %}
+        {% if entry.detail %}
+        <span class="pnl-audit-entry__detail">{{ entry.detail }}</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="pnl-muted">No activity recorded yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

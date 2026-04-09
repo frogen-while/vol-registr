@@ -1,0 +1,111 @@
+{% extends 'panel/base.html' %}
+
+{% block title %}Rankings — Panel{% endblock %}
+
+{% block topbar_actions %}
+<div class="pnl-topbar__actions">
+  <form method="post" action="{% url 'panel:rankings_recalculate' %}" style="display:inline"
+        onsubmit="return confirm('Recalculate all standings and Dream Team?')">
+    {% csrf_token %}
+    <button type="submit" class="pnl-btn pnl-btn--primary">
+      <i class="fas fa-sync-alt"></i> Recalculate All
+    </button>
+  </form>
+</div>
+{% endblock %}
+
+{% block content %}
+
+{# ── Group Standings ────────────────────────────────────────── #}
+<section class="pnl-rk-section">
+  <h2 class="pnl-rk-heading"><i class="fas fa-trophy"></i> Group Standings</h2>
+
+  {% if not groups %}
+  <div class="pnl-stub" style="min-height:12vh;">
+    <div class="pnl-stub__icon"><i class="fas fa-table"></i></div>
+    <p>No standings data yet. Import stats and click <strong>Recalculate All</strong>.</p>
+  </div>
+  {% else %}
+  <div class="pnl-rk-groups">
+    {% for group_name, rows in groups.items %}
+    <div class="pnl-rk-group">
+      <h3 class="pnl-rk-group__title">Group {{ group_name }}</h3>
+      <table class="pnl-table pnl-table--compact pnl-rk-table">
+        <thead>
+          <tr>
+            <th class="pnl-rk-table__rank">#</th>
+            <th>Team</th>
+            <th class="pnl-mono">P</th>
+            <th class="pnl-mono">W</th>
+            <th class="pnl-mono">L</th>
+            <th class="pnl-mono">SW</th>
+            <th class="pnl-mono">SL</th>
+            <th class="pnl-mono pnl-rk-table__pts">Pts</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for gs in rows %}
+          <tr{% if gs.rank_in_group <= 2 %} class="pnl-rk-row--qualified"{% endif %}>
+            <td class="pnl-mono pnl-rk-table__rank">{{ gs.rank_in_group }}</td>
+            <td>{{ gs.team.name }}</td>
+            <td class="pnl-mono">{{ gs.played }}</td>
+            <td class="pnl-mono">{{ gs.wins }}</td>
+            <td class="pnl-mono">{{ gs.losses }}</td>
+            <td class="pnl-mono">{{ gs.sets_won }}</td>
+            <td class="pnl-mono">{{ gs.sets_lost }}</td>
+            <td class="pnl-mono pnl-rk-table__pts"><strong>{{ gs.points }}</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+
+{# ── Category Leaders ───────────────────────────────────────── #}
+<section class="pnl-rk-section">
+  <h2 class="pnl-rk-heading"><i class="fas fa-medal"></i> Category Leaders</h2>
+
+  {% if not leaders.0.rows %}
+  <div class="pnl-stub" style="min-height:12vh;">
+    <div class="pnl-stub__icon"><i class="fas fa-chart-line"></i></div>
+    <p>No player stats imported yet.</p>
+  </div>
+  {% else %}
+  <div class="pnl-rk-leaders">
+    {% for cat in leaders %}
+    {% if cat.rows %}
+    <div class="pnl-rk-leader">
+      <h3 class="pnl-rk-leader__title">
+        <i class="fas {{ cat.icon }}"></i> {{ cat.label }}
+      </h3>
+      <table class="pnl-table pnl-table--compact pnl-rk-table">
+        <thead>
+          <tr>
+            <th class="pnl-rk-table__rank">#</th>
+            <th>Player</th>
+            <th>Team</th>
+            <th class="pnl-mono pnl-rk-table__pts">{{ cat.metric }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in cat.rows %}
+          <tr{% if forloop.first %} class="pnl-rk-row--leader"{% endif %}>
+            <td class="pnl-mono pnl-rk-table__rank">{{ forloop.counter }}</td>
+            <td>#{{ r.player__jersey_number }} {{ r.player__last_name }} {{ r.player__first_name }}</td>
+            <td>{{ r.team__name }}</td>
+            <td class="pnl-mono pnl-rk-table__pts"><strong>{{ r.total }}</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+
+{% endblock %}

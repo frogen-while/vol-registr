@@ -1,0 +1,105 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-dashboard">
+  {# ── KPI cards ─────────────────────────────────────── #}
+  <div class="pnl-kpi-grid">
+    <div class="pnl-kpi">
+      <div class="pnl-kpi__icon"><i class="fas fa-users"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value">{{ teams_total }}</span>
+        <span class="pnl-kpi__label">Teams</span>
+      </div>
+    </div>
+    <div class="pnl-kpi">
+      <div class="pnl-kpi__icon"><i class="fas fa-running"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value">{{ players_total }}</span>
+        <span class="pnl-kpi__label">Players</span>
+      </div>
+    </div>
+    <div class="pnl-kpi">
+      <div class="pnl-kpi__icon"><i class="fas fa-volleyball-ball"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value">{{ matches_finished }} / {{ matches_total }}</span>
+        <span class="pnl-kpi__label">Matches Played</span>
+      </div>
+    </div>
+    <div class="pnl-kpi">
+      <div class="pnl-kpi__icon"><i class="fas fa-calendar-alt"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value">{{ matches_remaining }}</span>
+        <span class="pnl-kpi__label">Matches Remaining</span>
+      </div>
+    </div>
+    <div class="pnl-kpi">
+      <div class="pnl-kpi__icon"><i class="fas fa-images"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value">{{ gallery_count }}</span>
+        <span class="pnl-kpi__label">Gallery Photos</span>
+      </div>
+    </div>
+    <div class="pnl-kpi">
+      <div class="pnl-kpi__icon"><i class="fas fa-clipboard-check"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value">{{ checkin_count }} / {{ checkin_of }}</span>
+        <span class="pnl-kpi__label">Check-ins</span>
+      </div>
+    </div>
+  </div>
+
+  {# ── Two-column lists ──────────────────────────────── #}
+  <div class="pnl-dash-lists">
+    {# Recent teams #}
+    <div class="pnl-dash-card">
+      <h3 class="pnl-dash-card__title">Recent Teams</h3>
+      {% if recent_teams %}
+      <table class="pnl-table">
+        <thead>
+          <tr><th>Name</th><th>Status</th><th>Created</th></tr>
+        </thead>
+        <tbody>
+          {% for t in recent_teams %}
+          <tr>
+            <td>{{ t.name }}</td>
+            <td>
+              <span class="pnl-badge pnl-badge--{% if t.status == 'APPROVED' %}green{% elif t.status == 'PAID' %}blue{% elif t.status == 'AWAITING_PAYMENT' %}yellow{% else %}gray{% endif %}">
+                {{ t.get_status_display }}
+              </span>
+            </td>
+            <td>{{ t.created_at|date:"d M Y" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <p class="pnl-muted">No teams registered yet.</p>
+      {% endif %}
+    </div>
+
+    {# Upcoming matches #}
+    <div class="pnl-dash-card">
+      <h3 class="pnl-dash-card__title">Upcoming Matches</h3>
+      {% if upcoming_matches %}
+      <table class="pnl-table">
+        <thead>
+          <tr><th>#</th><th>Match</th><th>Court</th><th>Time</th></tr>
+        </thead>
+        <tbody>
+          {% for m in upcoming_matches %}
+          <tr>
+            <td>{{ m.match_number }}</td>
+            <td>{{ m.team_a|default:"TBD" }} vs {{ m.team_b|default:"TBD" }}</td>
+            <td>{{ m.court }}</td>
+            <td>{{ m.start_time|date:"d M H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <p class="pnl-muted">No upcoming matches.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,210 @@
+{% extends 'panel/base.html' %}
+
+{% block title %}Dream Team — Panel{% endblock %}
+
+{% block topbar_actions %}
+<div class="pnl-topbar__actions">
+  {# Publish readiness indicator #}
+  {% if publish_ready %}
+  <span class="pnl-badge pnl-badge--success" style="margin-right:.5rem;">
+    <i class="fas fa-check-circle"></i> All {{ total_slots }} slots filled
+  </span>
+  {% elif has_entries %}
+  <span class="pnl-badge pnl-badge--warning" style="margin-right:.5rem;">
+    {{ empty_count }} slot{{ empty_count|pluralize }} empty
+  </span>
+  {% else %}
+  <span class="pnl-badge pnl-badge--muted" style="margin-right:.5rem;">
+    No entries yet
+  </span>
+  {% endif %}
+
+  <a href="{% url 'panel:dreamteam_preview' %}" class="pnl-btn pnl-btn--outline" title="Preview auto-fill changes">
+    <i class="fas fa-eye"></i> Preview Auto-fill
+  </a>
+  <form method="post" action="{% url 'panel:dreamteam_autofill' %}" style="display:inline">
+    {% csrf_token %}
+    <button type="submit" class="pnl-btn pnl-btn--outline" title="Auto-fill from stats">
+      <i class="fas fa-magic"></i> Auto-fill
+    </button>
+  </form>
+  {% if has_entries %}
+  <form method="post" action="{% url 'panel:dreamteam_reset' %}" style="display:inline"
+        onsubmit="return confirm('Clear all Dream Team slots?')">
+    {% csrf_token %}
+    <button type="submit" class="pnl-btn pnl-btn--danger-outline" title="Clear all slots">
+      <i class="fas fa-trash"></i> Reset
+    </button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+{% if not players %}
+<div class="pnl-stub" style="min-height:30vh;">
+  <div class="pnl-stub__icon"><i class="fas fa-star"></i></div>
+  <h2>No players available</h2>
+  <p>Import teams with players first, then return here to build the Dream Team.</p>
+</div>
+{% else %}
+<form method="post" action="{% url 'panel:dreamteam' %}" id="dreamteamForm">
+  {% csrf_token %}
+
+  <!-- Visual Court -->
+  <div class="pnl-dt-court">
+    <div class="pnl-dt-court__net">
+      <span>NET</span>
+    </div>
+
+    <!-- Front Row -->
+    <div class="pnl-dt-court__row pnl-dt-court__row--front">
+      {% for s in slots %}
+        {% if s.slot_id == 'front-left' or s.slot_id == 'front-center' or s.slot_id == 'front-right' %}
+        <div class="pnl-dt-slot" data-slot="{{ s.slot_id }}">
+          <span class="pnl-dt-slot__pos">{{ s.position }}
+            {% if s.is_auto != None %}
+              {% if s.is_auto %}<span class="pnl-dt-marker pnl-dt-marker--auto" title="Auto-filled">🤖</span>
+              {% else %}<span class="pnl-dt-marker pnl-dt-marker--manual" title="Manual pick">✏️</span>{% endif %}
+            {% endif %}
+          </span>
+          <span class="pnl-dt-slot__label">{{ s.label }}</span>
+          <select name="player_{{ s.slot_id }}" class="pnl-dt-slot__select">
+            <option value="">— empty —</option>
+            {% for p in players %}
+            <option value="{{ p.pk }}"
+              {% if s.entry and s.entry.player_id == p.pk %}selected{% endif %}>
+              #{{ p.jersey_number }} {{ p.last_name }} {{ p.first_name }} ({{ p.team.name }})
+            </option>
+            {% endfor %}
+          </select>
+          <div class="pnl-dt-slot__metric">
+            <input type="text" name="metric_label_{{ s.slot_id }}"
+                   value="{{ s.entry.metric_label|default:'' }}"
+                   placeholder="e.g. 25 kills" class="pnl-input pnl-input--sm">
+            <input type="number" name="metric_value_{{ s.slot_id }}" step="0.1"
+                   value="{{ s.entry.metric_value|default:'0' }}"
+                   class="pnl-input pnl-input--sm pnl-dt-slot__val">
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- Back Row -->
+    <div class="pnl-dt-court__row pnl-dt-court__row--back">
+      {% for s in slots %}
+        {% if s.slot_id == 'back-left' or s.slot_id == 'back-center' or s.slot_id == 'back-right' %}
+        <div class="pnl-dt-slot" data-slot="{{ s.slot_id }}">
+          <span class="pnl-dt-slot__pos">{{ s.position }}
+            {% if s.is_auto != None %}
+              {% if s.is_auto %}<span class="pnl-dt-marker pnl-dt-marker--auto" title="Auto-filled">🤖</span>
+              {% else %}<span class="pnl-dt-marker pnl-dt-marker--manual" title="Manual pick">✏️</span>{% endif %}
+            {% endif %}
+          </span>
+          <span class="pnl-dt-slot__label">{{ s.label }}</span>
+          <select name="player_{{ s.slot_id }}" class="pnl-dt-slot__select">
+            <option value="">— empty —</option>
+            {% for p in players %}
+            <option value="{{ p.pk }}"
+              {% if s.entry and s.entry.player_id == p.pk %}selected{% endif %}>
+              #{{ p.jersey_number }} {{ p.last_name }} {{ p.first_name }} ({{ p.team.name }})
+            </option>
+            {% endfor %}
+          </select>
+          <div class="pnl-dt-slot__metric">
+            <input type="text" name="metric_label_{{ s.slot_id }}"
+                   value="{{ s.entry.metric_label|default:'' }}"
+                   placeholder="e.g. 12 blocks" class="pnl-input pnl-input--sm">
+            <input type="number" name="metric_value_{{ s.slot_id }}" step="0.1"
+                   value="{{ s.entry.metric_value|default:'0' }}"
+                   class="pnl-input pnl-input--sm pnl-dt-slot__val">
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- Libero -->
+    <div class="pnl-dt-court__row pnl-dt-court__row--libero">
+      {% for s in slots %}
+        {% if s.slot_id == 'libero' %}
+        <div class="pnl-dt-slot pnl-dt-slot--libero" data-slot="{{ s.slot_id }}">
+          <span class="pnl-dt-slot__pos">{{ s.position }}
+            {% if s.is_auto != None %}
+              {% if s.is_auto %}<span class="pnl-dt-marker pnl-dt-marker--auto" title="Auto-filled">🤖</span>
+              {% else %}<span class="pnl-dt-marker pnl-dt-marker--manual" title="Manual pick">✏️</span>{% endif %}
+            {% endif %}
+          </span>
+          <span class="pnl-dt-slot__label">{{ s.label }}</span>
+          <select name="player_{{ s.slot_id }}" class="pnl-dt-slot__select">
+            <option value="">— empty —</option>
+            {% for p in players %}
+            <option value="{{ p.pk }}"
+              {% if s.entry and s.entry.player_id == p.pk %}selected{% endif %}>
+              #{{ p.jersey_number }} {{ p.last_name }} {{ p.first_name }} ({{ p.team.name }})
+            </option>
+            {% endfor %}
+          </select>
+          <div class="pnl-dt-slot__metric">
+            <input type="text" name="metric_label_{{ s.slot_id }}"
+                   value="{{ s.entry.metric_label|default:'' }}"
+                   placeholder="e.g. 30 perfect passes" class="pnl-input pnl-input--sm">
+            <input type="number" name="metric_value_{{ s.slot_id }}" step="0.1"
+                   value="{{ s.entry.metric_value|default:'0' }}"
+                   class="pnl-input pnl-input--sm pnl-dt-slot__val">
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="pnl-form-actions" style="margin-top:1.5rem;">
+    <button type="submit" class="pnl-btn pnl-btn--primary">
+      <i class="fas fa-save"></i> Save Dream Team
+    </button>
+  </div>
+</form>
+
+{# ── Candidate Rankings per Position ─────────────────── #}
+<section class="pnl-dt-candidates">
+  <h2 class="pnl-rk-heading" style="margin-top:2rem;">
+    <i class="fas fa-list-ol"></i> Top Candidates by Position
+  </h2>
+  {% if position_groups %}
+  <div class="pnl-dt-candidates__grid">
+    {% for pg in position_groups %}
+    <div class="pnl-dt-cand-card">
+      <h3 class="pnl-dt-cand-card__title">{{ pg.position }} — {{ pg.label }}</h3>
+      <table class="pnl-table pnl-table--compact">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Player</th>
+            <th>Team</th>
+            <th class="pnl-mono">{{ pg.candidates.0.metric }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in pg.candidates %}
+          <tr{% if forloop.first %} class="pnl-rk-row--leader"{% endif %}>
+            <td class="pnl-mono">{{ forloop.counter }}</td>
+            <td>#{{ c.jersey }} {{ c.name }}</td>
+            <td>{{ c.team }}</td>
+            <td class="pnl-mono"><strong>{{ c.total }}</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="pnl-stub" style="min-height:8vh;">
+    <p>No player stats imported yet. Import stats to see candidates.</p>
+  </div>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}

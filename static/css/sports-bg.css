@@ -8,7 +8,7 @@
   z-index: -10;
   pointer-events: none;
   overflow: hidden;
-  background-color: #020617;
+  background-color: #070b14;
   /* Hardware acceleration */
   transform: translateZ(0);
   will-change: transform;
@@ -59,7 +59,7 @@
   transform: translateX(-50%);
   width: 120vw;
   height: 80vh;
-  background: radial-gradient(ellipse at center, rgba(14, 165, 233, 0.15) 0%, transparent 60%);
+  background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.15) 0%, transparent 60%);
   z-index: 1;
   pointer-events: none;
 }
@@ -67,7 +67,7 @@
 .sports-bg-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(2, 6, 23, 0.4) 0%, rgba(2, 6, 23, 0.95) 100%);
+  background: linear-gradient(180deg, rgba(7, 11, 20, 0.4) 0%, rgba(7, 11, 20, 0.95) 100%);
   z-index: 2;
 }
 

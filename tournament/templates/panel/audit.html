@@ -1,0 +1,62 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-audit-page">
+
+  {# ── Filters ──────────────────────────────────────── #}
+  <div class="pnl-filter-bar" style="margin-bottom:1rem;">
+    <form method="get" class="pnl-filter-bar__form" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+      <select name="category" class="pnl-input pnl-input--sm" onchange="this.form.submit()">
+        <option value="">All Categories</option>
+        {% for val, label in category_choices %}
+        <option value="{{ val }}" {% if current_category == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <select name="entity" class="pnl-input pnl-input--sm" onchange="this.form.submit()">
+        <option value="">All Entities</option>
+        <option value="Team" {% if current_entity == "Team" %}selected{% endif %}>Team</option>
+        <option value="Match" {% if current_entity == "Match" %}selected{% endif %}>Match</option>
+        <option value="MatchHighlight" {% if current_entity == "MatchHighlight" %}selected{% endif %}>Highlight</option>
+      </select>
+      {% if current_category or current_entity %}
+      <a href="{% url 'panel:audit' %}" class="pnl-btn pnl-btn--outline pnl-btn--sm">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+
+  {# ── Timeline ─────────────────────────────────────── #}
+  {% if entries %}
+  <div class="pnl-audit-timeline pnl-audit-timeline--global">
+    {% for entry in entries %}
+    <div class="pnl-audit-entry">
+      <span class="pnl-audit-entry__time">{{ entry.timestamp|date:"d M Y H:i:s" }}</span>
+      <span class="pnl-badge pnl-badge--{{ entry.category }}">{{ entry.get_category_display }}</span>
+      <span class="pnl-audit-entry__action">{{ entry.action }}</span>
+      {% if entry.entity_label %}
+      <span class="pnl-audit-entry__entity">
+        <i class="fas fa-link"></i> {{ entry.entity_label }}
+      </span>
+      {% endif %}
+      {% if entry.user %}
+      <span class="pnl-audit-entry__user">
+        <i class="fas fa-user"></i> {{ entry.user.username }}
+      </span>
+      {% endif %}
+      {% if entry.detail %}
+      <p class="pnl-audit-entry__detail">{{ entry.detail }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  <p class="pnl-muted-text" style="margin-top:12px;">
+    Showing up to 200 entries.
+  </p>
+  {% else %}
+  <div class="pnl-empty">
+    <i class="fas fa-history" style="font-size:2rem;opacity:.3;margin-bottom:8px;"></i>
+    <p>No audit entries yet.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-teams">
+
+  {# ── Top bar with toggle ───────────────────────────── #}
+  <div class="pnl-pipeline-topbar">
+    <div class="pnl-view-toggle">
+      <a href="{% url 'panel:teams' %}" class="pnl-btn pnl-btn--sm">
+        <i class="fas fa-table"></i> Table
+      </a>
+      <a href="{% url 'panel:teams_pipeline' %}" class="pnl-btn pnl-btn--sm pnl-btn--primary">
+        <i class="fas fa-columns"></i> Pipeline
+      </a>
+    </div>
+    <a href="{% url 'panel:team_create' %}" class="pnl-btn pnl-btn--primary pnl-btn--sm">
+      <i class="fas fa-plus"></i> Create Team
+    </a>
+  </div>
+
+  {# ── Pipeline board ───────────────────────────────── #}
+  <div class="pnl-pipeline">
+    {% for col in columns %}
+    <div class="pnl-pipeline__col" data-status="{{ col.status }}">
+      <div class="pnl-pipeline__header pnl-pipeline__header--{{ col.color }}">
+        <span class="pnl-pipeline__label">{{ col.label }}</span>
+        <span class="pnl-badge pnl-badge--{{ col.color }} pnl-mono">{{ col.count }}</span>
+      </div>
+      <div class="pnl-pipeline__cards">
+        {% for t in col.teams %}
+        <div class="pnl-pipe-card" data-pk="{{ t.pk }}" data-drawer-url="{% url 'panel:team_drawer' pk=t.pk %}">
+          <div class="pnl-pipe-card__top">
+            <strong class="pnl-pipe-card__name">{{ t.name }}</strong>
+            {% if t.group_name %}<span class="pnl-pipe-card__group pnl-mono">{{ t.group_name }}</span>{% endif %}
+          </div>
+          <div class="pnl-pipe-card__meta">
+            <span><i class="fas fa-user"></i> {{ t.cap_name }} {{ t.cap_surname }}</span>
+            <span class="pnl-mono">{{ t.player_count }} pl.</span>
+          </div>
+          <div class="pnl-readiness" style="margin-top:4px;">
+            <span class="pnl-readiness__dot {% if t.is_payment_ok %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Payment"><i class="fas fa-credit-card"></i></span>
+            <span class="pnl-readiness__dot {% if t.is_roster_complete %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Roster"><i class="fas fa-users"></i></span>
+            <span class="pnl-readiness__dot {% if t.is_contacts_complete %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Contacts"><i class="fas fa-address-book"></i></span>
+            <span class="pnl-readiness__dot {% if t.is_logo_uploaded %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Logo"><i class="fas fa-image"></i></span>
+            <span class="pnl-readiness__dot {% if not t.has_duplicate_jerseys %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Jerseys"><i class="fas fa-tshirt"></i></span>
+          </div>
+          {% if col.status != 'CHECKED_IN' %}
+          <div class="pnl-pipe-card__actions">
+            {% if col.status == 'REGISTERED' %}
+              <button class="pnl-btn pnl-btn--xs pnl-pipe-move" data-pk="{{ t.pk }}" data-to="AWAITING_PAYMENT" data-url="{% url 'panel:team_pipeline_move' pk=t.pk %}">→ Awaiting</button>
+            {% elif col.status == 'AWAITING_PAYMENT' %}
+              <button class="pnl-btn pnl-btn--xs pnl-pipe-move" data-pk="{{ t.pk }}" data-to="PAID" data-url="{% url 'panel:team_pipeline_move' pk=t.pk %}">→ Paid</button>
+            {% elif col.status == 'PAID' %}
+              <button class="pnl-btn pnl-btn--xs pnl-btn--primary pnl-pipe-move" data-pk="{{ t.pk }}" data-to="APPROVED" data-url="{% url 'panel:team_pipeline_move' pk=t.pk %}">→ Approve</button>
+            {% elif col.status == 'APPROVED' %}
+              <span class="pnl-muted" style="font-size:.72rem;">
+                {% if t.checked_in %}<i class="fas fa-check-circle" style="color:var(--pnl-green)"></i> Checked in{% else %}<i class="fas fa-clock"></i> Awaiting check-in{% endif %}
+              </span>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+        {% empty %}
+        <div class="pnl-pipeline__empty">No teams</div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{# ── Drawer shell ────────────────────────────────────── #}
+<div class="pnl-drawer-overlay" id="pipeDrawerOverlay"></div>
+<div class="pnl-drawer" id="pipeDrawer">
+  <div class="pnl-drawer__header">
+    <span class="pnl-drawer__title">Team Details</span>
+    <button class="pnl-drawer__close" id="pipeDrawerClose"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="pnl-drawer__body" id="pipeDrawerBody">
+    <div class="pnl-muted" style="text-align:center;padding:40px 0;">Loading…</div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}CSV Stats Import — Match M{{ match.match_number }}{% endblock %}
+
+{% block content %}
+<h2>Import CSV Stats for Match M{{ match.match_number }}</h2>
+<p><strong>{{ match.team_a }}</strong> vs <strong>{{ match.team_b }}</strong> — {{ match.get_stage_display }}, Court {{ match.court }}</p>
+
+{% if match.stats_imported %}
+<div class="help" style="background:#fff3cd;padding:10px;border-radius:4px;margin-bottom:16px;">
+    ⚠️ Stats have already been imported for this match ({{ match.stats_imported_at|date:"Y-m-d H:i" }}).
+    Re-importing will <strong>overwrite</strong> existing data.
+</div>
+{% endif %}
+
+{% if errors %}
+<div class="errornote" style="margin-bottom:16px;">
+    <strong>Errors:</strong>
+    <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+{% if warnings %}
+<div class="help" style="background:#fff3cd;padding:10px;border-radius:4px;margin-bottom:16px;">
+    <strong>Warnings:</strong>
+    <ul>{% for w in warnings %}<li>{{ w }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+{% if imported_count is not None %}
+<div class="help" style="background:#d4edda;padding:10px;border-radius:4px;margin-bottom:16px;">
+    ✅ Successfully imported <strong>{{ imported_count }}</strong> player stat rows.
+    <a href="{% url 'admin:tournament_match_changelist' %}">← Back to matches</a>
+</div>
+{% endif %}
+
+{% if preview_rows %}
+<h3>Preview ({{ preview_rows|length }} players matched)</h3>
+<table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+<thead>
+    <tr style="background:#417690;color:#fff;text-align:left;">
+        <th style="padding:6px;">Name</th>
+        <th style="padding:6px;">#</th>
+        <th style="padding:6px;">Pos</th>
+        <th style="padding:6px;">Kills</th>
+        <th style="padding:6px;">Aces</th>
+        <th style="padding:6px;">Blocks</th>
+        <th style="padding:6px;">Assists</th>
+        <th style="padding:6px;">Att</th>
+        <th style="padding:6px;">Pass</th>
+    </tr>
+</thead>
+<tbody>
+    {% for r in preview_rows %}
+    <tr style="border-bottom:1px solid #ddd;">
+        <td style="padding:6px;">{{ r.player_name }}</td>
+        <td style="padding:6px;">{{ r.jersey_number }}</td>
+        <td style="padding:6px;">{{ r.position }}</td>
+        <td style="padding:6px;">{{ r.kills }}</td>
+        <td style="padding:6px;">{{ r.aces }}</td>
+        <td style="padding:6px;">{{ r.blocks }}</td>
+        <td style="padding:6px;">{{ r.assists }}</td>
+        <td style="padding:6px;">{{ r.attack_attempts }}</td>
+        <td style="padding:6px;">{{ r.pass_attempts }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="confirm">
+    <input type="hidden" name="cached_file" value="1">
+    <p>Upload the same file again to confirm import:</p>
+    <input type="file" name="csv_file" accept=".csv" required>
+    <button type="submit" class="default" style="margin-top:8px;">
+        ✅ Confirm Import ({{ preview_rows|length }} players)
+    </button>
+</form>
+{% endif %}
+
+{% if not preview_rows and imported_count is None %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="preview">
+    <p>
+        <label for="csv_file">Select CSV file (SoloStats Live export):</label><br>
+        <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+    </p>
+    <button type="submit" class="default">Preview Import</button>
+</form>
+{% endif %}
+
+<p style="margin-top:24px;"><a href="{% url 'admin:tournament_match_changelist' %}">← Back to matches</a></p>
+{% endblock %}

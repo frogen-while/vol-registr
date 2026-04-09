@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ page_title }} — Panel{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/panel.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="pnl">
+
+  <!-- Sidebar -->
+  <aside class="pnl-sidebar" id="pnlSidebar">
+    <div class="pnl-sidebar__header">
+      <img src="{% static 'assets/logo.png' %}" alt="PA" class="pnl-sidebar__logo">
+      <span class="pnl-sidebar__brand">Panel</span>
+      <button class="pnl-sidebar__close" id="sidebarClose" aria-label="Close menu">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <nav class="pnl-sidebar__nav">
+      {# ── Control Room ─────────────────────────── #}
+      <div class="pnl-nav-zone">
+        <span class="pnl-nav-zone__label">Control Room</span>
+        <a href="{% url 'panel:dashboard' %}"
+           class="pnl-nav-item{% if nav_section == 'dashboard' %} active{% endif %}">
+          <i class="fas fa-tower-broadcast"></i><span>Control Room</span>
+        </a>
+        <a href="{% url 'panel:audit' %}"
+           class="pnl-nav-item{% if nav_section == 'audit' %} active{% endif %}">
+          <i class="fas fa-clock-rotate-left"></i><span>Audit Log</span>
+        </a>
+      </div>
+
+      {# ── Teams & Registration ─────────────────── #}
+      <div class="pnl-nav-zone">
+        <span class="pnl-nav-zone__label">Teams &amp; Registration</span>
+        <a href="{% url 'panel:teams' %}"
+           class="pnl-nav-item{% if nav_section == 'teams' %} active{% endif %}">
+          <i class="fas fa-users"></i><span>Teams</span>
+        </a>
+        <a href="{% url 'panel:checkin' %}"
+           class="pnl-nav-item{% if nav_section == 'checkin' %} active{% endif %}">
+          <i class="fas fa-clipboard-check"></i><span>Check-in</span>
+        </a>
+      </div>
+
+      {# ── Match Operations ─────────────────────── #}
+      <div class="pnl-nav-zone">
+        <span class="pnl-nav-zone__label">Match Operations</span>
+        <a href="{% url 'panel:schedule' %}"
+           class="pnl-nav-item{% if nav_section == 'schedule' %} active{% endif %}">
+          <i class="fas fa-calendar-alt"></i><span>Schedule</span>
+        </a>
+      </div>
+
+      {# ── Stats & Rankings ─────────────────────── #}
+      <div class="pnl-nav-zone">
+        <span class="pnl-nav-zone__label">Stats &amp; Rankings</span>
+        <a href="{% url 'panel:stats' %}"
+           class="pnl-nav-item{% if nav_section == 'stats' %} active{% endif %}">
+          <i class="fas fa-chart-bar"></i><span>Statistics</span>
+        </a>
+        <a href="{% url 'panel:rankings' %}"
+           class="pnl-nav-item{% if nav_section == 'rankings' %} active{% endif %}">
+          <i class="fas fa-trophy"></i><span>Rankings</span>
+        </a>
+      </div>
+
+      {# ── Media & Publishing ───────────────────── #}
+      <div class="pnl-nav-zone">
+        <span class="pnl-nav-zone__label">Media &amp; Publishing</span>
+        <a href="{% url 'panel:gallery' %}"
+           class="pnl-nav-item{% if nav_section == 'gallery' %} active{% endif %}">
+          <i class="fas fa-images"></i><span>Gallery</span>
+        </a>
+        <a href="{% url 'panel:highlights' %}"
+           class="pnl-nav-item{% if nav_section == 'highlights' %} active{% endif %}">
+          <i class="fas fa-film"></i><span>Highlights</span>
+        </a>
+        <a href="{% url 'panel:dreamteam' %}"
+           class="pnl-nav-item{% if nav_section == 'dreamteam' %} active{% endif %}">
+          <i class="fas fa-star"></i><span>Dream Team</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="pnl-sidebar__footer">
+      <a href="{% url 'panel:logout' %}" class="pnl-nav-item pnl-nav-item--logout">
+        <i class="fas fa-sign-out-alt"></i><span>Log out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main content area -->
+  <div class="pnl-main">
+    <!-- Top bar -->
+    <header class="pnl-topbar">
+      <button class="pnl-topbar__burger" id="sidebarToggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <h1 class="pnl-topbar__title">{{ page_title }}</h1>
+      {% block topbar_actions %}{% endblock %}
+      <div class="pnl-topbar__user">
+        <i class="fas fa-user-circle"></i>
+        <span>{{ request.user.username }}</span>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <main class="pnl-content">
+      {% if messages %}
+      <div class="pnl-messages">
+        {% for message in messages %}
+        <div class="pnl-alert pnl-alert--{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  {# ── Command Palette Overlay ─────────────────────── #}
+  <div class="pnl-cmd-overlay" id="cmdPalette" style="display:none;">
+    <div class="pnl-cmd-backdrop" id="cmdBackdrop"></div>
+    <div class="pnl-cmd-dialog">
+      <div class="pnl-cmd-input-wrap">
+        <i class="fas fa-search pnl-cmd-icon"></i>
+        <input type="text" class="pnl-cmd-input" id="cmdInput"
+               placeholder="Type a command or search… (teams, matches, pages)" autocomplete="off">
+        <kbd class="pnl-cmd-kbd">Esc</kbd>
+      </div>
+      <ul class="pnl-cmd-results" id="cmdResults"></ul>
+    </div>
+  </div>
+
+  <script src="{% static 'js/panel.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,195 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-schedule">
+
+  {# ── Filter toolbar ────────────────────────────────── #}
+  <form method="get" class="pnl-filters">
+    <div class="pnl-filters__row">
+      <div class="pnl-field">
+        <select name="stage">
+          <option value="">All stages</option>
+          {% for val, label in stage_choices %}
+            <option value="{{ val }}" {% if stage_filter == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="pnl-field">
+        <select name="status">
+          <option value="">All statuses</option>
+          {% for val, label in match_status_choices %}
+            <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="pnl-field">
+        <select name="court">
+          <option value="">All courts</option>
+          {% for val, label in courts %}
+            <option value="{{ val }}" {% if court_filter == val|stringformat:"d" %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="pnl-field">
+        <select name="group">
+          <option value="">All groups</option>
+          {% for g in groups %}
+            <option value="{{ g }}" {% if group_filter == g %}selected{% endif %}>Group {{ g }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {# preserve view mode through filters #}
+      <input type="hidden" name="view" value="{{ view_mode }}">
+      <button type="submit" class="pnl-btn pnl-btn--primary">Filter</button>
+      <a href="{% url 'panel:schedule' %}?view={{ view_mode }}" class="pnl-btn">Reset</a>
+    </div>
+  </form>
+
+  {# ── View mode toggle ──────────────────────────────── #}
+  <div class="pnl-view-toggle">
+    <a href="{% url 'panel:match_create' %}" class="pnl-btn pnl-btn--primary" style="margin-right:8px;">
+      <i class="fas fa-plus"></i> New Match
+    </a>
+    <a href="{% url 'panel:schedule_csv_import' %}" class="pnl-btn" style="margin-right:auto;">
+      <i class="fas fa-file-csv"></i> Import CSV
+    </a>
+    <a href="?view=table{% if stage_filter %}&stage={{ stage_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if court_filter %}&court={{ court_filter }}{% endif %}{% if group_filter %}&group={{ group_filter }}{% endif %}"
+       class="pnl-btn{% if view_mode == 'table' %} pnl-btn--primary{% endif %}">
+      <i class="fas fa-table"></i> Table
+    </a>
+    <a href="?view=grid{% if stage_filter %}&stage={{ stage_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if court_filter %}&court={{ court_filter }}{% endif %}{% if group_filter %}&group={{ group_filter }}{% endif %}"
+       class="pnl-btn{% if view_mode == 'grid' %} pnl-btn--primary{% endif %}">
+      <i class="fas fa-th"></i> Grid
+    </a>
+  </div>
+
+  {% if view_mode == "table" %}
+  {# ── TABLE VIEW ──────────────────────────────────── #}
+  {% if matches %}
+  <div class="pnl-table-wrap">
+    <table class="pnl-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Stage</th>
+          <th>Group</th>
+          <th>Time</th>
+          <th>Court</th>
+          <th>Team A</th>
+          <th></th>
+          <th>Team B</th>
+          <th>Score</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in matches %}
+        <tr class="{% if m.pk in conflict_pks %}pnl-row--conflict{% endif %}">
+          <td>
+            <a href="#" class="pnl-match-panel-link" data-panel-url="{% url 'panel:match_panel' pk=m.pk %}">{{ m.match_number }}</a>
+          </td>
+          <td>{{ m.get_stage_display }}</td>
+          <td>{{ m.group|default:"—" }}</td>
+          <td>{{ m.start_time|date:"d M H:i" }}</td>
+          <td>Court {{ m.court }}</td>
+          <td>
+            {% if m.team_a %}
+              <a href="{% url 'panel:team_detail' pk=m.team_a_id %}">{{ m.team_a.name }}</a>
+            {% else %}TBD{% endif %}
+          </td>
+          <td class="pnl-vs">vs</td>
+          <td>
+            {% if m.team_b %}
+              <a href="{% url 'panel:team_detail' pk=m.team_b_id %}">{{ m.team_b.name }}</a>
+            {% else %}TBD{% endif %}
+          </td>
+          <td class="pnl-score">{{ m.score_a }} : {{ m.score_b }}</td>
+          <td>
+            <span class="pnl-badge pnl-badge--{% if m.status == 'FINISHED' %}green{% elif m.status == 'LIVE' %}red{% elif m.status == 'SCHEDULED' %}cyan{% else %}yellow{% endif %}">
+              {{ m.get_status_display }}
+            </span>
+          </td>
+          <td class="pnl-schedule__indicators">
+            {% if m.pk in conflict_pks %}<i class="fas fa-exclamation-triangle pnl-conflict-icon" title="Conflict detected"></i>{% endif %}
+            {% if m.stats_imported %}<i class="fas fa-chart-bar pnl-stats-icon" title="Stats imported"></i>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="pnl-muted" style="margin-top:12px;">{{ matches|length }} match{{ matches|length|pluralize:"es" }}</p>
+  {% else %}
+    <div class="pnl-stub" style="min-height:30vh;">
+      <div class="pnl-stub__icon"><i class="fas fa-calendar-alt"></i></div>
+      <h2>No matches found</h2>
+      <p>Try adjusting your filters.</p>
+    </div>
+  {% endif %}
+
+  {% else %}
+  {# ── GRID VIEW ───────────────────────────────────── #}
+  {% if grid_data %}
+  <div class="pnl-grid-schedule">
+    {# header row #}
+    <div class="pnl-grid-schedule__header">
+      <div class="pnl-grid-schedule__time-head">Time</div>
+      {% for val, label in courts %}
+        <div class="pnl-grid-schedule__court-head">{{ label }}</div>
+      {% endfor %}
+    </div>
+    {# data rows #}
+    {% for row in grid_data %}
+    <div class="pnl-grid-schedule__row">
+      <div class="pnl-grid-schedule__time">{{ row.time|date:"H:i" }}</div>
+      {% for m in row.cells %}
+      <div class="pnl-grid-schedule__cell{% if m %} pnl-grid-schedule__cell--{% if m.status == 'FINISHED' %}finished{% elif m.status == 'LIVE' %}live{% else %}scheduled{% endif %}{% if m.pk in conflict_pks %} pnl-grid-schedule__cell--conflict{% endif %}{% endif %}"
+           {% if m %}data-panel-url="{% url 'panel:match_panel' pk=m.pk %}"{% endif %}>
+        {% if m %}
+          <div class="pnl-grid-schedule__match-num"><a href="#" class="pnl-match-panel-link" data-panel-url="{% url 'panel:match_panel' pk=m.pk %}">#{{ m.match_number }}</a></div>
+          <div class="pnl-grid-schedule__teams">
+            {{ m.team_a.name|default:"TBD" }}<br>
+            <span class="pnl-vs">vs</span><br>
+            {{ m.team_b.name|default:"TBD" }}
+          </div>
+          {% if m.status == 'FINISHED' or m.status == 'LIVE' %}
+            <div class="pnl-grid-schedule__score">{{ m.score_a }} : {{ m.score_b }}</div>
+          {% endif %}
+          <div class="pnl-grid-schedule__card-footer">
+            <span class="pnl-badge pnl-badge--{% if m.status == 'FINISHED' %}green{% elif m.status == 'LIVE' %}red{% elif m.status == 'SCHEDULED' %}cyan{% else %}yellow{% endif %}" style="font-size:.7rem;">
+              {{ m.get_status_display }}
+            </span>
+            {% if m.pk in conflict_pks %}<i class="fas fa-exclamation-triangle pnl-conflict-icon" title="Conflict"></i>{% endif %}
+            {% if m.stats_imported %}<i class="fas fa-chart-bar pnl-stats-icon" title="Stats imported"></i>{% endif %}
+          </div>
+        {% else %}
+          <span class="pnl-muted" style="font-size:.8rem;">—</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  <p class="pnl-muted" style="margin-top:12px;">{{ matches|length }} match{{ matches|length|pluralize:"es" }}</p>
+  {% else %}
+    <div class="pnl-stub" style="min-height:30vh;">
+      <div class="pnl-stub__icon"><i class="fas fa-calendar-alt"></i></div>
+      <h2>No matches found</h2>
+      <p>Try adjusting your filters.</p>
+    </div>
+  {% endif %}
+  {% endif %}
+
+</div>
+
+{# ── Match drawer shell ──────────────────────────────── #}
+<div class="pnl-drawer-overlay" id="matchDrawerOverlay"></div>
+<div class="pnl-drawer" id="matchDrawer">
+  <div class="pnl-drawer__header">
+    <h3 class="pnl-drawer__title">Match Panel</h3>
+    <button class="pnl-drawer__close">&times;</button>
+  </div>
+  <div class="pnl-drawer__body" id="matchDrawerBody"></div>
+</div>
+{% endblock %}

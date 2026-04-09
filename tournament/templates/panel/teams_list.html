@@ -1,0 +1,206 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-teams">
+
+  <div class="pnl-pipeline-topbar">
+    <div class="pnl-view-toggle">
+      <a href="{% url 'panel:teams' %}" class="pnl-btn pnl-btn--sm pnl-btn--primary">
+        <i class="fas fa-table"></i> Table
+      </a>
+      <a href="{% url 'panel:teams_pipeline' %}" class="pnl-btn pnl-btn--sm">
+        <i class="fas fa-columns"></i> Pipeline
+      </a>
+    </div>
+    <a href="{% url 'panel:team_create' %}" class="pnl-btn pnl-btn--primary pnl-btn--sm">
+      <i class="fas fa-plus"></i> Create Team
+    </a>
+  </div>
+
+  {# ── Saved views (quick filters) ────────────────────── #}
+  <div class="pnl-saved-views">
+    <span class="pnl-saved-views__label">Quick views:</span>
+    <a href="{% url 'panel:teams' %}?payment=0"
+       class="pnl-saved-view {% if payment == '0' and not status and not checkin and not readiness %}pnl-saved-view--active{% endif %}">
+      <i class="fas fa-money-bill-wave"></i> Unpaid
+    </a>
+    <a href="{% url 'panel:teams' %}?status=approved&checkin=0"
+       class="pnl-saved-view {% if status == 'approved' and checkin == '0' %}pnl-saved-view--active{% endif %}">
+      <i class="fas fa-clipboard-check"></i> Approved, not checked in
+    </a>
+    <a href="{% url 'panel:teams' %}?readiness=incomplete"
+       class="pnl-saved-view {% if readiness == 'incomplete' and not status and not payment %}pnl-saved-view--active{% endif %}">
+      <i class="fas fa-exclamation-triangle"></i> Incomplete roster
+    </a>
+  </div>
+
+  {# ── Filter toolbar ────────────────────────────────── #}
+  <form method="get" class="pnl-filters">
+    <div class="pnl-filters__row">
+      <div class="pnl-field pnl-filters__search">
+        <input type="text" name="q" value="{{ q }}" placeholder="Search team / captain…">
+      </div>
+      <div class="pnl-field">
+        <select name="status">
+          <option value="">All statuses</option>
+          {% for val, label in status_choices %}
+            <option value="{{ val }}" {% if status == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="pnl-field">
+        <select name="payment">
+          <option value="">All payments</option>
+          {% for val, label in payment_choices %}
+            <option value="{{ val }}" {% if payment == val|stringformat:"d" %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="pnl-field">
+        <select name="group">
+          <option value="">All groups</option>
+          {% for g in groups %}
+            <option value="{{ g }}" {% if group == g %}selected{% endif %}>Group {{ g }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="pnl-field">
+        <select name="checkin">
+          <option value="">All check-in</option>
+          <option value="1" {% if checkin == "1" %}selected{% endif %}>Checked in</option>
+          <option value="0" {% if checkin == "0" %}selected{% endif %}>Not checked in</option>
+        </select>
+      </div>
+      <div class="pnl-field">
+        <select name="readiness">
+          <option value="">All readiness</option>
+          <option value="incomplete" {% if readiness == "incomplete" %}selected{% endif %}>Incomplete only</option>
+        </select>
+      </div>
+      <button type="submit" class="pnl-btn pnl-btn--primary">Filter</button>
+      <a href="{% url 'panel:teams' %}" class="pnl-btn">Reset</a>
+    </div>
+  </form>
+
+  {# ── Batch action bar ────────────────────────────────── #}
+  {% if teams %}
+  <form method="post" action="{% url 'panel:team_batch' %}" id="batchForm">
+    {% csrf_token %}
+    <div class="pnl-batch" id="batchBar" style="display:none;">
+      <span class="pnl-batch__count"><span id="batchCount">0</span> selected</span>
+      <select name="batch_action" class="pnl-batch__select" required>
+        <option value="">— Action —</option>
+        <option value="mark_awaiting">Mark Awaiting Payment</option>
+        <option value="mark_paid">Mark Paid</option>
+        <option value="approve">Approve</option>
+        <option value="reset">Reset to Registered</option>
+      </select>
+      <button type="submit" class="pnl-btn pnl-btn--primary pnl-btn--sm">Apply</button>
+    </div>
+
+  {# ── Teams table ───────────────────────────────────── #}
+  <div class="pnl-table-wrap">
+    <table class="pnl-table pnl-table--sortable">
+      <thead>
+        <tr>
+          <th class="pnl-th--check"><input type="checkbox" id="selectAll" title="Select all"></th>
+          {% with s=sort d=dir %}
+          <th>
+            <a class="pnl-sort{% if s == 'name' %} active{% endif %}" href="?{{ query_base }}&sort=name&dir={% if s == 'name' and d == 'asc' %}desc{% else %}asc{% endif %}{% if q %}&q={{ q }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if payment %}&payment={{ payment }}{% endif %}{% if group %}&group={{ group }}{% endif %}{% if checkin %}&checkin={{ checkin }}{% endif %}">
+              Name {% if s == 'name' %}{% if d == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+            </a>
+          </th>
+          <th>
+            <a class="pnl-sort{% if s == 'group' %} active{% endif %}" href="?sort=group&dir={% if s == 'group' and d == 'asc' %}desc{% else %}asc{% endif %}{% if q %}&q={{ q }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if payment %}&payment={{ payment }}{% endif %}{% if group %}&group={{ group }}{% endif %}{% if checkin %}&checkin={{ checkin }}{% endif %}">
+              Group {% if s == 'group' %}{% if d == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+            </a>
+          </th>
+          <th>
+            <a class="pnl-sort{% if s == 'status' %} active{% endif %}" href="?sort=status&dir={% if s == 'status' and d == 'asc' %}desc{% else %}asc{% endif %}{% if q %}&q={{ q }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if payment %}&payment={{ payment }}{% endif %}{% if group %}&group={{ group }}{% endif %}{% if checkin %}&checkin={{ checkin }}{% endif %}">
+              Status {% if s == 'status' %}{% if d == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+            </a>
+          </th>
+          <th>
+            <a class="pnl-sort{% if s == 'payment' %} active{% endif %}" href="?sort=payment&dir={% if s == 'payment' and d == 'asc' %}desc{% else %}asc{% endif %}{% if q %}&q={{ q }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if payment %}&payment={{ payment }}{% endif %}{% if group %}&group={{ group }}{% endif %}{% if checkin %}&checkin={{ checkin }}{% endif %}">
+              Payment {% if s == 'payment' %}{% if d == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+            </a>
+          </th>
+          <th>Check-in</th>
+          <th>Readiness</th>
+          <th>
+            <a class="pnl-sort{% if s == 'players' %} active{% endif %}" href="?sort=players&dir={% if s == 'players' and d == 'asc' %}desc{% else %}asc{% endif %}{% if q %}&q={{ q }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if payment %}&payment={{ payment }}{% endif %}{% if group %}&group={{ group }}{% endif %}{% if checkin %}&checkin={{ checkin }}{% endif %}">
+              Players {% if s == 'players' %}{% if d == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+            </a>
+          </th>
+          <th>Captain</th>
+          <th>
+            <a class="pnl-sort{% if s == 'created' %} active{% endif %}" href="?sort=created&dir={% if s == 'created' and d == 'asc' %}desc{% else %}asc{% endif %}{% if q %}&q={{ q }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if payment %}&payment={{ payment }}{% endif %}{% if group %}&group={{ group }}{% endif %}{% if checkin %}&checkin={{ checkin }}{% endif %}">
+              Created {% if s == 'created' %}{% if d == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+            </a>
+          </th>
+          {% endwith %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in teams %}
+        <tr>
+          <td class="pnl-td--check"><input type="checkbox" name="team_ids" value="{{ t.pk }}" class="team-check"></td>
+          <td><strong><a href="{% url 'panel:team_detail' pk=t.pk %}" class="pnl-team-drawer-link" data-drawer-url="{% url 'panel:team_drawer' pk=t.pk %}">{{ t.name }}</a></strong></td>
+          <td>{{ t.group_name|default:"—" }}</td>
+          <td>
+            <span class="pnl-badge pnl-badge--{% if t.status == 'APPROVED' %}green{% elif t.status == 'PAID' %}blue{% elif t.status == 'AWAITING_PAYMENT' %}yellow{% else %}gray{% endif %}">
+              {{ t.get_status_display }}
+            </span>
+          </td>
+          <td>
+            <span class="pnl-badge pnl-badge--{% if t.payment_status == 1 %}green{% elif t.payment_status == 2 %}red{% else %}gray{% endif %}">
+              {{ t.get_payment_status_display }}
+            </span>
+          </td>
+          <td>
+            {% if t.checked_in %}
+              <span class="pnl-badge pnl-badge--green">Yes</span>
+            {% else %}
+              <span class="pnl-badge pnl-badge--gray">No</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="pnl-readiness">
+              <span class="pnl-readiness__dot {% if t.is_payment_ok %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Payment {% if t.is_payment_ok %}OK{% else %}pending{% endif %}"><i class="fas fa-credit-card"></i></span>
+              <span class="pnl-readiness__dot {% if t.is_roster_complete %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Roster {% if t.is_roster_complete %}complete{% else %}incomplete (need 6+){% endif %}"><i class="fas fa-users"></i></span>
+              <span class="pnl-readiness__dot {% if t.is_contacts_complete %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Contacts {% if t.is_contacts_complete %}complete{% else %}missing{% endif %}"><i class="fas fa-address-book"></i></span>
+              <span class="pnl-readiness__dot {% if t.is_logo_uploaded %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Logo {% if t.is_logo_uploaded %}uploaded{% else %}missing{% endif %}"><i class="fas fa-image"></i></span>
+              <span class="pnl-readiness__dot {% if not t.has_duplicate_jerseys %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Jerseys {% if not t.has_duplicate_jerseys %}OK{% else %}duplicates!{% endif %}"><i class="fas fa-tshirt"></i></span>
+            </div>
+          </td>
+          <td>{{ t.player_count }}</td>
+          <td>{{ t.cap_name }} {{ t.cap_surname }}</td>
+          <td>{{ t.created_at|date:"d M Y" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="pnl-muted" style="margin-top:12px;">{{ teams|length }} team{{ teams|length|pluralize }}</p>
+  </form>
+  {% else %}
+    <div class="pnl-stub" style="min-height:30vh;">
+      <div class="pnl-stub__icon"><i class="fas fa-search"></i></div>
+      <h2>No teams found</h2>
+      <p>Try adjusting your filters.</p>
+    </div>
+  {% endif %}
+</div>
+
+{# ── Drawer shell ────────────────────────────────────── #}
+<div class="pnl-drawer-overlay" id="teamDrawerOverlay"></div>
+<div class="pnl-drawer" id="teamDrawer">
+  <div class="pnl-drawer__header">
+    <span class="pnl-drawer__title">Team Details</span>
+    <button class="pnl-drawer__close" id="teamDrawerClose"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="pnl-drawer__body" id="teamDrawerBody">
+    <div class="pnl-muted" style="text-align:center;padding:40px 0;">Loading…</div>
+  </div>
+</div>
+{% endblock %}

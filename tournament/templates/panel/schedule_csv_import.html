@@ -1,0 +1,101 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-form-page">
+
+  <a href="{% url 'panel:schedule' %}" class="pnl-btn" style="margin-bottom:16px;">
+    <i class="fas fa-arrow-left"></i> Back to Schedule
+  </a>
+
+  {% if csv_errors %}
+  <div class="pnl-alert pnl-alert--error">
+    <h4><i class="fas fa-exclamation-triangle"></i> Errors</h4>
+    <ul>
+      {% for err in csv_errors %}
+        <li>{{ err }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if preview %}
+  {# ── Step 2: Preview + Confirm ──────────────────────── #}
+  <div class="pnl-dash-card">
+    <h3 class="pnl-dash-card__title">Preview — {{ preview|length }} match{{ preview|length|pluralize:"es" }}</h3>
+    <div class="pnl-table-wrap">
+      <table class="pnl-table">
+        <thead>
+          <tr>
+            <th>Row</th>
+            <th>Time</th>
+            <th>Court</th>
+            <th>Stage</th>
+            <th>Group</th>
+            <th>Team A</th>
+            <th></th>
+            <th>Team B</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in preview %}
+          <tr>
+            <td>{{ r.row_num }}</td>
+            <td>{{ r.time|date:"d M H:i" }}</td>
+            <td>Court {{ r.court }}</td>
+            <td>{{ r.stage }}</td>
+            <td>{{ r.group|default:"—" }}</td>
+            <td>{{ r.team_a_name }}</td>
+            <td class="pnl-vs">vs</td>
+            <td>{{ r.team_b_name }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <form method="post" style="margin-top:20px;">
+      {% csrf_token %}
+      <div class="pnl-form__actions">
+        <button type="submit" name="confirm" value="1" class="pnl-btn pnl-btn--primary">
+          <i class="fas fa-check"></i> Confirm Import ({{ preview|length }})
+        </button>
+        <a href="{% url 'panel:schedule_csv_import' %}" class="pnl-btn">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  {% else %}
+  {# ── Step 1: Upload CSV ─────────────────────────────── #}
+  <div class="pnl-dash-card">
+    <h3 class="pnl-dash-card__title">Upload Schedule CSV</h3>
+    <p class="pnl-muted" style="margin-bottom:16px;">
+      Expected columns: <code>Time, Team A, Team B, Group, Court</code>
+      (optional: <code>Stage</code>, defaults to GROUP).<br>
+      Delimiter: comma or semicolon. Match numbers are auto-assigned.
+    </p>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="pnl-csv-upload">
+        <div class="pnl-field">
+          <label for="csv_file">CSV File</label>
+          <input type="file" name="csv_file" id="csv_file" accept=".csv,text/csv" required>
+        </div>
+        <button type="submit" class="pnl-btn pnl-btn--primary" style="margin-top:12px;">
+          <i class="fas fa-upload"></i> Upload & Preview
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="pnl-dash-card" style="margin-top:20px;">
+    <h3 class="pnl-dash-card__title">CSV Format Example</h3>
+    <pre class="pnl-code-block">Time,Team A,Team B,Group,Court
+2026-01-18 09:00,Volley Stars,Beach Kings,A,1
+2026-01-18 09:00,Thunder,Sky High,B,2
+2026-01-18 09:50,Fire Squad,Net Ninjas,C,3</pre>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static static_v %}
+
+{% block title %}{{ page_title|default:"Tournament Hub — Pocket Aces Volleyball" }}{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="{{ page_description|default:'Live standings, schedule, and highlights from the Pocket Aces Spring Volleyball Tournament.' }}">
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+<meta property="og:title" content="{{ page_title|default:'Tournament Hub — Pocket Aces Volleyball' }}">
+<meta property="og:description" content="{{ page_description|default:'Live standings, schedule, and highlights from the Pocket Aces Spring Volleyball Tournament.' }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<link rel="stylesheet" href="{% static_v 'css/sports-preview.css' %}" />
+{% endblock %}
+
+{% block content %}
+<section class="sp-page">
+  <div class="sp-page__noise" aria-hidden="true"></div>
+  <div class="container sp-page__container">
+
+    <div class="page-hero">
+      <div class="page-hero__accent" aria-hidden="true"></div>
+      <p class="page-hero__eyebrow" data-i18n="sports_hub.eyebrow">Pocket Aces Match Centre</p>
+      <h1 class="page-hero__title" data-i18n="sports_hub.title">Tournament Hub</h1>
+      <p class="page-hero__sub" data-i18n="sports_hub.subtitle">Standings, schedule and highlights. Nothing extra between you and the tournament.</p>
+      {% include 'tournament/partials/preview_nav.html' with active='hub' %}
+    </div>
+
+    <nav class="sp-anchor-nav sp-reveal" aria-label="Tournament sections">
+      <a href="#standings" class="is-active" data-section-link="standings" data-i18n="sports_hub.nav_standings">Standings</a>
+      <a href="#matches" data-section-link="matches" data-i18n="sports_hub.nav_matches">Matches</a>
+      <a href="#highlights" data-section-link="highlights" data-i18n="sports_hub.nav_highlights">Highlights</a>
+    </nav>
+
+    <section class="sp-section sp-reveal" id="standings">
+      <div class="sp-section__head">
+        <h2 data-i18n="sports_hub.standings_title">Tables</h2>
+        <div class="sp-toggle-row" role="tablist" aria-label="Standings view">
+          <button type="button" class="sp-toggle is-active" data-view-toggle="standings" data-view="groups" role="tab" aria-selected="true" data-i18n="sports_hub.standings_view_groups">Groups</button>
+          <button type="button" class="sp-toggle" data-view-toggle="standings" data-view="overall" role="tab" aria-selected="false" data-i18n="sports_hub.standings_view_overall">Overall</button>
+        </div>
+      </div>
+
+      <div class="sp-dual-grid" data-view-panel="standings" data-view="groups">
+        {% for group in standings %}
+        <article class="sp-card">
+          <h3 class="sp-card__title">{{ group.group }}</h3>
+          <div class="sp-table-wrap">
+            <table class="sp-table sp-table--standings">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col" data-i18n="sports_hub.col_team">Team</th>
+                  <th scope="col" data-i18n="sports_hub.col_played">P</th>
+                  <th scope="col" data-i18n="sports_hub.col_wins">W</th>
+                  <th scope="col" data-i18n="sports_hub.col_losses">L</th>
+                  <th scope="col" data-i18n="sports_hub.col_sets">Sets</th>
+                  <th scope="col" data-i18n="sports_hub.col_points">Pts</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in group.rows %}
+                <tr>
+                  <td><span class="sp-rank-badge">{{ forloop.counter }}</span></td>
+                  <td>{% if row.team_id %}<a href="{% url 'tournament_team' row.team_id %}" class="sp-table-team-link">{% if row.logo %}<img src="{{ row.logo|asset_url }}" alt="" class="sp-table-logo--lg">{% endif %}<span>{{ row.name }}</span></a>{% else %}{{ row.name }}{% endif %}</td>
+                  <td>{{ row.played }}</td>
+                  <td>{{ row.wins }}</td>
+                  <td>{{ row.losses }}</td>
+                  <td>{{ row.sets }}</td>
+                  <td><strong>{{ row.points }}</strong></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+
+      <article class="sp-card is-hidden" data-view-panel="standings" data-view="overall">
+        <h3 class="sp-card__title" data-i18n="sports_hub.overall_title">Overall ranking</h3>
+        <div class="sp-table-wrap">
+          <table class="sp-table sp-table--standings">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col" data-i18n="sports_hub.col_team">Team</th>
+                <th scope="col" data-i18n="sports_hub.col_group">Group</th>
+                <th scope="col" data-i18n="sports_hub.col_played">P</th>
+                <th scope="col" data-i18n="sports_hub.col_wins">W</th>
+                <th scope="col" data-i18n="sports_hub.col_losses">L</th>
+                <th scope="col" data-i18n="sports_hub.col_sets">Sets</th>
+                <th scope="col" data-i18n="sports_hub.col_points">Pts</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in overall_standings %}
+              <tr>
+                <td><span class="sp-rank-badge">{{ row.rank }}</span></td>
+                <td>{% if row.team_id %}<a href="{% url 'tournament_team' row.team_id %}" class="sp-table-team-link">{% if row.logo %}<img src="{{ row.logo|asset_url }}" alt="" class="sp-table-logo--lg">{% endif %}<span>{{ row.name }}</span></a>{% else %}{{ row.name }}{% endif %}</td>
+                <td>{{ row.group }}</td>
+                <td>{{ row.played }}</td>
+                <td>{{ row.wins }}</td>
+                <td>{{ row.losses }}</td>
+                <td>{{ row.sets }}</td>
+                <td><strong>{{ row.points }}</strong></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="sp-section sp-reveal" id="matches">
+      <div class="sp-section__head">
+        <h2 data-i18n="sports_hub.matches_title">Schedule</h2>
+      </div>
+
+      {% if schedule_slots %}
+      <div class="sp-sched">
+        {% for slot in schedule_slots %}
+        <div class="sp-sched__group">
+          <div class="sp-sched__time-bar">
+            <span class="sp-sched__time-mark" aria-hidden="true"></span>
+            <strong class="sp-sched__time-value">{{ slot.time }}</strong>
+            <span class="sp-sched__time-dash" aria-hidden="true"></span>
+          </div>
+          <div class="sp-sched__list">
+            {% for item in slot.games %}
+            <article class="sp-sched__row{% if item.status_raw == 'LIVE' %} sp-sched__row--live{% endif %}{% if item.status_raw == 'FINISHED' %} sp-sched__row--done{% endif %}">
+              <div class="sp-sched__battle">
+                <div class="sp-sched__battle-meta">
+                  <span class="sp-sched__stage-badge">{{ item.stage }}</span>
+                  <span class="sp-sched__court">{{ item.court }}</span>
+                </div>
+                <div class="sp-sched__battle-main">
+                  <div class="sp-sched__team">
+                    {% if item.home_logo %}<img src="{{ item.home_logo|asset_url }}" alt="" class="sp-sched__flag">{% else %}<span class="sp-sched__flag-abbr">{{ item.home_short }}</span>{% endif %}
+                    <span class="sp-sched__name">{{ item.home }}</span>
+                  </div>
+                  <div class="sp-sched__versus" aria-hidden="true"><span>VS</span></div>
+                  <div class="sp-sched__team sp-sched__team--away">
+                    {% if item.away_logo %}<img src="{{ item.away_logo|asset_url }}" alt="" class="sp-sched__flag">{% else %}<span class="sp-sched__flag-abbr">{{ item.away_short }}</span>{% endif %}
+                    <span class="sp-sched__name">{{ item.away }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="sp-sched__result">
+                {% if item.score_home != "" and item.score_away != "" %}
+                <div class="sp-sched__scoreline">
+                  <span class="sp-sched__score">{{ item.score_home }}</span>
+                  <span class="sp-sched__score-sep">:</span>
+                  <span class="sp-sched__score">{{ item.score_away }}</span>
+                </div>
+                {% else %}
+                <span class="sp-sched__clock">{{ slot.time }}</span>
+                {% endif %}
+                {% if item.status_raw == 'LIVE' %}
+                <span class="sp-status-badge sp-status-badge--live">LIVE</span>
+                {% elif item.status_raw == 'FINISHED' %}
+                <span class="sp-status-badge sp-status-badge--finished">Final</span>
+                {% else %}
+                <span class="sp-status-badge sp-status-badge--scheduled">{{ item.status }}</span>
+                {% endif %}
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="sp-copy" data-i18n="sports_hub.no_matches">No matches scheduled yet.</p>
+      {% endif %}
+    </section>
+
+    <section class="sp-section sp-reveal" id="highlights">
+      <div class="sp-section__head">
+        <h2 data-i18n="sports_hub.highlights_title">Highlights</h2>
+      </div>
+
+      {% if highlights %}
+      <div class="sp-highlight-grid">
+        {% for item in highlights %}
+        <article class="sp-highlight-card sp-highlight-card--v2">
+          <div class="sp-highlight-card__head">
+            <span class="sp-highlight-card__tag">{{ item.match }}</span>
+          </div>
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.copy }}</p>
+          {% if item.match_id %}
+          <a href="{% url 'tournament_match' item.match_id %}" class="sp-highlight-card__link" data-i18n="sports_hub.view_match">View match →</a>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="sp-copy" data-i18n="sports_hub.no_highlights">No highlights yet.</p>
+      {% endif %}
+    </section>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static_v 'js/sports-preview.js' %}"></script>
+{% endblock %}

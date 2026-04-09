@@ -14,7 +14,7 @@ html.rt-modal-open {
   flex-direction: column;
   align-items: flex-start;
   gap: 0.3rem;
-  border-left: 4px solid #0ea5e9;
+  border-left: 4px solid #38bdf8;
   padding-left: 1.5rem;
   text-decoration: none;
   color: #94a3b8;
@@ -33,7 +33,7 @@ html.rt-modal-open {
 }
 
 .rt-link:focus-visible {
-  outline: 2px solid #0ea5e9;
+  outline: 2px solid #38bdf8;
   outline-offset: 4px;
   border-radius: 0.2rem;
 }
@@ -167,13 +167,13 @@ html.rt-modal-open {
 /* --- Modal Content Box (Sports Scoreboard) --- */
 .rt-modal__content.sports-scoreboard {
   position: relative;
-  background-color: #050a14;
+  background-color: #070b14;
   background-image: 
-    linear-gradient(45deg, rgba(14, 165, 233, 0.05) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(14, 165, 233, 0.05) 25%, transparent 25%);
+    linear-gradient(45deg, rgba(56, 189, 248, 0.05) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(56, 189, 248, 0.05) 25%, transparent 25%);
   background-size: 4px 4px;
-  border: 1px solid rgba(14, 165, 233, 0.3);
-  border-left: 6px solid #0ea5e9;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-left: 6px solid #38bdf8;
   border-radius: 0; /* Sharp corners for aggressive look */
   padding: 3rem 2rem;
   width: 95%;
@@ -184,7 +184,7 @@ html.rt-modal-open {
   transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.3s ease;
   box-shadow: 
     -15px 15px 40px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(14, 165, 233, 0.1);
+    0 0 20px rgba(56, 189, 248, 0.1);
   max-height: 90vh;
   overflow-y: auto;
 }
@@ -199,7 +199,7 @@ html.rt-modal-open {
   position: absolute;
   top: 0;
   right: 0;
-  background: #0ea5e9;
+  background: #38bdf8;
   border: none;
   border-radius: 0;
   width: 3rem;
@@ -208,7 +208,7 @@ html.rt-modal-open {
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
-  color: #050a14;
+  color: #070b14;
   cursor: pointer;
   transition: all 0.2s ease;
   clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%);
@@ -216,7 +216,7 @@ html.rt-modal-open {
 
 .rt-modal__close:hover {
   background: #ffffff;
-  color: #0ea5e9;
+  color: #38bdf8;
 }
 
 /* --- Modal Header --- */
@@ -224,7 +224,7 @@ html.rt-modal-open {
   text-align: left;
   margin-bottom: 2.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid rgba(14, 165, 233, 0.2);
+  border-bottom: 2px solid rgba(56, 189, 248, 0.2);
   position: relative;
 }
 
@@ -235,8 +235,8 @@ html.rt-modal-open {
   left: 0;
   width: 60px;
   height: 2px;
-  background: #0ea5e9;
-  box-shadow: 0 0 10px #0ea5e9;
+  background: #38bdf8;
+  box-shadow: 0 0 10px #38bdf8;
 }
 
 .rt-modal__title {
@@ -248,14 +248,14 @@ html.rt-modal-open {
   font-style: italic;
   margin-bottom: 0.25rem;
   color: #ffffff;
-  text-shadow: 3px 3px 0px rgba(14, 165, 233, 0.5);
+  text-shadow: 3px 3px 0px rgba(56, 189, 248, 0.5);
 }
 
 .rt-modal__subtitle {
   font-family: 'Montserrat', sans-serif;
   font-size: 0.8rem;
   font-weight: 800;
-  color: #0ea5e9;
+  color: #38bdf8;
   text-transform: uppercase;
   letter-spacing: 0.3em;
 }
@@ -301,14 +301,14 @@ html.rt-modal-open {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent);
   transition: left 0.5s;
 }
 
 @media (min-width: 768px) {
   .rt-team-row:hover {
     background: rgba(30, 41, 59, 0.8);
-    border-color: rgba(14, 165, 233, 0.4);
+    border-color: rgba(56, 189, 248, 0.4);
     transform: translateX(10px) skewX(-1deg);
     box-shadow: -5px 5px 20px rgba(0, 0, 0, 0.4);
   }
@@ -319,8 +319,8 @@ html.rt-modal-open {
 }
 
 .rt-in-tournament {
-  border-left-color: #0ea5e9;
-  background: linear-gradient(90deg, rgba(14, 165, 233, 0.1) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border-left-color: #38bdf8;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.1) 0%, rgba(15, 23, 42, 0.8) 100%);
 }
 
 .rt-reserve {
@@ -340,8 +340,8 @@ html.rt-modal-open {
 }
 
 .rt-in-tournament .rt-col-rank {
-  color: #0ea5e9;
-  text-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+  color: #38bdf8;
+  text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
 }
 
 .rt-col-team {
@@ -367,9 +367,9 @@ html.rt-modal-open {
   width: 8rem;
   font-size: 0.8rem;
   font-weight: 800;
-  color: #0ea5e9;
+  color: #38bdf8;
   text-transform: uppercase;
-  background: rgba(14, 165, 233, 0.1);
+  background: rgba(56, 189, 248, 0.1);
   padding: 0.35rem 0.5rem;
   text-align: center;
   clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);

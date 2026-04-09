@@ -1,0 +1,2509 @@
+/* ================================================================
+   Arena Editorial — Design System  (Dark Unified Theme)
+   Pocket Aces Tournament · Public Entity Pages
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
+/* ── 1. Design Tokens ─────────────────────────────────────────── */
+
+:root {
+  /* Ink — text hierarchy (light on dark) */
+  --ae-ink-950: #f0f4f8;
+  --ae-ink-900: #0f1f30;
+  --ae-ink-800: #c8d6e0;
+  --ae-ink-600: #94a8b8;
+  --ae-ink-400: #6b8599;
+  --ae-ink-100: #0f1a28;
+
+  /* Chalk — surface hierarchy (dark) */
+  --ae-chalk-50:  #070b14;
+  --ae-chalk-100: #0d1a2a;
+  --ae-chalk-200: #162236;
+
+  /* Sand → muted accents (slate) */
+  --ae-sand-300: #8ba3b8;
+  --ae-sand-500: #6b8599;
+
+  /* Net — brand blue (sky-400, unified) */
+  --ae-net-500: #38bdf8;
+  --ae-net-600: #0ea5e9;
+
+  /* Serve — accent warm */
+  --ae-serve-500: #ff9f4a;
+  --ae-serve-600: #e68a3a;
+
+  /* State (brighter for dark bg) */
+  --ae-success-500: #34d399;
+  --ae-danger-500:  #f87171;
+
+  /* Accent surfaces (dark fills for badges, heroes, etc.) */
+  --ae-accent-surface: #0a1525;
+  --ae-accent-surface-2: #1a3050;
+
+  /* Lines — blue-tinted */
+  --ae-line-soft:   rgba(56, 189, 248, 0.06);
+  --ae-line-strong: rgba(56, 189, 248, 0.12);
+
+  /* Shadows — darker for dark theme */
+  --ae-shadow-soft: 0 14px 30px rgba(0, 0, 0, 0.30);
+  --ae-shadow-hero: 0 24px 60px rgba(0, 0, 0, 0.40);
+
+  /* Motion */
+  --ae-motion-1: 120ms;
+  --ae-motion-2: 180ms;
+  --ae-motion-3: 260ms;
+  --ae-motion-4: 420ms;
+
+  /* Easing */
+  --ae-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ae-ease-soft:     cubic-bezier(0.25, 0.8, 0.25, 1);
+  --ae-ease-sharp:    cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Fonts (unified with sp-) */
+  --ae-font-display: 'Barlow Condensed', 'Segoe UI', Arial, sans-serif;
+  --ae-font-ui:      'Montserrat', 'Segoe UI', Arial, sans-serif;
+}
+
+
+/* ── 2. Page Wrapper & Background ─────────────────────────────── */
+
+.ae-page {
+  font-family: var(--ae-font-ui);
+  color: var(--ae-ink-950);
+  background-color: var(--ae-chalk-50);
+  background-image:
+    radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.10), transparent 28%),
+    radial-gradient(circle at 100% 0, rgba(255, 159, 74, 0.08), transparent 22%),
+    linear-gradient(180deg, #070b14 0%, #0a1525 48%, #070b14 100%);
+  min-height: 100vh;
+  padding-top: clamp(6rem, 10vh, 8rem);
+  padding-bottom: 4rem;
+  position: relative;
+}
+
+.ae-page__court-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(0deg,   var(--ae-line-soft) 1px, transparent 1px),
+    linear-gradient(90deg,  var(--ae-line-soft) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.04;
+  z-index: 0;
+}
+
+.ae-page > *:not(.ae-page__court-grid) {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ── 3. Container ─────────────────────────────────────────────── */
+
+.ae-container {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 3vw, 2rem);
+  width: 100%;
+}
+
+
+/* ── 4. Typography ────────────────────────────────────────────── */
+
+.ae-title-hero {
+  font-family: var(--ae-font-display);
+  font-size: clamp(3.6rem, 8vw, 7.2rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 0.9;
+  color: var(--ae-ink-950);
+}
+
+.ae-title-section {
+  font-family: var(--ae-font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 0.92;
+  color: var(--ae-ink-950);
+}
+
+.ae-title-card {
+  font-family: var(--ae-font-ui);
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ae-ink-950);
+}
+
+.ae-score-digits {
+  font-family: var(--ae-font-display);
+  font-size: clamp(3.4rem, 7vw, 6rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 0.88;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Score-digit scale-in (§8.6) */
+@keyframes ae-score-pop {
+  from { transform: scale(0.96); opacity: 0.8; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.ae-reveal.is-visible .ae-scoreboard__value strong {
+  animation: ae-score-pop 180ms var(--ae-ease-standard) both;
+}
+
+.ae-body {
+  font-family: var(--ae-font-ui);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.ae-body--muted {
+  color: var(--ae-ink-800);
+}
+
+.ae-inline-logo {
+  height: 1.1em;
+  vertical-align: middle;
+  margin-right: 0.3em;
+}
+
+.ae-small {
+  font-family: var(--ae-font-ui);
+  font-size: 0.86rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.ae-meta {
+  font-family: var(--ae-font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+.ae-eyebrow {
+  font-family: var(--ae-font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: var(--ae-sand-500);
+}
+
+.ae-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ── 5. Surface System ────────────────────────────────────────── */
+
+.ae-surface-light {
+  background: var(--ae-chalk-100);
+  box-shadow: var(--ae-shadow-soft);
+  border-radius: 12px;
+}
+
+.ae-surface-warm {
+  background: var(--ae-chalk-200);
+  border-radius: 12px;
+}
+
+.ae-surface-dark {
+  background: var(--ae-accent-surface);
+  color: #fff;
+  border-radius: 12px;
+}
+
+.ae-surface-dark .ae-eyebrow {
+  color: var(--ae-sand-300);
+}
+
+.ae-surface-dark .ae-title-section,
+.ae-surface-dark .ae-title-card,
+.ae-surface-dark .ae-title-hero {
+  color: #fff;
+}
+
+
+/* ── 6. Badge System ──────────────────────────────────────────── */
+
+.ae-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2em 0.65em;
+  border-radius: 100px;
+  font-family: var(--ae-font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.ae-badge--win {
+  background: var(--ae-success-500);
+  color: #fff;
+}
+
+.ae-badge--loss {
+  background: var(--ae-danger-500);
+  color: #fff;
+}
+
+.ae-badge--captain {
+  background: var(--ae-sand-500);
+  color: #fff;
+}
+
+.ae-badge--status {
+  background: var(--ae-accent-surface-2);
+  color: #fff;
+}
+
+.ae-badge--live {
+  background: var(--ae-serve-500);
+  color: #fff;
+  animation: ae-pulse-live 1.2s ease-in-out infinite;
+}
+
+@keyframes ae-pulse-live {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.72; }
+}
+
+.ae-badge--scheduled {
+  background: var(--ae-chalk-200);
+  color: var(--ae-ink-800);
+}
+
+.ae-badge--finished {
+  background: var(--ae-accent-surface-2);
+  color: #fff;
+}
+
+
+/* ── 7. Back Link ─────────────────────────────────────────────── */
+
+.ae-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--ae-font-ui);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ae-net-500);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: color var(--ae-motion-1) var(--ae-ease-standard);
+}
+
+.ae-back-link:hover {
+  color: var(--ae-net-600);
+}
+
+
+/* ── 8. Entity Navigation ─────────────────────────────────────── */
+
+.ae-entity-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.ae-entity-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--ae-font-ui);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ae-ink-800);
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  transition:
+    background var(--ae-motion-1) var(--ae-ease-standard),
+    color var(--ae-motion-1) var(--ae-ease-standard);
+}
+
+.ae-entity-nav a:hover,
+.ae-entity-nav a.is-active {
+  background: var(--ae-chalk-200);
+  color: var(--ae-ink-950);
+}
+
+
+/* ── 9. Sticky Anchor Nav ─────────────────────────────────────── */
+
+.ae-anchor-nav {
+  position: sticky;
+  top: 5.6rem;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.65rem 1rem;
+  margin-bottom: 2rem;
+  background: var(--ae-chalk-50);
+  border-bottom: 1px solid var(--ae-line-soft);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.ae-anchor-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.ae-anchor-nav__link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.85rem;
+  border-radius: 100px;
+  font-family: var(--ae-font-ui);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ae-ink-800);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background var(--ae-motion-2) var(--ae-ease-standard),
+    color var(--ae-motion-1) var(--ae-ease-standard);
+}
+
+.ae-anchor-nav__link:hover {
+  background: var(--ae-chalk-200);
+  color: var(--ae-ink-950);
+}
+
+.ae-anchor-nav__link.is-active {
+  background: var(--ae-net-500);
+  color: #fff;
+}
+
+
+/* ── 10. Section Structure ────────────────────────────────────── */
+
+.ae-section {
+  margin-bottom: 3rem;
+}
+
+.ae-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.ae-section__cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ae-section__head .ae-eyebrow {
+  margin-bottom: 0;
+}
+
+
+/* ── 11. Reveal System ────────────────────────────────────────── */
+
+.ae-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity var(--ae-motion-3) var(--ae-ease-standard),
+    transform var(--ae-motion-3) var(--ae-ease-standard);
+}
+
+.ae-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ae-reveal--d1 { transition-delay: 60ms; }
+.ae-reveal--d2 { transition-delay: 120ms; }
+.ae-reveal--d3 { transition-delay: 180ms; }
+.ae-reveal--d4 { transition-delay: 240ms; }
+
+
+/* ── 12. Comparison Bars (shared: Team & Match pages) ─────────── */
+
+.ae-comparison-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  gap: 1rem;
+}
+
+.ae-comparison-header__team {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.ae-comparison-header__team--away {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.ae-comparison-header__crest {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ae-chalk-200);
+  flex-shrink: 0;
+}
+
+.ae-comparison-header__crest img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ae-comparison-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ae-comparison-row {
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--ae-line-soft);
+}
+
+.ae-comparison-row__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.45rem;
+  gap: 0.5rem;
+}
+
+.ae-comparison-row__head > span:first-child,
+.ae-comparison-row__head > span:last-child {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-width: 3rem;
+}
+
+.ae-comparison-row__head > span:first-child {
+  text-align: left;
+}
+
+.ae-comparison-row__head > span:last-child {
+  text-align: right;
+}
+
+.ae-comparison-row__head > span:nth-child(2) {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ae-ink-800);
+  text-align: center;
+  flex: 1;
+}
+
+.ae-comparison-bars {
+  display: flex;
+  gap: 4px;
+}
+
+.ae-comparison-bars__lane {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ae-chalk-200);
+  overflow: hidden;
+}
+
+.ae-comparison-bars__lane > span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  transition: width var(--ae-motion-4) var(--ae-ease-soft);
+}
+
+.ae-comparison-bars__lane--home > span {
+  background: var(--ae-net-500);
+  margin-left: auto;
+}
+
+.ae-comparison-bars__lane--away > span {
+  background: var(--ae-serve-500);
+}
+
+
+/* ── 13. Form Strip (shared: Team & Match Hero) ───────────────── */
+
+.ae-form-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ae-form-strip__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ae-form-strip__dot--w {
+  background: var(--ae-success-500);
+}
+
+.ae-form-strip__dot--l {
+  background: var(--ae-danger-500);
+}
+
+
+/* ── 14. Stat Table Wrapper ───────────────────────────────────── */
+
+.ae-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  background: var(--ae-chalk-100);
+}
+
+.ae-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ae-font-ui);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.ae-table th {
+  position: sticky;
+  top: 0;
+  background: var(--ae-chalk-200);
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ae-ink-800);
+  white-space: nowrap;
+  user-select: none;
+  border-bottom: 2px solid var(--ae-line-strong);
+}
+
+.ae-table th[data-ae-sort-key] {
+  cursor: pointer;
+  transition: color var(--ae-motion-1) var(--ae-ease-standard);
+}
+
+.ae-table th[data-ae-sort-key]:hover {
+  color: var(--ae-net-500);
+}
+
+.ae-table th[data-ae-sort-key]::after {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 0.35em;
+  vertical-align: middle;
+  border-left: 3.5px solid transparent;
+  border-right: 3.5px solid transparent;
+  border-top: 4px solid currentColor;
+  opacity: 0.35;
+  transition: opacity var(--ae-motion-1), transform var(--ae-motion-1);
+}
+
+.ae-table th.ae-sort-asc::after {
+  opacity: 1;
+  transform: rotate(180deg);
+}
+
+.ae-table th.ae-sort-desc::after {
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.ae-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--ae-line-soft);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ae-table tbody tr {
+  transition: background var(--ae-motion-1) var(--ae-ease-standard);
+}
+
+.ae-table tbody tr:hover {
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.ae-table td a {
+  color: var(--ae-net-500);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.ae-table td a:hover {
+  color: var(--ae-net-600);
+  text-decoration: underline;
+}
+
+
+/* ── 15. Toggle Row (Team A / Team B / All) ───────────────────── */
+
+.ae-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.ae-toggle {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--ae-line-strong);
+  border-radius: 100px;
+  background: transparent;
+  font-family: var(--ae-font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ae-ink-800);
+  cursor: pointer;
+  transition:
+    background var(--ae-motion-2) var(--ae-ease-standard),
+    color var(--ae-motion-1) var(--ae-ease-standard),
+    border-color var(--ae-motion-1) var(--ae-ease-standard);
+}
+
+.ae-toggle:hover {
+  background: var(--ae-chalk-200);
+  border-color: var(--ae-chalk-200);
+}
+
+.ae-toggle.is-active {
+  background: var(--ae-net-500);
+  color: #fff;
+  border-color: var(--ae-net-500);
+}
+
+
+/* ── 16. Card Base ────────────────────────────────────────────── */
+
+.ae-card {
+  background: var(--ae-chalk-100);
+  border-radius: 12px;
+  box-shadow: var(--ae-shadow-soft);
+  padding: 1.25rem;
+}
+
+.ae-card__title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.ae-card__headline {
+  font-family: var(--ae-font-ui);
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  font-weight: 700;
+  color: var(--ae-ink-950);
+}
+
+
+/* ── 17. Hero Base ────────────────────────────────────────────── */
+
+.ae-hero {
+  border-radius: 16px;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  margin-bottom: 2rem;
+  min-height: 180px;
+}
+
+.ae-hero--light {
+  background: var(--ae-chalk-100);
+  box-shadow: var(--ae-shadow-hero);
+}
+
+.ae-hero--dark {
+  background: var(--ae-accent-surface);
+  color: #fff;
+  box-shadow: var(--ae-shadow-hero);
+}
+
+
+/* ── 18. Hero Stats Row ───────────────────────────────────────── */
+
+.ae-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.75rem;
+  margin-top: 1.25rem;
+}
+
+.ae-hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.ae-hero-stat__value {
+  font-family: var(--ae-font-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ae-ink-950);
+}
+
+.ae-hero-stat__label {
+  font-family: var(--ae-font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ae-ink-800);
+}
+
+.ae-hero--dark .ae-hero-stat__value {
+  color: #fff;
+}
+
+.ae-hero--dark .ae-hero-stat__label {
+  color: var(--ae-sand-300);
+}
+
+
+/* ── 19. Scoreboard (Match Hero) ──────────────────────────────── */
+
+.ae-scoreboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ae-scoreboard__top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ae-scoreboard__datetime {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ae-sand-300);
+}
+
+.ae-scoreboard__body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 4vw, 3rem);
+  width: 100%;
+}
+
+.ae-scoreboard__team {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.ae-scoreboard__team--away {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.ae-scoreboard__crest {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ae-ink-900);
+  flex-shrink: 0;
+  font-family: var(--ae-font-display);
+  font-size: 1.2rem;
+  color: var(--ae-ink-800);
+}
+
+.ae-scoreboard__crest--lg {
+  width: 72px;
+  height: 72px;
+}
+
+.ae-scoreboard__crest img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ae-scoreboard__name {
+  font-family: var(--ae-font-ui);
+  font-size: clamp(0.92rem, 2vw, 1.15rem);
+  font-weight: 700;
+  color: #fff;
+}
+
+.ae-scoreboard__name a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--ae-motion-1) var(--ae-ease-standard);
+}
+
+.ae-scoreboard__name a:hover {
+  color: var(--ae-net-500);
+}
+
+.ae-scoreboard__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+.ae-scoreboard__value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.ae-scoreboard__value strong {
+  font-family: var(--ae-font-display);
+  font-size: clamp(3.4rem, 7vw, 6rem);
+  font-weight: 400;
+  line-height: 0.88;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.ae-scoreboard__value span {
+  font-family: var(--ae-font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--ae-sand-300);
+  line-height: 1;
+}
+
+.ae-scoreboard__set-pills {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ae-set-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2em 0.55em;
+  border-radius: 6px;
+  font-family: var(--ae-font-ui);
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: var(--ae-ink-900);
+  color: var(--ae-ink-800);
+}
+
+.ae-set-pill--home {
+  background: rgba(56, 189, 248, 0.2);
+  color: var(--ae-net-500);
+}
+
+.ae-set-pill--away {
+  background: rgba(255, 159, 74, 0.2);
+  color: var(--ae-serve-500);
+}
+
+/* Set-pill stagger animation (§8.6 — 40ms per pill) */
+@keyframes ae-pill-in {
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.ae-reveal.is-visible .ae-set-pill {
+  animation: ae-pill-in 200ms var(--ae-ease-standard) both;
+}
+.ae-reveal.is-visible .ae-set-pill:nth-child(1) { animation-delay: 0ms; }
+.ae-reveal.is-visible .ae-set-pill:nth-child(2) { animation-delay: 40ms; }
+.ae-reveal.is-visible .ae-set-pill:nth-child(3) { animation-delay: 80ms; }
+.ae-reveal.is-visible .ae-set-pill:nth-child(4) { animation-delay: 120ms; }
+.ae-reveal.is-visible .ae-set-pill:nth-child(5) { animation-delay: 160ms; }
+
+.ae-scoreboard__meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ae-scoreboard__meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.ae-scoreboard__meta-item span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ae-sand-300);
+}
+
+.ae-scoreboard__meta-item strong {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ── 20. Match Navigation ─────────────────────────────────────── */
+
+.ae-match-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ae-match-nav__link {
+  font-family: var(--ae-font-ui);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ae-net-500);
+  text-decoration: none;
+  transition: color var(--ae-motion-1) var(--ae-ease-standard);
+}
+
+.ae-match-nav__link:hover {
+  color: #fff;
+}
+
+
+/* ── 21. Storyline (Match Hero accent) ────────────────────────── */
+
+.ae-storyline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(255, 159, 74, 0.12);
+  color: var(--ae-serve-500);
+  font-family: var(--ae-font-ui);
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+}
+
+
+/* ── 22. MVP / Spotlight Card ─────────────────────────────────── */
+
+.ae-mvp-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  background: var(--ae-chalk-100);
+  border-radius: 12px;
+  box-shadow: var(--ae-shadow-soft);
+  border-left: 4px solid var(--ae-sand-500);
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow var(--ae-motion-2) var(--ae-ease-standard);
+}
+
+a.ae-mvp-card:hover {
+  box-shadow: var(--ae-shadow-hero);
+}
+
+.ae-mvp-card__photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ae-mvp-card__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ae-mvp-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ae-mvp-card__name {
+  font-family: var(--ae-font-ui);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ae-ink-950);
+  margin-bottom: 0.15rem;
+}
+
+.ae-mvp-card__team {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ae-ink-800);
+}
+
+.ae-mvp-card__team-logo {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.ae-mvp-card__reason {
+  margin-top: 0.35rem;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--ae-ink-800);
+  line-height: 1.5;
+}
+
+
+/* ── 23. Stage Rail (Match page primary block) ────────────────── */
+
+.ae-stage-rail {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0.35rem 0;
+  scroll-snap-type: x mandatory;
+  mask-image: linear-gradient(to right, transparent, #000 2%, #000 98%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 2%, #000 98%, transparent);
+}
+
+.ae-stage-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.ae-stage-rail__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 180px;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: var(--ae-chalk-100);
+  border: 1px solid var(--ae-line-soft);
+  text-decoration: none;
+  color: var(--ae-ink-950);
+  scroll-snap-align: center;
+  flex-shrink: 0;
+  transition:
+    border-color var(--ae-motion-2) var(--ae-ease-standard),
+    box-shadow var(--ae-motion-2) var(--ae-ease-standard);
+}
+
+.ae-stage-rail__item:hover {
+  border-color: var(--ae-net-500);
+}
+
+.ae-stage-rail__item.is-current {
+  border-color: var(--ae-serve-500);
+  box-shadow: 0 0 0 2px rgba(255, 159, 74, 0.18);
+  background: var(--ae-chalk-200);
+}
+
+.ae-stage-rail__court {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ae-sand-500);
+}
+
+.ae-stage-rail__teams {
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.ae-stage-rail__score {
+  font-family: var(--ae-font-display);
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ae-ink-800);
+}
+
+
+/* ── 24. Player Cards (mobile responsive) ─────────────────────── */
+
+.ae-player-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.ae-player-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  background: var(--ae-chalk-100);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--ae-ink-950);
+  transition: box-shadow var(--ae-motion-2) var(--ae-ease-standard);
+}
+
+.ae-player-card:hover {
+  box-shadow: var(--ae-shadow-soft);
+}
+
+.ae-player-card__photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--ae-chalk-200);
+}
+
+.ae-player-card__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ae-player-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ae-player-card__body h3 {
+  font-family: var(--ae-font-ui);
+  font-size: 0.92rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ae-player-card__position {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ae-ink-800);
+}
+
+.ae-player-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.ae-player-card--total {
+  border-top: 2px solid var(--ae-line-strong);
+  background: var(--ae-chalk-100);
+}
+
+.ae-kpi-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+}
+
+.ae-kpi-chip {
+  display: inline-flex;
+  padding: 0.15em 0.45em;
+  border-radius: 6px;
+  background: var(--ae-chalk-200);
+  font-family: var(--ae-font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ae-ink-800);
+}
+
+
+/* ── 25. Highlight Cards ──────────────────────────────────────── */
+
+.ae-highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.ae-highlight-card {
+  padding: 1.25rem;
+  background: var(--ae-chalk-100);
+  border-radius: 12px;
+  border-left: 3px solid var(--ae-sand-500);
+}
+
+
+/* ── Match Story Component ────────────────────────────────────── */
+
+.ae-match-story {
+  background: var(--ae-chalk-100);
+  border-radius: 16px;
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.ae-match-story__headline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--ae-font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--ae-ink-950);
+  margin-bottom: 1.5rem;
+}
+
+.ae-match-story__headline i {
+  color: var(--ae-net-500);
+  font-size: 0.85em;
+}
+
+.ae-match-story__momentum {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ae-match-story__set-row {
+  display: grid;
+  grid-template-columns: 4rem 1fr 3.5rem;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.ae-match-story__set-label {
+  font-family: var(--ae-font-ui);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ae-ink-400);
+}
+
+.ae-match-story__bar-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ae-ink-100);
+  overflow: hidden;
+}
+
+.ae-match-story__bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 600ms var(--ae-ease-standard);
+}
+
+.ae-match-story__bar--home {
+  background: var(--ae-net-500);
+}
+
+.ae-match-story__bar--away {
+  background: var(--ae-serve-500);
+}
+
+.ae-match-story__set-score {
+  font-family: var(--ae-font-ui);
+  font-weight: 700;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--ae-ink-600);
+}
+
+.ae-match-story__set-score--home {
+  color: var(--ae-net-500);
+}
+
+.ae-match-story__set-score--away {
+  color: var(--ae-serve-500);
+}
+
+
+/* ================================================================
+   Team Page — Phase 2 Components
+   ================================================================ */
+
+/* ── 26. Team Hero Layout ─────────────────────────────────────── */
+
+.ae-hero--team {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  flex-wrap: wrap;
+}
+
+.ae-hero__crest {
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--ae-ink-900);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ae-font-display);
+  font-size: 1.8rem;
+  color: var(--ae-ink-800);
+}
+
+.ae-hero__crest img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ae-hero__identity {
+  flex: 1;
+  min-width: 200px;
+}
+
+.ae-hero__identity .ae-title-hero {
+  margin-bottom: 0.15rem;
+}
+
+.ae-hero__captain {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ae-ink-800);
+  margin-top: 0.35rem;
+}
+
+.ae-hero--dark .ae-hero__captain {
+  color: var(--ae-sand-300);
+}
+
+.ae-hero__form-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+
+/* ── 27. Roster Wall ──────────────────────────────────────────── */
+
+.ae-roster {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.75rem;
+}
+
+.ae-roster__card {
+  position: relative;
+  border-radius: 12px;
+  background: var(--ae-chalk-100);
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    box-shadow var(--ae-motion-2) var(--ae-ease-standard),
+    transform var(--ae-motion-2) var(--ae-ease-standard),
+    opacity var(--ae-motion-3) var(--ae-ease-standard);
+}
+
+.ae-roster__card:hover {
+  box-shadow: var(--ae-shadow-soft);
+  transform: translateY(-2px);
+}
+
+.ae-roster__card:focus-visible {
+  outline: 2px solid var(--ae-net-500);
+  outline-offset: 2px;
+}
+
+.ae-roster__media {
+  position: relative;
+  padding-top: 120%;
+  overflow: hidden;
+  background: var(--ae-chalk-200);
+}
+
+.ae-roster__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--ae-motion-3) var(--ae-ease-soft);
+}
+
+.ae-roster__card:hover .ae-roster__media img {
+  transform: scale(1.04);
+}
+
+.ae-roster__caption {
+  padding: 0.65rem 0.75rem;
+}
+
+.ae-roster__name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  line-height: 1.25;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ae-roster__sub {
+  font-size: 0.72rem;
+  color: var(--ae-ink-800);
+  font-weight: 600;
+}
+
+.ae-roster__expand-icon {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(15, 20, 25, 0.55);
+  color: #fff;
+  font-size: 0.72rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--ae-motion-2) var(--ae-ease-standard);
+  pointer-events: none;
+}
+
+.ae-roster__card:hover .ae-roster__expand-icon,
+.ae-roster__card:focus-visible .ae-roster__expand-icon {
+  opacity: 1;
+}
+
+/* Expandable detail panel */
+.ae-roster__detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--ae-motion-3) var(--ae-ease-standard);
+}
+
+.ae-roster__detail__inner {
+  overflow: hidden;
+}
+
+.ae-roster__card.is-expanded .ae-roster__detail {
+  grid-template-rows: 1fr;
+}
+
+.ae-roster__detail__content {
+  padding: 0 0.75rem 0.75rem;
+  border-top: 1px solid var(--ae-line-soft);
+}
+
+.ae-roster__stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.45rem 0.75rem;
+  padding-top: 0.65rem;
+}
+
+.ae-roster__stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.ae-roster__stat__label {
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ae-ink-800);
+}
+
+.ae-roster__stat__value {
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ae-roster__cta {
+  display: inline-block;
+  margin-top: 0.6rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ae-net-500);
+  border: 1px solid var(--ae-net-500);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background var(--ae-motion-2) var(--ae-ease-standard),
+              color var(--ae-motion-2) var(--ae-ease-standard);
+}
+
+.ae-roster__cta:hover {
+  background: var(--ae-net-500);
+  color: #fff;
+}
+
+/* Dimmed neighbors */
+.ae-roster.has-expanded .ae-roster__card:not(.is-expanded) {
+  opacity: 0.5;
+  transform: scale(0.97);
+}
+
+.ae-roster.has-expanded .ae-roster__card:not(.is-expanded):hover {
+  opacity: 0.8;
+  transform: scale(1);
+}
+
+
+/* ── 28. Identity Stats Bands ─────────────────────────────────── */
+
+.ae-identity-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ae-identity-band {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--ae-chalk-100);
+  border-radius: 12px;
+  border-left: 3px solid var(--ae-sand-500);
+}
+
+.ae-identity-band__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.1rem;
+}
+
+.ae-identity-band--attack .ae-identity-band__icon {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--ae-net-500);
+}
+
+.ae-identity-band--serve .ae-identity-band__icon {
+  background: rgba(255, 159, 74, 0.12);
+  color: var(--ae-serve-500);
+}
+
+.ae-identity-band--block .ae-identity-band__icon {
+  background: rgba(107, 133, 153, 0.15);
+  color: var(--ae-sand-500);
+}
+
+.ae-identity-band--reception .ae-identity-band__icon {
+  background: rgba(52, 211, 153, 0.12);
+  color: var(--ae-success-500);
+}
+
+.ae-identity-band__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ae-identity-band__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ae-ink-800);
+}
+
+.ae-identity-band__copy {
+  font-size: 0.82rem;
+  color: var(--ae-ink-800);
+  line-height: 1.4;
+  margin-top: 0.1rem;
+}
+
+.ae-identity-band__value {
+  font-family: var(--ae-font-display);
+  font-size: 1.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ── 29. Breakdown Bars (single-team) ─────────────────────────── */
+
+.ae-breakdown-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.ae-breakdown-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ae-breakdown-bar__head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.ae-breakdown-bar__head strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.ae-breakdown-bar__track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ae-chalk-200);
+  overflow: hidden;
+}
+
+.ae-breakdown-bar__track > span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  transition: width var(--ae-motion-4) var(--ae-ease-soft);
+}
+
+.ae-breakdown-bar--net .ae-breakdown-bar__track > span {
+  background: var(--ae-net-500);
+}
+
+.ae-breakdown-bar--serve .ae-breakdown-bar__track > span {
+  background: var(--ae-serve-500);
+}
+
+
+/* ── 30. Team Leaders Grid ────────────────────────────────────── */
+
+.ae-leaders {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.ae-leader-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--ae-chalk-100);
+  border-radius: 12px;
+  border-left: 3px solid var(--ae-sand-500);
+  text-decoration: none;
+  color: var(--ae-ink-950);
+  transition: box-shadow var(--ae-motion-2) var(--ae-ease-standard);
+}
+
+.ae-leader-card:hover {
+  box-shadow: var(--ae-shadow-soft);
+}
+
+.ae-leader-card__photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--ae-chalk-200);
+}
+
+.ae-leader-card__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ae-leader-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ae-leader-card__category {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ae-sand-500);
+}
+
+.ae-leader-card__name {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.ae-leader-card__value {
+  font-family: var(--ae-font-display);
+  font-size: 1.4rem;
+  line-height: 1;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ── 31. Match Strip (team page) ──────────────────────────────── */
+
+.ae-match-strip {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0.35rem 0;
+  scroll-snap-type: x mandatory;
+  mask-image: linear-gradient(to right, transparent, #000 2%, #000 98%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 2%, #000 98%, transparent);
+}
+
+.ae-match-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.ae-match-strip__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 160px;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: var(--ae-chalk-100);
+  border: 1px solid var(--ae-line-soft);
+  text-decoration: none;
+  color: var(--ae-ink-950);
+  scroll-snap-align: center;
+  flex-shrink: 0;
+  transition: border-color var(--ae-motion-2) var(--ae-ease-standard);
+}
+
+.ae-match-strip__item:hover {
+  border-color: var(--ae-net-500);
+}
+
+.ae-match-strip__item--win {
+  border-left: 3px solid var(--ae-success-500);
+}
+
+.ae-match-strip__item--loss {
+  border-left: 3px solid var(--ae-danger-500);
+}
+
+.ae-match-strip__stage {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ae-sand-500);
+}
+
+.ae-match-strip__opponent {
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ae-match-strip__crest {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--ae-chalk-200);
+}
+
+.ae-match-strip__crest img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ae-match-strip__score {
+  font-family: var(--ae-font-display);
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ── 32. Team Page Summary Pills ──────────────────────────────── */
+
+.ae-summary-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.ae-summary-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3em 0.7em;
+  border-radius: 8px;
+  background: var(--ae-chalk-200);
+  font-family: var(--ae-font-ui);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ae-ink-800);
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ── 33. Team Page — Responsive Overrides ─────────────────────── */
+
+@media (max-width: 640px) {
+  .ae-hero--team {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .ae-hero__form-row {
+    justify-content: center;
+  }
+
+  .ae-hero-stats {
+    justify-content: center;
+  }
+
+  .ae-roster {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .ae-identity-band {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .ae-identity-band__value {
+    order: -1;
+  }
+
+  .ae-leaders {
+    grid-template-columns: 1fr;
+  }
+
+  .ae-leader-card__value {
+    font-size: 1.2rem;
+  }
+}
+
+.ae-highlight-card__tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ae-sand-500);
+  margin-bottom: 0.5rem;
+}
+
+.ae-highlight-card h3 {
+  font-family: var(--ae-font-ui);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  color: var(--ae-ink-950);
+}
+
+.ae-highlight-card p {
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--ae-ink-800);
+  margin: 0;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   PLAYER PAGE SECTIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── P1. Player Hero Layout ───────────────────────────────────── */
+
+.ae-hero--player {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 2.5rem;
+  position: relative;
+}
+
+.ae-player-hero__photo {
+  flex-shrink: 0;
+  width: 180px;
+  height: 180px;
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--ae-shadow-soft);
+}
+
+.ae-player-hero__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ae-player-hero__photo__number {
+  position: absolute;
+  bottom: 0.25rem;
+  right: 0.5rem;
+  font-family: var(--ae-font-display);
+  font-size: 2.4rem;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.45);
+}
+
+.ae-player-hero__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ae-player-hero__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.ae-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.75rem;
+  font-family: var(--ae-font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 100px;
+  background: var(--ae-chalk-200);
+  color: var(--ae-ink-950);
+}
+
+.ae-chip--pos {
+  background: var(--ae-net-500);
+  color: #fff;
+}
+
+.ae-chip--award {
+  background: var(--ae-sand-500);
+  color: #fff;
+}
+
+.ae-player-hero__role {
+  margin-top: 0.75rem;
+  font-family: var(--ae-font-ui);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ae-serve-500);
+}
+
+/* ── P2. Position Fingerprint ─────────────────────────────────── */
+
+.ae-fingerprint {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.ae-fingerprint__band {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--ae-chalk-100);
+  border: 1px solid var(--ae-line-soft);
+}
+
+.ae-fingerprint__label {
+  font-family: var(--ae-font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ae-ink-800);
+}
+
+.ae-fingerprint__value {
+  font-family: var(--ae-font-display);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  line-height: 1;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  color: var(--ae-ink-950);
+}
+
+/* ── P3. Stat Grid (summary cards with ranks) ─────────────────── */
+
+.ae-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.ae-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 1rem 1.25rem;
+  background: var(--ae-chalk-100);
+  border-radius: 0.75rem;
+  border: 1px solid var(--ae-line-soft);
+}
+
+.ae-stat-card__label {
+  font-family: var(--ae-font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ae-ink-800);
+}
+
+.ae-stat-card__value {
+  font-family: var(--ae-font-display);
+  font-size: 1.75rem;
+  line-height: 1;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  color: var(--ae-ink-950);
+}
+
+.ae-stat-card__rank {
+  font-family: var(--ae-font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ae-net-500);
+  margin-top: 0.15rem;
+}
+
+/* ── P4. Table Total Row ──────────────────────────────────────── */
+
+.ae-table-total td {
+  font-weight: 700;
+  border-top: 2px solid var(--ae-line-strong);
+  background: var(--ae-chalk-100);
+}
+
+/* ── P5. Awards List ──────────────────────────────────────────── */
+
+.ae-awards-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ae-awards-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--ae-line-soft);
+  background: var(--ae-chalk-100);
+  font-family: var(--ae-font-ui);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ae-ink-950);
+}
+
+/* ── P6. Player Form Strip (recent matches) ───────────────────── */
+
+.ae-player-form-strip {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.ae-player-form-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  font-family: var(--ae-font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 100px;
+  background: var(--ae-chalk-200);
+  color: var(--ae-ink-800);
+  text-decoration: none;
+  transition: background var(--ae-motion-1) var(--ae-ease-standard);
+}
+
+.ae-player-form-chip:hover {
+  background: rgba(56, 189, 248, 0.10);
+}
+
+.ae-player-form-chip strong {
+  color: var(--ae-net-500);
+}
+
+
+/* ── 26. Set Progression ──────────────────────────────────────── */
+
+.ae-set-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ae-set-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid var(--ae-line-soft);
+}
+
+.ae-set-row__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ae-sand-500);
+  min-width: 4rem;
+}
+
+.ae-set-row__score {
+  font-family: var(--ae-font-display);
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+  flex: 1;
+  text-align: center;
+}
+
+.ae-set-row__winner {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  min-width: 3.5rem;
+  text-align: right;
+}
+
+.ae-set-row__winner--home { color: var(--ae-net-500); }
+.ae-set-row__winner--away { color: var(--ae-serve-500); }
+
+
+/* ── 27. Match Leader Card extras ─────────────────────────────── */
+
+/* Alias for templates using __info instead of __body */
+.ae-leader-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Accent value color for match leaders */
+.ae-leader-card--accent .ae-leader-card__value {
+  color: var(--ae-serve-500);
+}
+
+
+/* ── 28. Empty State ──────────────────────────────────────────── */
+
+.ae-empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.ae-empty-state .ae-title-section {
+  margin-bottom: 0.5rem;
+}
+
+.ae-empty-state p {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ae-ink-800);
+  max-width: 42ch;
+  margin-inline: auto;
+}
+
+
+/* ── 28. Player Stat Grid (two-column layout) ─────────────────── */
+
+.ae-player-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+
+/* ── 29. Visibility Utilities ─────────────────────────────────── */
+
+.ae-desktop-only {
+  display: block;
+}
+
+.ae-mobile-only {
+  display: none;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+
+/* ── 30. Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 991px) {
+  .ae-player-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ae-scoreboard__body {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .ae-scoreboard__team,
+  .ae-scoreboard__team--away {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .ae-scoreboard__team--away {
+    flex-direction: row;
+  }
+
+  .ae-leaders {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .ae-page {
+    padding-top: clamp(4.5rem, 8vh, 6rem);
+  }
+
+  .ae-anchor-nav {
+    top: 4.2rem;
+  }
+
+  .ae-desktop-only {
+    display: none;
+  }
+
+  .ae-mobile-only {
+    display: block;
+  }
+
+  .ae-hero {
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+
+  .ae-hero-stats {
+    gap: 1rem;
+  }
+
+  .ae-hero-stat__value {
+    font-size: 1.25rem;
+  }
+
+  .ae-scoreboard__crest--lg {
+    width: 56px;
+    height: 56px;
+  }
+
+  .ae-scoreboard__value strong {
+    font-size: clamp(2.4rem, 10vw, 3.4rem);
+  }
+
+  .ae-comparison-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .ae-comparison-header__team--away {
+    flex-direction: row;
+  }
+
+  .ae-leaders {
+    grid-template-columns: 1fr;
+  }
+
+  .ae-highlight-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ae-section__head {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Player page mobile */
+  .ae-hero--player {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.25rem;
+  }
+
+  .ae-player-hero__photo {
+    width: 140px;
+    height: 140px;
+  }
+
+  .ae-player-hero__badges {
+    justify-content: center;
+  }
+
+  .ae-fingerprint {
+    grid-template-columns: 1fr;
+  }
+
+  .ae-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Touch targets – ensure ≥ 44px */
+  .ae-anchor-nav__link {
+    padding: 0.5rem 0.85rem;
+  }
+
+  .ae-toggle__btn {
+    padding: 0.5rem 0.85rem;
+  }
+}
+
+
+/* ── 31. Reduced Motion ───────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .ae-reveal {
+    opacity: 0;
+    transform: none;
+    transition: opacity 80ms ease;
+  }
+
+  .ae-reveal.is-visible {
+    opacity: 1;
+  }
+
+  .ae-reveal--d1,
+  .ae-reveal--d2,
+  .ae-reveal--d3,
+  .ae-reveal--d4 {
+    transition-delay: 0ms;
+  }
+
+  .ae-badge--live {
+    animation: none;
+  }
+
+  .ae-comparison-bars__lane > span {
+    transition: none;
+  }
+
+  /* Roster card hover / expand animations */
+  .ae-roster__card {
+    transition: box-shadow var(--ae-motion-2) var(--ae-ease-standard),
+                opacity var(--ae-motion-3) var(--ae-ease-standard);
+  }
+
+  .ae-roster__card:hover {
+    transform: none;
+  }
+
+  .ae-roster__media img {
+    transition: none;
+  }
+
+  .ae-roster__card:hover .ae-roster__media img {
+    transform: none;
+  }
+
+  .ae-roster__detail {
+    transition: none;
+  }
+
+  .ae-roster.has-expanded .ae-roster__card:not(.is-expanded) {
+    transform: none;
+  }
+
+  .ae-roster.has-expanded .ae-roster__card:not(.is-expanded):hover {
+    transform: none;
+  }
+
+  /* Sort-icon rotation */
+  .ae-table th[data-ae-sort-key]::after {
+    transition: none;
+  }
+
+  /* Score / pill animations */
+  .ae-reveal.is-visible .ae-scoreboard__value strong,
+  .ae-reveal.is-visible .ae-set-pill {
+    animation: none;
+  }
+
+  .ae-match-story__bar {
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}

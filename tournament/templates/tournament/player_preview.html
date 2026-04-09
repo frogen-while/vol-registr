@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+{% load static static_v %}
+
+{% block title %}{% if page_title %}{{ page_title }}{% else %}{{ player_profile.name }} — Pocket Aces Tournament{% endif %}{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="{{ page_description|default:'Player stats and match log.' }}">
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+<meta property="og:title" content="{{ page_title|default:'Player — Pocket Aces Tournament' }}">
+<meta property="og:description" content="{{ page_description|default:'Player stats and match log.' }}">
+<meta property="og:type" content="profile">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% if player_profile.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ player_profile.image|asset_url }}">{% endif %}
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ page_title|default:'Player — Pocket Aces Tournament' }}">
+<meta name="twitter:description" content="{{ page_description|default:'Player stats and match log.' }}">
+<link rel="stylesheet" href="{% static_v 'css/arena-editorial.css' %}" />
+{% endblock %}
+
+{% block content %}
+<section class="ae-page">
+  <div class="ae-page__court-grid" aria-hidden="true"></div>
+  <div class="ae-container">
+
+    {% if empty %}
+    <div class="page-hero">
+      <a href="{% url 'tournament_hub' %}" class="page-hero__crumb"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Tournament Hub</a>
+      <p class="page-hero__eyebrow">Player Stats</p>
+      <h1 class="page-hero__title">Player Stats</h1>
+    </div>
+    <div class="ae-empty-state ae-reveal">
+      <p>No player stats available yet. Data will appear here after matches are played.</p>
+    </div>
+    {% else %}
+
+    <div class="page-hero">
+      <a href="{% url 'tournament_hub' %}" class="page-hero__crumb"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Tournament Hub</a>
+      <div class="page-hero__accent" aria-hidden="true"></div>
+      <p class="page-hero__eyebrow">
+        {% if player_profile.team_id %}{{ player_profile.team }} · {% endif %}#{{ player_profile.number }}
+      </p>
+      <h1 class="page-hero__title">{{ player_profile.name }}</h1>
+    </div>
+
+    {# ══════════════════════════════════════════════════════════════
+       HERO — Player Profile
+       ══════════════════════════════════════════════════════════════ #}
+    <header class="ae-hero ae-hero--player ae-reveal">
+      <div class="ae-player-hero__photo">
+        <img src="{{ player_profile.image|asset_url }}" alt="{{ player_profile.name }}">
+        <span class="ae-player-hero__photo__number">#{{ player_profile.number }}</span>
+      </div>
+
+      <div class="ae-player-hero__body">
+        <span class="ae-eyebrow">
+          {% if player_profile.team_logo %}<img src="{{ player_profile.team_logo|asset_url }}" alt="{{ player_profile.team }}" class="ae-inline-logo">{% endif %}{% if player_profile.team_id %}<a href="{% url 'tournament_team' player_profile.team_id %}">{{ player_profile.team }}</a>{% else %}{{ player_profile.team }}{% endif %}
+        </span>
+        <div class="ae-title-hero">{{ player_profile.name }}</div>
+
+        <div class="ae-player-hero__badges">
+          <span class="ae-chip">#{{ player_profile.number }}</span>
+          <span class="ae-chip ae-chip--pos">{{ player_profile.position }}</span>
+          {% if player_profile.awards %}<span class="ae-chip ae-chip--award">★ {{ player_profile.awards|length }}</span>{% endif %}
+        </div>
+
+        {% if role_statement %}
+        <div class="ae-player-hero__role"><i class="fas fa-bolt"></i> {{ role_statement }}</div>
+        {% endif %}
+
+        {% if player_hero_stats %}
+        <div class="ae-hero-stats">
+          {% for s in player_hero_stats %}
+          <div class="ae-hero-stat">
+            <span class="ae-hero-stat__value">{{ s.value }}</span>
+            <span class="ae-hero-stat__label">{{ s.label }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if form_strip %}
+        <div class="ae-player-form-strip">
+          {% for f in form_strip %}
+          <a href="{% url 'tournament_match' f.match_id %}" class="ae-player-form-chip" title="{{ f.stage }} vs {{ f.opponent }}">vs {{ f.opponent }} <strong>{{ f.points_won }}pts</strong></a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </header>
+
+    {# ── Anchor Nav ── #}
+    <nav class="ae-anchor-nav ae-reveal" aria-label="Player sections">
+      {% if position_fingerprint %}<a href="#fingerprint" class="ae-anchor-nav__link is-active" data-ae-target="fingerprint">Fingerprint</a>{% endif %}
+      <a href="#season" class="ae-anchor-nav__link{% if not position_fingerprint %} is-active{% endif %}" data-ae-target="season">Stats</a>
+      <a href="#player-matches" class="ae-anchor-nav__link" data-ae-target="player-matches">Match Log</a>
+      {% if player_profile.awards %}<a href="#awards" class="ae-anchor-nav__link" data-ae-target="awards">Awards</a>{% endif %}
+    </nav>
+
+    {# ══════════════════════════════════════════════════════════════
+       SECTION — Position Fingerprint
+       ══════════════════════════════════════════════════════════════ #}
+    {% if position_fingerprint %}
+    <section class="ae-section ae-reveal" id="fingerprint" data-ae-section>
+      <div class="ae-section__head">
+        <div class="ae-section__cluster">
+          <span class="ae-eyebrow">Role Profile</span>
+          <h2 class="ae-title-section">Position Fingerprint</h2>
+        </div>
+      </div>
+
+      <div class="ae-fingerprint">
+        {% for fp in position_fingerprint %}
+        <div class="ae-fingerprint__band">
+          <span class="ae-fingerprint__label">{{ fp.label }}</span>
+          <span class="ae-fingerprint__value">{{ fp.value }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {# ══════════════════════════════════════════════════════════════
+       SECTION — Season Snapshot (stat cards with ranks)
+       ══════════════════════════════════════════════════════════════ #}
+    <section class="ae-section ae-reveal" id="season" data-ae-section>
+      <div class="ae-section__head">
+        <div class="ae-section__cluster">
+          <span class="ae-eyebrow">Season Snapshot</span>
+          <h2 class="ae-title-section">Player Stats</h2>
+        </div>
+      </div>
+
+      <div class="ae-stat-grid">
+        {% for item in player_summary_cards %}
+        <article class="ae-stat-card">
+          <span class="ae-stat-card__label">{{ item.label }}</span>
+          <span class="ae-stat-card__value">{{ item.value }}</span>
+          {% if item.rank %}
+          <span class="ae-stat-card__rank">{{ item.rank.rank }}<sup>{% if item.rank.rank == 1 %}st{% elif item.rank.rank == 2 %}nd{% elif item.rank.rank == 3 %}rd{% else %}th{% endif %}</sup> of {{ item.rank.total }}</span>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    {# ══════════════════════════════════════════════════════════════
+       SECTION — Match Timeline
+       ══════════════════════════════════════════════════════════════ #}
+    <section class="ae-section ae-reveal" id="player-matches" data-ae-section>
+      <div class="ae-section__head">
+        <div class="ae-section__cluster">
+          <span class="ae-eyebrow">Performance</span>
+          <h2 class="ae-title-section">Match Log</h2>
+        </div>
+      </div>
+
+      {% if player_match_log %}
+      <article class="ae-card">
+        <div class="ae-table-wrap ae-desktop-only">
+          <table class="ae-table" data-ae-sortable>
+            <thead>
+              <tr>
+                <th scope="col" data-ae-sort-key="date" data-ae-sort-type="string">Date</th>
+                <th scope="col" data-ae-sort-key="stage" data-ae-sort-type="string">Stage</th>
+                <th scope="col" data-ae-sort-key="opponent" data-ae-sort-type="string">Opponent</th>
+                <th scope="col" data-ae-sort-key="kills" data-ae-sort-type="number">Kills</th>
+                <th scope="col" data-ae-sort-key="aces" data-ae-sort-type="number">Aces</th>
+                <th scope="col" data-ae-sort-key="blocks" data-ae-sort-type="number">Blocks</th>
+                <th scope="col" data-ae-sort-key="pts" data-ae-sort-type="number">Pts</th>
+                <th scope="col" data-ae-sort-key="atteff" data-ae-sort-type="number">Att Eff</th>
+                <th scope="col" data-ae-sort-key="pass" data-ae-sort-type="number">3P%</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in player_match_log %}
+              <tr>
+                <td>{% if item.match_id %}<a href="{% url 'tournament_match' item.match_id %}">{{ item.date }}</a>{% else %}{{ item.date }}{% endif %}</td>
+                <td>{{ item.stage }}</td>
+                <td>{{ item.opponent }}</td>
+                <td>{{ item.kills }}</td>
+                <td>{{ item.aces }}</td>
+                <td>{{ item.blocks }}</td>
+                <td>{{ item.points_won }}</td>
+                <td>{{ item.attack_eff }}</td>
+                <td>{{ item.three_pass_pct }}</td>
+              </tr>
+              {% endfor %}
+              {# TOTAL row #}
+              <tr class="ae-table-total">
+                <td colspan="3"><strong>{{ player_totals_row.opponent }}</strong></td>
+                <td><strong>{{ player_totals_row.kills }}</strong></td>
+                <td><strong>{{ player_totals_row.aces }}</strong></td>
+                <td><strong>{{ player_totals_row.blocks }}</strong></td>
+                <td><strong>{{ player_totals_row.points_won }}</strong></td>
+                <td><strong>{{ player_totals_row.attack_eff }}</strong></td>
+                <td><strong>{{ player_totals_row.three_pass_pct }}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ae-player-cards ae-mobile-only">
+          {% for item in player_match_log %}
+          {% if item.match_id %}<a href="{% url 'tournament_match' item.match_id %}" class="ae-player-card">{% else %}<div class="ae-player-card">{% endif %}
+            <div class="ae-player-card__body">
+              <div class="ae-player-card__header">
+                <span class="ae-player-card__position">{{ item.date }}</span>
+                <span class="ae-player-card__position">{{ item.stage }}</span>
+              </div>
+              <h3>vs {{ item.opponent }}</h3>
+              <div class="ae-kpi-row">
+                <span class="ae-kpi-chip">{{ item.kills }} K</span>
+                <span class="ae-kpi-chip">{{ item.aces }} A</span>
+                <span class="ae-kpi-chip">{{ item.blocks }} B</span>
+                <span class="ae-kpi-chip">{{ item.points_won }} Pts</span>
+                <span class="ae-kpi-chip">{{ item.attack_eff }}</span>
+              </div>
+            </div>
+          {% if item.match_id %}</a>{% else %}</div>{% endif %}
+          {% endfor %}
+          {# TOTAL card #}
+          <div class="ae-player-card ae-player-card--total">
+            <div class="ae-player-card__body">
+              <h3>Total — {{ player_totals_row.opponent }}</h3>
+              <div class="ae-kpi-row">
+                <span class="ae-kpi-chip">{{ player_totals_row.kills }} K</span>
+                <span class="ae-kpi-chip">{{ player_totals_row.aces }} A</span>
+                <span class="ae-kpi-chip">{{ player_totals_row.blocks }} B</span>
+                <span class="ae-kpi-chip">{{ player_totals_row.points_won }} Pts</span>
+                <span class="ae-kpi-chip">{{ player_totals_row.attack_eff }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+      {% else %}
+      <p class="ae-body ae-body--muted">No matches played yet.</p>
+      {% endif %}
+    </section>
+
+    {# ══════════════════════════════════════════════════════════════
+       SECTION — Awards & Recognition
+       ══════════════════════════════════════════════════════════════ #}
+    {% if player_profile.awards %}
+    <section class="ae-section ae-reveal" id="awards" data-ae-section>
+      <div class="ae-section__head">
+        <div class="ae-section__cluster">
+          <span class="ae-eyebrow">Recognition</span>
+          <h2 class="ae-title-section">Awards</h2>
+        </div>
+      </div>
+
+      <article class="ae-card">
+        <ul class="ae-awards-list">
+          {% for award in player_profile.awards %}
+          <li>
+            {% if award.type == 'mvp' %}
+            <span class="ae-badge ae-badge--live">MVP</span>
+            {% elif award.type == 'dream_team' %}
+            <span class="ae-badge ae-badge--finished">★</span>
+            {% elif award.type == 'leader' %}
+            <span class="ae-badge ae-badge--scheduled">#1</span>
+            {% endif %}
+            {{ award.label }}
+          </li>
+          {% endfor %}
+        </ul>
+      </article>
+    </section>
+    {% endif %}
+
+    {% endif %}{# end empty check #}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static_v 'js/arena-editorial.js' %}"></script>
+{% endblock %}

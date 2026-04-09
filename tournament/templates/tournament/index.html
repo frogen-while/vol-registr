@@ -80,7 +80,7 @@
                 
                 {% if teams %}
                     {% for team in teams %}
-                        <div class="rt-team-row {% if forloop.counter <= max_slots %}rt-in-tournament{% else %}rt-reserve{% endif %}" onclick="window.location.href='{% url 'team_detail' team.id %}'" style="cursor: pointer;">
+                        <div class="rt-team-row {% if forloop.counter <= max_slots %}rt-in-tournament{% else %}rt-reserve{% endif %}" onclick="window.location.href='{% url 'tournament_team' team.id %}'" style="cursor: pointer;">
                             <span class="rt-col-rank">{{ forloop.counter }}</span>
                             <span class="rt-col-team">{{ team.name }}</span>
                             <span class="rt-col-captain">{{ team.cap_name }} {{ team.cap_surname }}</span>

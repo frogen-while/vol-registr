@@ -41,19 +41,19 @@
             >Home</a
           >
 
-          <div class="site-nav__item">
-            <span
-              class="site-nav__link site-nav__link--disabled"
-              data-i18n="nav_match"
-              >Match</span
-            >
-            <div class="site-nav__tooltip" data-i18n="nav_match_tip">
-              Available during the tournament
-            </div>
-          </div>
+          <a
+            href="{% url 'tournament_hub' %}"
+            class="site-nav__link"
+            data-i18n="nav_match"
+            >Match Centre</a
+          >
 
           <a href="{% url 'faq' %}" class="site-nav__link" data-i18n="nav_faq"
             >FAQ</a
+          >
+
+          <a href="{% url 'tournament_gallery' %}" class="site-nav__link" data-i18n="nav_gallery"
+            >Gallery</a
           >
 
           <a
@@ -98,8 +98,10 @@
           </h3>
           <ul class="site-footer__links">
             <li><a href="{% url 'index' %}">Home</a></li>
+            <li><a href="{% url 'tournament_hub' %}">Match Centre</a></li>
             <li><a href="{% url 'register' %}">Register Team</a></li>
             <li><a href="{% url 'faq' %}">FAQ</a></li>
+            <li><a href="{% url 'tournament_gallery' %}">Gallery</a></li>
           </ul>
         </div>
 

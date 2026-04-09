@@ -1,0 +1,303 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-gallery">
+
+  {# ── Tabs ───────────────────────────────────────────── #}
+  <div class="pnl-tabs">
+    <a href="?tab=photos" class="pnl-tab{% if tab == 'photos' %} pnl-tab--active{% endif %}">
+      <i class="fas fa-images"></i> Photos <span class="pnl-tab__count">{{ photos|length }}</span>
+    </a>
+    <a href="?tab=videos" class="pnl-tab{% if tab == 'videos' %} pnl-tab--active{% endif %}">
+      <i class="fas fa-video"></i> Videos <span class="pnl-tab__count">{{ videos|length }}</span>
+    </a>
+  </div>
+
+  {# ── State Filter Pills ────────────────────────────── #}
+  <div class="pnl-media-pipeline" style="margin-bottom:1rem;display:flex;gap:.5rem;flex-wrap:wrap;">
+    <a href="?tab={{ tab }}" class="pnl-media-state pnl-media-state--all{% if not state_filter %} pnl-media-state--active{% endif %}">
+      All
+    </a>
+    {% for val, label in state_choices %}
+    <a href="?tab={{ tab }}&state={{ val }}"
+       class="pnl-media-state pnl-media-state--{{ val }}{% if state_filter == val %} pnl-media-state--active{% endif %}">
+      {{ label }}
+      {% if state_stats %}
+      <span class="pnl-media-state__count">{{ state_stats|default_if_none:"" }}</span>
+      {% endif %}
+    </a>
+    {% endfor %}
+  </div>
+
+  {% if tab == "photos" %}
+  {# ══════════════════ PHOTOS TAB ═══════════════════════ #}
+  <div class="pnl-gallery__actions">
+    <a href="{% url 'panel:gallery_add' %}" class="pnl-btn pnl-btn--primary">
+      <i class="fas fa-plus"></i> Add Photo
+    </a>
+    <a href="{% url 'panel:gallery_bulk_add' %}" class="pnl-btn pnl-btn--outline">
+      <i class="fas fa-layer-group"></i> Bulk Add
+    </a>
+    <button type="button" class="pnl-btn pnl-btn--outline" id="bulkLinkToggle">
+      <i class="fas fa-link"></i> Bulk Link
+    </button>
+  </div>
+
+  {# ── Bulk Link Bar (hidden until toggle) ─────────── #}
+  <form method="post" action="{% url 'panel:gallery_bulk_link' %}" id="bulkLinkForm" style="display:none;margin-bottom:1rem;">
+    {% csrf_token %}
+    <div class="pnl-bulk-link-bar">
+      <span class="pnl-bulk-link-bar__info"><span id="selectedCount">0</span> selected</span>
+      <select name="match_id" class="pnl-input pnl-input--sm">
+        <option value="">— Match —</option>
+        {% for m in matches %}
+        <option value="{{ m.pk }}">M{{ m.match_number }} — {{ m.team_a|default:"TBD" }} vs {{ m.team_b|default:"TBD" }}</option>
+        {% endfor %}
+      </select>
+      <select name="team_id" class="pnl-input pnl-input--sm">
+        <option value="">— Team —</option>
+        {% for t in teams %}
+        <option value="{{ t.pk }}">{{ t.name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="pnl-btn pnl-btn--primary pnl-btn--sm">
+        <i class="fas fa-link"></i> Link Selected
+      </button>
+      <button type="button" class="pnl-btn pnl-btn--outline pnl-btn--sm" id="bulkLinkCancel">Cancel</button>
+    </div>
+  </form>
+
+  {% if photos %}
+  <div class="pnl-gallery__grid" id="galleryGrid">
+    {% for photo in photos %}
+    <div class="pnl-gallery__card" data-id="{{ photo.pk }}" draggable="true">
+      <input type="checkbox" name="photo_ids" value="{{ photo.pk }}" form="bulkLinkForm"
+             class="pnl-gallery__checkbox" style="display:none">
+      <div class="pnl-gallery__thumb">
+        <img src="{{ photo.thumbnail_url }}" alt="{{ photo.title|default:'Photo' }}" loading="lazy">
+        <span class="pnl-media-state-badge pnl-media-state-badge--{{ photo.media_state }}">{{ photo.media_state }}</span>
+        <div class="pnl-gallery__overlay">
+          <a href="{{ photo.drive_url }}" target="_blank" rel="noopener" class="pnl-gallery__action-btn" title="Open in Drive">
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+          <form method="post" action="{% url 'panel:gallery_delete' photo.pk %}"
+                onsubmit="return confirm('Delete this photo?')">
+            {% csrf_token %}
+            <button type="submit" class="pnl-gallery__action-btn pnl-gallery__action-btn--danger" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+      <div class="pnl-gallery__info">
+        <span class="pnl-gallery__title">{{ photo.title|default:"Untitled" }}</span>
+        {% if photo.match %}
+        <span class="pnl-media-link"><i class="fas fa-futbol"></i> M{{ photo.match.match_number }}</span>
+        {% endif %}
+        {% if photo.team %}
+        <span class="pnl-media-link"><i class="fas fa-users"></i> {{ photo.team.name }}</span>
+        {% endif %}
+        <span class="pnl-gallery__date">{{ photo.uploaded_at|date:"d M Y" }}</span>
+      </div>
+      <div class="pnl-gallery__drag-handle" title="Drag to reorder">
+        <i class="fas fa-grip-vertical"></i>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <p class="pnl-muted-text" style="margin-top:12px;">
+    <i class="fas fa-info-circle"></i>
+    Drag cards to reorder. {{ photos|length }} photo{{ photos|length|pluralize }}.
+  </p>
+  {% else %}
+  <div class="pnl-empty">
+    <i class="fas fa-images" style="font-size:2rem;opacity:.3;margin-bottom:8px;"></i>
+    <p>No photos yet.</p>
+    <a href="{% url 'panel:gallery_add' %}" class="pnl-btn pnl-btn--primary" style="margin-top:12px;">
+      <i class="fas fa-plus"></i> Add First Photo
+    </a>
+  </div>
+  {% endif %}
+
+  {% else %}
+  {# ══════════════════ VIDEOS TAB ═══════════════════════ #}
+  <div class="pnl-gallery__actions">
+    <a href="{% url 'panel:video_add' %}" class="pnl-btn pnl-btn--primary">
+      <i class="fas fa-plus"></i> Add Video
+    </a>
+    <button type="button" class="pnl-btn pnl-btn--outline" id="bulkLinkVideoToggle">
+      <i class="fas fa-link"></i> Bulk Link
+    </button>
+  </div>
+
+  {# ── Bulk Link Bar for Videos ────────────────────── #}
+  <form method="post" action="{% url 'panel:video_bulk_link' %}" id="bulkLinkVideoForm" style="display:none;margin-bottom:1rem;">
+    {% csrf_token %}
+    <div class="pnl-bulk-link-bar">
+      <span class="pnl-bulk-link-bar__info"><span id="videoSelectedCount">0</span> selected</span>
+      <select name="match_id" class="pnl-input pnl-input--sm">
+        <option value="">— Match —</option>
+        {% for m in matches %}
+        <option value="{{ m.pk }}">M{{ m.match_number }} — {{ m.team_a|default:"TBD" }} vs {{ m.team_b|default:"TBD" }}</option>
+        {% endfor %}
+      </select>
+      <select name="team_id" class="pnl-input pnl-input--sm">
+        <option value="">— Team —</option>
+        {% for t in teams %}
+        <option value="{{ t.pk }}">{{ t.name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="pnl-btn pnl-btn--primary pnl-btn--sm">
+        <i class="fas fa-link"></i> Link Selected
+      </button>
+      <button type="button" class="pnl-btn pnl-btn--outline pnl-btn--sm" id="bulkLinkVideoCancel">Cancel</button>
+    </div>
+  </form>
+
+  {% if videos %}
+  <div class="pnl-gallery__grid pnl-gallery__grid--videos" id="videoGrid">
+    {% for video in videos %}
+    <div class="pnl-gallery__card pnl-video-card" data-id="{{ video.pk }}" draggable="true">
+      <input type="checkbox" name="video_ids" value="{{ video.pk }}" form="bulkLinkVideoForm"
+             class="pnl-gallery__checkbox pnl-gallery__checkbox--video" style="display:none">
+      <div class="pnl-gallery__thumb pnl-video-card__thumb">
+        {% if video.thumbnail_url %}
+        <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
+        {% endif %}
+        <span class="pnl-media-state-badge pnl-media-state-badge--{{ video.media_state }}">{{ video.media_state }}</span>
+        <div class="pnl-video-card__play-icon">
+          <i class="fas fa-play-circle"></i>
+        </div>
+        <div class="pnl-gallery__overlay">
+          <a href="{{ video.drive_url }}" target="_blank" rel="noopener" class="pnl-gallery__action-btn" title="Open in Drive">
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+          <a href="{% url 'panel:video_edit' video.pk %}" class="pnl-gallery__action-btn" title="Edit">
+            <i class="fas fa-pen"></i>
+          </a>
+          <form method="post" action="{% url 'panel:video_delete' video.pk %}"
+                onsubmit="return confirm('Delete this video?')">
+            {% csrf_token %}
+            <button type="submit" class="pnl-gallery__action-btn pnl-gallery__action-btn--danger" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+      <div class="pnl-video-card__body">
+        <span class="pnl-gallery__title">{{ video.title }}</span>
+        {% if video.match %}
+        <span class="pnl-media-link"><i class="fas fa-futbol"></i> M{{ video.match.match_number }}</span>
+        {% endif %}
+        {% if video.team %}
+        <span class="pnl-media-link"><i class="fas fa-users"></i> {{ video.team.name }}</span>
+        {% endif %}
+        {% if video.description %}
+        <p class="pnl-video-card__desc">{{ video.description|truncatewords:15 }}</p>
+        {% endif %}
+        <span class="pnl-gallery__date">{{ video.uploaded_at|date:"d M Y" }}</span>
+      </div>
+      <div class="pnl-gallery__drag-handle" title="Drag to reorder">
+        <i class="fas fa-grip-vertical"></i>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <p class="pnl-muted-text" style="margin-top:12px;">
+    <i class="fas fa-info-circle"></i>
+    Drag cards to reorder. {{ videos|length }} video{{ videos|length|pluralize }}.
+  </p>
+  {% else %}
+  <div class="pnl-empty">
+    <i class="fas fa-video" style="font-size:2rem;opacity:.3;margin-bottom:8px;"></i>
+    <p>No videos yet.</p>
+    <a href="{% url 'panel:video_add' %}" class="pnl-btn pnl-btn--primary" style="margin-top:12px;">
+      <i class="fas fa-plus"></i> Add First Video
+    </a>
+  </div>
+  {% endif %}
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  function initDragReorder(gridId, reorderUrl) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    let dragSrc = null;
+
+    grid.addEventListener('dragstart', function(e) {
+      const card = e.target.closest('.pnl-gallery__card');
+      if (!card) return;
+      dragSrc = card;
+      card.classList.add('pnl-gallery__card--dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', card.dataset.id);
+    });
+
+    grid.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const card = e.target.closest('.pnl-gallery__card');
+      if (!card || card === dragSrc) return;
+      const rect = card.getBoundingClientRect();
+      const mid = rect.left + rect.width / 2;
+      if (e.clientX < mid) {
+        grid.insertBefore(dragSrc, card);
+      } else {
+        grid.insertBefore(dragSrc, card.nextSibling);
+      }
+    });
+
+    grid.addEventListener('dragend', function(e) {
+      const card = e.target.closest('.pnl-gallery__card');
+      if (card) card.classList.remove('pnl-gallery__card--dragging');
+      const ids = Array.from(grid.querySelectorAll('.pnl-gallery__card'))
+                       .map(c => parseInt(c.dataset.id));
+      fetch(reorderUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: JSON.stringify(ids),
+      });
+    });
+  }
+
+  initDragReorder('galleryGrid', '{% url "panel:gallery_reorder" %}');
+  initDragReorder('videoGrid', '{% url "panel:video_reorder" %}');
+
+  /* ── Bulk link toggle for photos ───────────────────── */
+  function initBulkLink(toggleId, cancelId, formId, checkboxClass, countId) {
+    const toggle = document.getElementById(toggleId);
+    const cancel = document.getElementById(cancelId);
+    const form = document.getElementById(formId);
+    if (!toggle || !form) return;
+    const checkboxes = () => document.querySelectorAll('.' + checkboxClass);
+    const countEl = document.getElementById(countId);
+
+    toggle.addEventListener('click', function() {
+      form.style.display = 'block';
+      checkboxes().forEach(cb => { cb.style.display = 'block'; });
+    });
+    if (cancel) cancel.addEventListener('click', function() {
+      form.style.display = 'none';
+      checkboxes().forEach(cb => { cb.style.display = 'none'; cb.checked = false; });
+      if (countEl) countEl.textContent = '0';
+    });
+    document.addEventListener('change', function(e) {
+      if (!e.target.classList.contains(checkboxClass)) return;
+      const n = document.querySelectorAll('.' + checkboxClass + ':checked').length;
+      if (countEl) countEl.textContent = n;
+    });
+  }
+
+  initBulkLink('bulkLinkToggle', 'bulkLinkCancel', 'bulkLinkForm', 'pnl-gallery__checkbox', 'selectedCount');
+  initBulkLink('bulkLinkVideoToggle', 'bulkLinkVideoCancel', 'bulkLinkVideoForm', 'pnl-gallery__checkbox--video', 'videoSelectedCount');
+})();
+</script>
+{% endblock %}

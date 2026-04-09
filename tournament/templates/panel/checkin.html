@@ -1,0 +1,149 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-checkin">
+
+  {# ── Progress bar ──────────────────────────────────── #}
+  <div class="pnl-checkin__progress-wrap">
+    <div class="pnl-checkin__progress-header">
+      <span class="pnl-checkin__progress-label">Check-in Progress</span>
+      <span class="pnl-checkin__progress-text" id="progressText">{{ checked }} / {{ total }}</span>
+    </div>
+    <div class="pnl-checkin__progress-bar">
+      <div class="pnl-checkin__progress-fill" id="progressFill"
+           style="width: {% if total %}{% widthratio checked total 100 %}{% else %}0{% endif %}%"></div>
+    </div>
+  </div>
+
+  {# ── Search field ──────────────────────────────────── #}
+  <div class="pnl-checkin__search-wrap">
+    <i class="fas fa-search pnl-checkin__search-icon"></i>
+    <input type="text"
+           id="checkinSearch"
+           class="pnl-checkin__search"
+           placeholder="Search team or captain name…"
+           autocomplete="off"
+           data-url="{% url 'panel:checkin_search' %}">
+    <div id="checkinSearchResults" class="pnl-checkin__search-results" style="display:none;"></div>
+  </div>
+
+  {# ── Arrival card (hidden until a team is selected) ── #}
+  <div id="arrivalCard" class="pnl-arrival" style="display:none;">
+    <button class="pnl-arrival__close" id="arrivalClose" title="Close">&times;</button>
+    <div class="pnl-arrival__header">
+      <h2 class="pnl-arrival__team-name" id="arrivalName"></h2>
+      <span class="pnl-arrival__status" id="arrivalStatus"></span>
+    </div>
+    <div class="pnl-arrival__details">
+      <div class="pnl-arrival__detail">
+        <span class="pnl-arrival__detail-label">Captain</span>
+        <span class="pnl-arrival__detail-value" id="arrivalCaptain"></span>
+      </div>
+      <div class="pnl-arrival__detail">
+        <span class="pnl-arrival__detail-label">Phone</span>
+        <span class="pnl-arrival__detail-value" id="arrivalPhone"></span>
+      </div>
+      <div class="pnl-arrival__detail">
+        <span class="pnl-arrival__detail-label">Group</span>
+        <span class="pnl-arrival__detail-value" id="arrivalGroup"></span>
+      </div>
+      <div class="pnl-arrival__detail">
+        <span class="pnl-arrival__detail-label">Roster</span>
+        <span class="pnl-arrival__detail-value" id="arrivalRoster"></span>
+      </div>
+      <div class="pnl-arrival__detail">
+        <span class="pnl-arrival__detail-label">Payment</span>
+        <span class="pnl-arrival__detail-value" id="arrivalPayment"></span>
+      </div>
+    </div>
+    <div class="pnl-arrival__readiness" id="arrivalReadiness"></div>
+    <div class="pnl-arrival__issues" id="arrivalIssues" style="display:none;">
+      <h4 class="pnl-arrival__issues-title"><i class="fas fa-exclamation-triangle"></i> Issues</h4>
+      <ul id="arrivalIssuesList"></ul>
+    </div>
+    <div class="pnl-arrival__actions">
+      <button class="pnl-btn pnl-btn--success pnl-arrival__action" data-action="complete" id="arrivalBtnComplete">
+        <i class="fas fa-check"></i> Complete
+      </button>
+      <button class="pnl-btn pnl-btn--warning pnl-arrival__action" data-action="payment" id="arrivalBtnPayment">
+        <i class="fas fa-exclamation-circle"></i> Payment Issue
+      </button>
+      <button class="pnl-btn pnl-btn--warning pnl-arrival__action" data-action="roster" id="arrivalBtnRoster">
+        <i class="fas fa-users"></i> Roster Issue
+      </button>
+      <button class="pnl-btn pnl-arrival__action" data-action="waiting" id="arrivalBtnWaiting">
+        <i class="fas fa-clock"></i> Waiting Coordinator
+      </button>
+    </div>
+    <div class="pnl-arrival__note-wrap">
+      <textarea id="arrivalNote" class="pnl-arrival__note" placeholder="Arrival note (optional)…" rows="2"></textarea>
+    </div>
+  </div>
+
+  {# ── Warning section ───────────────────────────────── #}
+  {% if warning_teams %}
+  <details class="pnl-checkin__warnings" open>
+    <summary class="pnl-checkin__warnings-title">
+      <i class="fas fa-exclamation-triangle"></i>
+      Incomplete readiness ({{ warning_teams|length }})
+    </summary>
+    <div class="pnl-checkin__warnings-grid">
+      {% for t in warning_teams %}
+      <div class="pnl-checkin__warn-card">
+        <strong>{{ t.name }}</strong>
+        <span class="pnl-checkin__warn-group">{{ t.group_name|default:"—" }}</span>
+        <span class="pnl-checkin__warn-score">{{ t.readiness_score }}/5</span>
+        <span class="pnl-readiness pnl-readiness--compact">
+          <i class="fas fa-{% if t.is_payment_ok %}check{% else %}times{% endif %}-circle"
+             style="color:var(--pnl-{% if t.is_payment_ok %}green{% else %}red{% endif %})"
+             title="Payment"></i>
+          <i class="fas fa-{% if t.is_roster_complete %}check{% else %}times{% endif %}-circle"
+             style="color:var(--pnl-{% if t.is_roster_complete %}green{% else %}red{% endif %})"
+             title="Roster"></i>
+          <i class="fas fa-{% if t.is_contacts_complete %}check{% else %}times{% endif %}-circle"
+             style="color:var(--pnl-{% if t.is_contacts_complete %}green{% else %}red{% endif %})"
+             title="Contacts"></i>
+          <i class="fas fa-{% if t.is_logo_uploaded %}check{% else %}times{% endif %}-circle"
+             style="color:var(--pnl-{% if t.is_logo_uploaded %}green{% else %}red{% endif %})"
+             title="Logo"></i>
+          <i class="fas fa-{% if not t.has_duplicate_jerseys %}check{% else %}times{% endif %}-circle"
+             style="color:var(--pnl-{% if not t.has_duplicate_jerseys %}green{% else %}red{% endif %})"
+             title="Jerseys"></i>
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+  </details>
+  {% endif %}
+
+  {# ── Team cards ────────────────────────────────────── #}
+  {% if teams %}
+  <div class="pnl-checkin__grid">
+    {% for t in teams %}
+    <div class="pnl-checkin__card{% if t.checked_in %} pnl-checkin__card--checked{% endif %}" id="card-{{ t.pk }}"
+         data-name="{{ t.name|lower }}" data-captain="{{ t.cap_name|lower }} {{ t.cap_surname|lower }}">
+      <div class="pnl-checkin__info">
+        <h3 class="pnl-checkin__team-name">{{ t.name }}</h3>
+        <span class="pnl-checkin__group">Group {{ t.group_name|default:"—" }}</span>
+        <span class="pnl-checkin__captain">{{ t.cap_name }} {{ t.cap_surname }}</span>
+      </div>
+      <label class="pnl-toggle pnl-toggle--lg" title="Toggle check-in">
+        <input type="checkbox"
+               class="pnl-toggle__input"
+               data-pk="{{ t.pk }}"
+               data-url="{% url 'panel:checkin_toggle' pk=t.pk %}"
+               {% if t.checked_in %}checked{% endif %}>
+        <span class="pnl-toggle__slider"></span>
+      </label>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="pnl-stub" style="min-height:30vh;">
+      <div class="pnl-stub__icon"><i class="fas fa-clipboard-check"></i></div>
+      <h2>No approved teams</h2>
+      <p>Only teams with <strong>Approved</strong> status appear here.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

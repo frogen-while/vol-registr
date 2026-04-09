@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+{% load static static_v %}
+
+{% block title %}Roster Update — Pocket Aces Invitational{% endblock %}
+
+{% block content %}
+<div class="sports-bg-wrapper">
+  <div class="sports-bg-image"></div>
+  <div class="sports-bg-grid"></div>
+  <div class="sports-bg-overlay"></div>
+</div>
+
+<div class="roster-page" style="position:relative;z-index:10;">
+  <div class="roster-container">
+    <h1 class="roster-title">Roster Update</h1>
+    <p class="roster-subtitle">Captains: set jersey numbers and positions for your team.</p>
+
+    {# ── Error / Success ─────────────────────────────── #}
+    {% if error %}
+    <div class="roster-alert roster-alert--error">
+      <i class="fas fa-exclamation-triangle"></i> {{ error }}
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="roster-alert roster-alert--success">
+      <i class="fas fa-check-circle"></i> {{ success }}
+    </div>
+    {% endif %}
+
+    {% if authenticated_team %}
+    {# ── Team Logo Upload ────────────────────────────── #}
+    <div class="roster-card" style="margin-bottom:20px;">
+      <h2 class="roster-card__title">
+        <i class="fas fa-image"></i> Team Logo
+      </h2>
+      <div class="roster-logo-section">
+        {% if authenticated_team.logo_path %}
+        <div class="roster-logo-preview">
+          <img src="{{ MEDIA_URL }}{{ authenticated_team.logo_path }}" alt="{{ authenticated_team.name }} logo">
+        </div>
+        {% endif %}
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="upload_logo">
+          <div class="roster-field">
+            <label for="logo" class="roster-btn roster-btn--browse" tabindex="0">
+              <i class="fas fa-folder-open"></i> Choose File
+            </label>
+            <input type="file" name="logo" id="logo" accept="image/png,image/jpeg,image/webp"
+                   class="roster-input roster-file-hidden" required>
+            <span class="roster-file-name">No file chosen</span>
+          </div>
+          <div class="roster-actions">
+            <button type="submit" class="roster-btn roster-btn--primary">
+              <i class="fas fa-upload"></i> Upload Logo
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {# ── Roster editing table ────────────────────────── #}
+    <div class="roster-card">
+      <h2 class="roster-card__title">
+        <i class="fas fa-users"></i> {{ authenticated_team.name }}
+      </h2>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="save">
+        <input type="hidden" name="team_id" value="{{ authenticated_team.pk }}">
+
+        <div class="roster-table-wrap">
+          <table class="roster-table">
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>Jersey #</th>
+                <th>Position</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in players %}
+              <tr>
+                <td class="roster-table__name">
+                  {{ p.first_name }} {{ p.last_name }}
+                  <input type="hidden" name="player_id" value="{{ p.pk }}">
+                </td>
+                <td>
+                  <input type="text" name="jersey_{{ p.pk }}"
+                         value="{{ p.jersey_number|default_if_none:'' }}"
+                         maxlength="3" pattern="[0-9]{1,3}" class="roster-input roster-input--jersey"
+                         placeholder="—">
+                </td>
+                <td>
+                  <select name="position_{{ p.pk }}" class="roster-input roster-input--position">
+                    <option value="">—</option>
+                    {% for code, label in position_choices %}
+                    <option value="{{ code }}" {% if p.position == code %}selected{% endif %}>
+                      {{ code }} — {{ label }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="roster-actions">
+          <button type="submit" class="roster-btn roster-btn--primary">
+            <i class="fas fa-save"></i> Save Roster
+          </button>
+          <a href="{% url 'roster_update' %}" class="roster-btn">Cancel</a>
+        </div>
+      </form>
+    </div>
+
+    {% elif code_sent_team %}
+    {# ── Step 2: Enter code from email ───────────────── #}
+    <div class="roster-card">
+      <h2 class="roster-card__title">
+        <i class="fas fa-envelope-open-text"></i> Enter Access Code
+      </h2>
+      <p class="roster-hint">
+        A 6-digit code was sent to the captain's email for
+        <strong>{{ code_sent_team.name }}</strong>. Check your inbox and enter it below.
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="auth">
+
+        <div class="roster-field">
+          <label for="code">Access code</label>
+          <input type="text" name="code" id="code" class="roster-input"
+                 maxlength="10" required autocomplete="off"
+                 placeholder="Enter 6-digit code" inputmode="numeric">
+        </div>
+
+        <div class="roster-actions">
+          <button type="submit" class="roster-btn roster-btn--primary">
+            <i class="fas fa-sign-in-alt"></i> Verify Code
+          </button>
+          <a href="{% url 'roster_update' %}" class="roster-btn">Back</a>
+        </div>
+      </form>
+    </div>
+
+    {% else %}
+    {# ── Step 1: Select team ─────────────────────────── #}
+    <div class="roster-card">
+      <h2 class="roster-card__title">
+        <i class="fas fa-volleyball-ball"></i> Select Your Team
+      </h2>
+      <p class="roster-hint">
+        Choose your team below. A verification code will be sent to the captain's email.
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="select_team">
+
+        <div class="roster-field">
+          <label for="team_id">Team</label>
+          <select name="team_id" id="team_id" class="roster-input" required>
+            <option value="">— Choose team —</option>
+            {% for t in teams %}
+            <option value="{{ t.pk }}">{{ t.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="roster-actions">
+          <button type="submit" class="roster-btn roster-btn--primary">
+            <i class="fas fa-paper-plane"></i> Send Code
+          </button>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .roster-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 60px 20px 40px;
+  }
+  .roster-container {
+    max-width: 680px;
+    width: 100%;
+  }
+  .roster-title {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .roster-subtitle {
+    color: var(--brand-muted);
+    margin-bottom: 24px;
+    font-size: .95rem;
+  }
+  .roster-alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: .9rem;
+  }
+  .roster-alert--error {
+    background: rgba(248, 113, 113, .12);
+    border: 1px solid rgba(248, 113, 113, .35);
+    color: var(--brand-danger);
+  }
+  .roster-alert--success {
+    background: rgba(52, 211, 153, .12);
+    border: 1px solid rgba(52, 211, 153, .35);
+    color: var(--brand-success);
+  }
+  .roster-card {
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: 12px;
+    padding: 28px;
+  }
+  .roster-card__title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: #fff;
+    margin: 0 0 20px;
+  }
+  .roster-card__title i {
+    margin-right: 8px;
+    color: var(--brand-blue);
+  }
+  .roster-field {
+    margin-bottom: 16px;
+  }
+  .roster-field label {
+    display: block;
+    color: var(--brand-text-sec);
+    font-size: .85rem;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .roster-hint {
+    color: var(--brand-muted);
+    font-size: .9rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .roster-hint strong {
+    color: #fff;
+  }
+  .roster-input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--brand-border);
+    background: var(--brand-surface-2);
+    color: #fff;
+    font-size: .95rem;
+    box-sizing: border-box;
+    transition: border-color .2s;
+  }
+  .roster-input:focus {
+    outline: none;
+    border-color: var(--brand-blue);
+  }
+  .roster-input option {
+    background: var(--brand-surface);
+    color: #fff;
+  }
+  .roster-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 20px;
+  }
+  .roster-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .roster-table th {
+    text-align: left;
+    color: var(--brand-muted);
+    font-size: .8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--brand-border);
+  }
+  .roster-table td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.04);
+    vertical-align: middle;
+  }
+  .roster-table__name {
+    color: #fff;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .roster-input--jersey {
+    width: 80px;
+    text-align: center;
+    padding: 8px;
+  }
+  .roster-input--position {
+    width: 180px;
+    padding: 8px;
+  }
+  .roster-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .roster-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 8px;
+    border: 1px solid var(--brand-border);
+    background: var(--brand-surface-2);
+    color: #fff;
+    font-size: .9rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all .2s;
+  }
+  .roster-btn:hover {
+    background: rgba(56, 189, 248, 0.08);
+  }
+  .roster-btn--primary {
+    background: var(--brand-blue);
+    border-color: var(--brand-blue);
+  }
+  .roster-btn--primary:hover {
+    background: var(--brand-blue-dark);
+    border-color: var(--brand-blue-dark);
+  }
+
+  @media (max-width: 600px) {
+    .roster-card { padding: 18px; }
+    .roster-title { font-size: 1.5rem; }
+    .roster-input--position { width: 140px; }
+  }
+  .roster-logo-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .roster-logo-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--brand-border);
+    background: var(--brand-surface-2);
+    flex-shrink: 0;
+  }
+  .roster-logo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .roster-logo-section form {
+    flex: 1;
+    min-width: 200px;
+  }
+  .roster-file-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+  .roster-btn--browse {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--brand-surface-2);
+    color: var(--brand-text-sec);
+    border: 1px solid var(--brand-border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .9rem;
+    font-weight: 500;
+    transition: all .2s ease;
+    user-select: none;
+  }
+  .roster-btn--browse:hover,
+  .roster-btn--browse:focus-visible {
+    background: rgba(56, 189, 248, 0.08);
+    border-color: var(--brand-blue);
+    color: #fff;
+  }
+  .roster-file-name {
+    display: inline-block;
+    margin-left: 12px;
+    color: var(--brand-muted);
+    font-size: .85rem;
+    vertical-align: middle;
+  }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var inp = document.getElementById('logo');
+  if (inp) {
+    inp.addEventListener('change', function() {
+      var span = inp.parentElement.querySelector('.roster-file-name');
+      if (span) span.textContent = inp.files.length ? inp.files[0].name : 'No file chosen';
+    });
+  }
+});
+</script>
+{% endblock %}

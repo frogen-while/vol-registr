@@ -1,0 +1,126 @@
+from django.urls import path
+
+from .panel.audit_views import audit_view, cmd_search
+from .panel.auth_views import panel_login, panel_logout
+from .panel.checkin_views import checkin_search, checkin_toggle, checkin_view
+from .panel.dashboard_views import dashboard_view
+from .panel.dreamteam_views import (
+    dreamteam_autofill_view,
+    dreamteam_preview_view,
+    dreamteam_reset_view,
+    dreamteam_view,
+)
+from .panel.rankings_views import rankings_recalculate_view, rankings_view
+from .panel.match_views import (
+    match_conflict_check,
+    match_create_view,
+    match_delete_view,
+    match_edit_view,
+    match_panel_view,
+    match_score_update,
+    match_status_change,
+    schedule_csv_import_view,
+    schedule_list_view,
+)
+from .panel.highlights_views import (
+    highlight_add_view,
+    highlight_delete_view,
+    highlight_edit_view,
+    highlight_reorder_view,
+    highlight_toggle_featured_view,
+    highlights_list_view,
+)
+from .panel.media_views import (
+    gallery_add_view,
+    gallery_bulk_add_view,
+    gallery_bulk_link_view,
+    gallery_delete_view,
+    gallery_list_view,
+    gallery_reorder_view,
+    gallery_state_change_view,
+    video_add_view,
+    video_bulk_link_view,
+    video_delete_view,
+    video_edit_view,
+    video_reorder_view,
+)
+from .panel.stats_views import (
+    stats_detail_view,
+    stats_edit_view,
+    stats_import_view,
+    stats_list_view,
+)
+from .panel.team_views import (
+    generate_roster_code,
+    team_batch_action,
+    team_create_view,
+    team_delete_view,
+    team_detail_view,
+    team_drawer_view,
+    team_edit_view,
+    team_pipeline_move,
+    team_status_action,
+    teams_list_view,
+    teams_pipeline_view,
+)
+
+app_name = "panel"
+
+urlpatterns = [
+    path("login/", panel_login, name="login"),
+    path("logout/", panel_logout, name="logout"),
+    path("", dashboard_view, name="dashboard"),
+    path("teams/", teams_list_view, name="teams"),
+    path("teams/pipeline/", teams_pipeline_view, name="teams_pipeline"),
+    path("teams/create/", team_create_view, name="team_create"),
+    path("teams/<int:pk>/", team_detail_view, name="team_detail"),
+    path("teams/<int:pk>/edit/", team_edit_view, name="team_edit"),
+    path("teams/<int:pk>/delete/", team_delete_view, name="team_delete"),
+    path("teams/<int:pk>/status/", team_status_action, name="team_status"),
+    path("teams/<int:pk>/roster-code/", generate_roster_code, name="generate_roster_code"),
+    path("teams/<int:pk>/drawer/", team_drawer_view, name="team_drawer"),
+    path("teams/<int:pk>/pipeline-move/", team_pipeline_move, name="team_pipeline_move"),
+    path("teams/batch/", team_batch_action, name="team_batch"),
+    path("checkin/", checkin_view, name="checkin"),
+    path("checkin/search/", checkin_search, name="checkin_search"),
+    path("checkin/<int:pk>/toggle/", checkin_toggle, name="checkin_toggle"),
+    path("schedule/", schedule_list_view, name="schedule"),
+    path("schedule/create/", match_create_view, name="match_create"),
+    path("schedule/conflicts/", match_conflict_check, name="match_conflict_check"),
+    path("schedule/<int:pk>/edit/", match_edit_view, name="match_edit"),
+    path("schedule/<int:pk>/delete/", match_delete_view, name="match_delete"),
+    path("schedule/<int:pk>/panel/", match_panel_view, name="match_panel"),
+    path("schedule/<int:pk>/status/", match_status_change, name="match_status_change"),
+    path("schedule/<int:pk>/score/", match_score_update, name="match_score_update"),
+    path("schedule/import-csv/", schedule_csv_import_view, name="schedule_csv_import"),
+    path("stats/", stats_list_view, name="stats"),
+    path("stats/<int:pk>/import/", stats_import_view, name="stats_import"),
+    path("stats/<int:pk>/", stats_detail_view, name="stats_detail"),
+    path("stats/<int:pk>/edit/", stats_edit_view, name="stats_edit"),
+    path("gallery/", gallery_list_view, name="gallery"),
+    path("gallery/add/", gallery_add_view, name="gallery_add"),
+    path("gallery/bulk-add/", gallery_bulk_add_view, name="gallery_bulk_add"),
+    path("gallery/<int:pk>/delete/", gallery_delete_view, name="gallery_delete"),
+    path("gallery/reorder/", gallery_reorder_view, name="gallery_reorder"),
+    path("gallery/bulk-link/", gallery_bulk_link_view, name="gallery_bulk_link"),
+    path("gallery/<int:pk>/state/", gallery_state_change_view, name="gallery_state_change"),
+    path("gallery/videos/add/", video_add_view, name="video_add"),
+    path("gallery/videos/<int:pk>/edit/", video_edit_view, name="video_edit"),
+    path("gallery/videos/<int:pk>/delete/", video_delete_view, name="video_delete"),
+    path("gallery/videos/reorder/", video_reorder_view, name="video_reorder"),
+    path("gallery/videos/bulk-link/", video_bulk_link_view, name="video_bulk_link"),
+    path("highlights/", highlights_list_view, name="highlights"),
+    path("highlights/add/", highlight_add_view, name="highlight_add"),
+    path("highlights/<int:pk>/edit/", highlight_edit_view, name="highlight_edit"),
+    path("highlights/<int:pk>/delete/", highlight_delete_view, name="highlight_delete"),
+    path("highlights/<int:pk>/toggle-featured/", highlight_toggle_featured_view, name="highlight_toggle_featured"),
+    path("highlights/reorder/", highlight_reorder_view, name="highlight_reorder"),
+    path("rankings/", rankings_view, name="rankings"),
+    path("rankings/recalculate/", rankings_recalculate_view, name="rankings_recalculate"),
+    path("dreamteam/", dreamteam_view, name="dreamteam"),
+    path("dreamteam/preview/", dreamteam_preview_view, name="dreamteam_preview"),
+    path("dreamteam/autofill/", dreamteam_autofill_view, name="dreamteam_autofill"),
+    path("dreamteam/reset/", dreamteam_reset_view, name="dreamteam_reset"),
+    path("audit/", audit_view, name="audit"),
+    path("cmd-search/", cmd_search, name="cmd_search"),
+]

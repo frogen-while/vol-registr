@@ -16,10 +16,6 @@ class PlayerForm(forms.Form):
     firstName    = forms.CharField(max_length=50, strip=True)
     lastName     = forms.CharField(max_length=50, strip=True)
     jerseyNumber = forms.IntegerField(required=False, min_value=0, max_value=99)
-    dob          = forms.DateField(
-        required=False,
-        input_formats=["%Y-%m-%d", "%d.%m.%Y", "%d/%m/%Y"],
-    )
 
 
 class TeamRegistrationForm(forms.Form):
@@ -28,16 +24,9 @@ class TeamRegistrationForm(forms.Form):
     # ── Step 1: Team Identity ───────────────────────────────
     teamName    = forms.CharField(max_length=100, strip=True)
     leagueLevel = forms.ChoiceField(choices=LEAGUE_LEVEL_CHOICES)
-    city        = forms.CharField(max_length=100, required=False, strip=True)
-    instagram   = forms.CharField(max_length=255, required=False, strip=True)
 
     # ── Step 2: Captain ─────────────────────────────────────
     capName   = forms.CharField(max_length=100, strip=True)
-    capDob    = forms.DateField(
-        required=False,
-        input_formats=["%Y-%m-%d", "%d.%m.%Y", "%d/%m/%Y"],
-    )
-    capJersey = forms.IntegerField(required=False, min_value=0, max_value=99)
     phone     = forms.CharField(max_length=20, required=False, strip=True)
     email     = forms.EmailField(max_length=100)
 
