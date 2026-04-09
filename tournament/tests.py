@@ -155,15 +155,6 @@ class TestPlayerMatchStats(TestCase):
         s = self._create_stats(kills=5, aces=2, blocks=3)
         self.assertEqual(s.points_won, 10)
 
-    def test_attack_efficiency(self):
-        s = self._create_stats(kills=10, attack_errors=3, attack_attempts=20)
-        # (10 - 3) / 20 * 100 = 35.0
-        self.assertAlmostEqual(s.attack_efficiency, 35.0)
-
-    def test_attack_efficiency_zero_attempts(self):
-        s = self._create_stats(kills=0, attack_errors=0, attack_attempts=0)
-        self.assertIsNone(s.attack_efficiency)
-
     def test_ace_pct(self):
         s = self._create_stats(aces=3, serve_attempts=10)
         self.assertAlmostEqual(s.ace_pct, 30.0)
@@ -171,14 +162,6 @@ class TestPlayerMatchStats(TestCase):
     def test_ace_pct_zero_attempts(self):
         s = self._create_stats(aces=0, serve_attempts=0)
         self.assertIsNone(s.ace_pct)
-
-    def test_pass_3_pct(self):
-        s = self._create_stats(perfect_passes=6, pass_attempts=10)
-        self.assertAlmostEqual(s.pass_3_pct, 60.0)
-
-    def test_pass_3_pct_zero_attempts(self):
-        s = self._create_stats(perfect_passes=0, pass_attempts=0)
-        self.assertIsNone(s.pass_3_pct)
 
 
 class TestGroupStanding(TestCase):
@@ -270,12 +253,10 @@ class TestCSVMultiSection(TestCase):
         self.assertEqual(alice["aces"], 2)
         self.assertEqual(alice["kills"], 4)
         self.assertEqual(alice["blocks"], 3)
-        self.assertEqual(alice["perfect_passes"], 0)
         self.assertEqual(alice["pass_errors"], 4)
 
         bob = by_jersey["10"]
         self.assertEqual(bob["assists"], 5)
-        self.assertEqual(bob["attack_attempts"], 6)
         self.assertEqual(bob["setting_errors"], 1)
 
     def test_total_and_team_rows_skipped(self):
@@ -532,7 +513,7 @@ class TestDemoViewsSmoke(TestCase):
     def test_tournament_hub(self):
         r = self.client.get(reverse("tournament_hub"))
         self.assertEqual(r.status_code, 200)
-        self.assertContains(r, "sp-page")
+        self.assertContains(r, "ae-page")
 
     def test_tournament_demo(self):
         r = self.client.get(reverse("tournament_demo"))
@@ -542,11 +523,6 @@ class TestDemoViewsSmoke(TestCase):
 
     def test_tournament_teams(self):
         r = self.client.get(reverse("tournament_teams"))
-        self.assertEqual(r.status_code, 200)
-        self.assertContains(r, "sp-page")
-
-    def test_tournament_dream_team(self):
-        r = self.client.get(reverse("tournament_dream_team"))
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, "sp-page")
 
@@ -570,15 +546,15 @@ class TestDBViewsSmoke(TestCase):
             PlayerMatchStats.objects.create(
                 match=cls.match, player=p, team=cls.team_a,
                 position="OH", jersey_number=p.jersey_number,
-                kills=4, aces=1, blocks=1, attack_attempts=10,
-                serve_attempts=5, pass_attempts=8, perfect_passes=3,
+                kills=4, aces=1, blocks=1,
+                serve_attempts=5,
             )
         for p in cls.players_b:
             PlayerMatchStats.objects.create(
                 match=cls.match, player=p, team=cls.team_b,
                 position="MB", jersey_number=p.jersey_number,
-                kills=3, aces=0, blocks=2, attack_attempts=8,
-                serve_attempts=4, pass_attempts=6, perfect_passes=2,
+                kills=3, aces=0, blocks=2,
+                serve_attempts=4,
             )
 
     def test_match_detail(self):
@@ -702,8 +678,8 @@ class TestPanelGETSmoke(TestCase):
             PlayerMatchStats.objects.create(
                 match=cls.match, player=p, team=cls.team_a,
                 position="OH", jersey_number=p.jersey_number,
-                kills=4, aces=1, blocks=1, attack_attempts=10,
-                serve_attempts=5, pass_attempts=8, perfect_passes=3,
+                kills=4, aces=1, blocks=1,
+                serve_attempts=5,
             )
 
     def setUp(self):
@@ -1146,16 +1122,18 @@ class TestPanelDreamTeam(TestCase):
             PlayerMatchStats.objects.create(
                 match=cls.match, player=p, team=cls.team_a,
                 position="OH", jersey_number=p.jersey_number,
-                kills=10, aces=2, blocks=1, attack_attempts=20,
-                serve_attempts=10, pass_attempts=10, perfect_passes=5,
+                kills=10, aces=2, blocks=1,
+                serve_attempts=10,
+                sets_played=3,
             )
         # MB stats for team_b
         for p in cls.players_b:
             PlayerMatchStats.objects.create(
                 match=cls.match, player=p, team=cls.team_b,
                 position="MB", jersey_number=p.jersey_number,
-                kills=3, aces=0, blocks=8, attack_attempts=8,
-                serve_attempts=4, pass_attempts=6, perfect_passes=2,
+                kills=3, aces=0, blocks=8,
+                serve_attempts=4,
+                sets_played=3,
             )
 
     def setUp(self):

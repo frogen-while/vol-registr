@@ -7,6 +7,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
 from ..constants import (
+    MVP_WEIGHTS,
     POSITION_L,
     POSITION_MB,
     POSITION_OH,
@@ -34,19 +35,16 @@ _SLOT_MAP = {
     POSITION_L: ["libero"],
 }
 
-_METRIC_MAP = {
-    POSITION_OH: ("kills", "kills"),
-    POSITION_MB: ("blocks", "blocks"),
-    POSITION_OPP: ("kills", "kills"),
-    POSITION_S: ("assists", "assists"),
-    POSITION_L: ("perfect_passes", "perfect_passes"),
-}
-
 
 def _build_candidates(top_n=5):
-    """Return {position: [{player_id, name, team, jersey, total, metric}, ...]}."""
+    """Return {position: [{player_id, name, team, jersey, score, sets, metric}, ...]}.
+
+    Uses weighted per-set MVP formulas from MVP_WEIGHTS.
+    """
     candidates: dict[str, list] = {}
-    for pos, (_metric_label, metric_field) in _METRIC_MAP.items():
+    for pos, weights in MVP_WEIGHTS.items():
+        agg_fields = list({f for f, _ in weights}) + ["sets_played"]
+        agg_kwargs = {f: Sum(f) for f in agg_fields}
         rows = list(
             PlayerMatchStats.objects.filter(position=pos)
             .values(
@@ -56,20 +54,48 @@ def _build_candidates(top_n=5):
                 "player__jersey_number",
                 "team__name",
             )
-            .annotate(total=Sum(metric_field))
-            .order_by("-total")
-            .filter(total__gt=0)[:top_n]
+            .annotate(**agg_kwargs)
         )
+
+        scored: list[tuple[float, int, dict]] = []
+        for r in rows:
+            total_sets = r.get("sets_played") or 0
+            if total_sets == 0:
+                continue
+            # "Did they play?" filter
+            if pos == POSITION_S:
+                if (r.get("assists") or 0) == 0 and (r.get("setting_errors") or 0) == 0:
+                    continue
+            elif pos == POSITION_L:
+                if (r.get("pass_errors") or 0) == 0:
+                    continue
+            else:
+                if all((r.get(f) or 0) == 0 for f, _ in weights):
+                    continue
+
+            raw_score = sum(
+                (r.get(field) or 0) * weight for field, weight in weights
+            )
+            per_set = raw_score / total_sets
+            scored.append((per_set, total_sets, r))
+
+        # L: closest to 0; others: descending
+        if pos == POSITION_L:
+            scored.sort(key=lambda x: abs(x[0]))
+        else:
+            scored.sort(key=lambda x: x[0], reverse=True)
+
         candidates[pos] = [
             {
                 "player_id": r["player_id"],
                 "name": f'{r["player__last_name"]} {r["player__first_name"]}',
                 "jersey": r["player__jersey_number"],
                 "team": r["team__name"],
-                "total": r["total"],
-                "metric": _metric_label,
+                "score": round(per_set, 2),
+                "sets": total_sets,
+                "metric": f"{per_set:+.2f}/set",
             }
-            for r in rows
+            for per_set, total_sets, r in scored[:top_n]
         ]
     return candidates
 
@@ -81,9 +107,7 @@ def _compute_autofill_preview(current_entries):
     """
     candidates = _build_candidates(top_n=10)
     preview = []
-    # Simulate the same logic as recalculate_dream_team
     for pos, slots in _SLOT_MAP.items():
-        metric_label, _metric_field = _METRIC_MAP[pos]
         pos_candidates = candidates.get(pos, [])
         for i, slot_id in enumerate(slots):
             slot_label = next((lbl for sid, _p, lbl in SLOTS if sid == slot_id), "")
@@ -105,7 +129,7 @@ def _compute_autofill_preview(current_entries):
                 ),
                 "new_player_id": new_candidate["player_id"] if new_candidate else None,
                 "new_metric": (
-                    f"{new_candidate['total']} {metric_label}"
+                    new_candidate["metric"]
                     if new_candidate else None
                 ),
                 "changed": (

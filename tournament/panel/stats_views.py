@@ -72,8 +72,8 @@ def stats_list_view(request):
 
 @staff_member_required(login_url="/panel/login/")
 def stats_import_view(request, pk):
-    """Two-step CSV stats import: upload → preview → confirm (per-team)."""
-    from ..services import confirm_csv_import, preview_csv_import
+    """Two-step stats import (CSV/XML): upload → preview → confirm (per-team)."""
+    from ..services import confirm_stats_import, preview_stats_import
 
     match = get_object_or_404(
         Match.objects.select_related("team_a", "team_b"), pk=pk
@@ -108,7 +108,7 @@ def stats_import_view(request, pk):
             else:
                 try:
                     file_obj = io.StringIO(cached_csv)
-                    result = confirm_csv_import(file_obj, pk, cached_team)
+                    result = confirm_stats_import(file_obj, pk, cached_team)
                     imported_count = result["imported"]
                     warnings = result.get("warnings", [])
                     if cached_team:
@@ -145,7 +145,7 @@ def stats_import_view(request, pk):
             csv_file = request.FILES.get("csv_file")
             team_id_str = request.POST.get("team_id", "")
             if not csv_file:
-                messages.error(request, "Please select a CSV file.")
+                messages.error(request, "Please select a stats file.")
             elif not team_id_str:
                 messages.error(request, "Please select a team.")
             else:
@@ -162,13 +162,13 @@ def stats_import_view(request, pk):
                         raw = raw.decode("utf-8-sig")
                     csv_file.seek(0)
 
-                    result = preview_csv_import(csv_file, pk, team_id)
+                    result = preview_stats_import(csv_file, pk, team_id)
                     errors = result["errors"]
                     warnings = result["warnings"]
 
                     if result["can_import"]:
                         preview_rows = result["preview"]
-                        # Cache raw CSV text in session for confirm step
+                        # Cache raw content in session for confirm step
                         request.session["_stats_csv_content"] = raw
                         request.session["_stats_csv_match"] = pk
                         request.session["_stats_csv_team"] = team_id
@@ -259,9 +259,10 @@ def stats_detail_view(request, pk):
 
 # Editable stat fields in order
 _STAT_FIELDS = [
+    "sets_played",
     "serve_attempts", "aces", "serve_errors",
-    "attack_attempts", "kills", "attack_errors",
-    "pass_attempts", "perfect_passes", "pass_errors",
+    "kills", "attack_errors",
+    "pass_errors",
     "blocks", "assists", "setting_errors",
 ]
 

@@ -183,7 +183,8 @@
             <th>#</th>
             <th>Player</th>
             <th>Team</th>
-            <th class="pnl-mono">{{ pg.candidates.0.metric }}</th>
+            <th class="pnl-mono">Sets</th>
+            <th class="pnl-mono">Score/Set</th>
           </tr>
         </thead>
         <tbody>
@@ -192,7 +193,8 @@
             <td class="pnl-mono">{{ forloop.counter }}</td>
             <td>#{{ c.jersey }} {{ c.name }}</td>
             <td>{{ c.team }}</td>
-            <td class="pnl-mono"><strong>{{ c.total }}</strong></td>
+            <td class="pnl-mono">{{ c.sets }}</td>
+            <td class="pnl-mono"><strong>{{ c.metric }}</strong></td>
           </tr>
           {% endfor %}
         </tbody>

@@ -753,8 +753,8 @@ def stats_detail_view(request, pk):
 # Editable stat fields in order
 _STAT_FIELDS = [
     "serve_attempts", "aces", "serve_errors",
-    "attack_attempts", "kills", "attack_errors",
-    "pass_attempts", "perfect_passes", "pass_errors",
+    "kills", "attack_errors",
+    "pass_errors",
     "blocks", "assists", "setting_errors",
 ]
 

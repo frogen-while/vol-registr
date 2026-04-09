@@ -35,7 +35,6 @@
 
     <div class="page-hero">
       <a href="{% url 'tournament_hub' %}" class="page-hero__crumb"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Tournament Hub</a>
-      <div class="page-hero__accent" aria-hidden="true"></div>
       <p class="page-hero__eyebrow">{{ match.date }} · {{ match.time }}</p>
       <h1 class="page-hero__title">Match Preview</h1>
     </div>
@@ -114,20 +113,7 @@
       {% endif %}
     </header>
 
-    {# ── Anchor Nav ── #}
-    <nav class="ae-anchor-nav ae-reveal" aria-label="Match sections">
-      {% if stage_rail %}<a href="#stage-context" class="ae-anchor-nav__link is-active" data-ae-target="stage-context">Stage</a>{% endif %}
-      {% if storyline or set_scores %}<a href="#match-story" class="ae-anchor-nav__link{% if not stage_rail %} is-active{% endif %}" data-ae-target="match-story">Story</a>{% endif %}
-      <a href="#team-stats" class="ae-anchor-nav__link{% if not stage_rail and not storyline and not set_scores %} is-active{% endif %}" data-ae-target="team-stats">Team Stats</a>
-      {% if match_leaders %}<a href="#leaders" class="ae-anchor-nav__link" data-ae-target="leaders">Leaders</a>{% endif %}
-      <a href="#player-stats" class="ae-anchor-nav__link" data-ae-target="player-stats">Player Stats</a>
-      {% if match_mvp %}<a href="#mvp" class="ae-anchor-nav__link" data-ae-target="mvp">MVP</a>{% endif %}
-      {% if match_highlights %}<a href="#highlights" class="ae-anchor-nav__link" data-ae-target="highlights">Highlights</a>{% endif %}
-    </nav>
-
-    {# ══════════════════════════════════════════════════════════════
-       SECTION — Stage Rail
-       ══════════════════════════════════════════════════════════════ #}
+    {# ── Sections ── #}
     {% if stage_rail %}
     <section class="ae-section ae-reveal" id="stage-context" data-ae-section>
       <div class="ae-section__head">
@@ -320,8 +306,6 @@
                   <th scope="col" data-ae-sort-key="aces" data-ae-sort-type="number">Aces</th>
                   <th scope="col" data-ae-sort-key="blocks" data-ae-sort-type="number">Blocks</th>
                   <th scope="col" data-ae-sort-key="pts" data-ae-sort-type="number">Pts</th>
-                  <th scope="col" data-ae-sort-key="atteff" data-ae-sort-type="number">Att Eff</th>
-                  <th scope="col" data-ae-sort-key="pass" data-ae-sort-type="number">3P%</th>
                 </tr>
               </thead>
               <tbody>
@@ -333,8 +317,6 @@
                   <td>{{ player.aces }}</td>
                   <td>{{ player.blocks }}</td>
                   <td>{{ player.points_won }}</td>
-                  <td>{{ player.attack_eff }}</td>
-                  <td>{{ player.three_pass_pct }}</td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -352,8 +334,6 @@
                   <span class="ae-kpi-chip">{{ player.aces }} A</span>
                   <span class="ae-kpi-chip">{{ player.blocks }} B</span>
                   <span class="ae-kpi-chip">{{ player.points_won }} Pts</span>
-                  <span class="ae-kpi-chip">{{ player.attack_eff }}</span>
-                  <span class="ae-kpi-chip">{{ player.three_pass_pct }}</span>
                 </div>
               </div>
             {% if player.player_id %}</a>{% else %}</div>{% endif %}
@@ -376,8 +356,6 @@
                   <th scope="col" data-ae-sort-key="aces" data-ae-sort-type="number">Aces</th>
                   <th scope="col" data-ae-sort-key="blocks" data-ae-sort-type="number">Blocks</th>
                   <th scope="col" data-ae-sort-key="pts" data-ae-sort-type="number">Pts</th>
-                  <th scope="col" data-ae-sort-key="atteff" data-ae-sort-type="number">Att Eff</th>
-                  <th scope="col" data-ae-sort-key="pass" data-ae-sort-type="number">3P%</th>
                 </tr>
               </thead>
               <tbody>
@@ -389,8 +367,6 @@
                   <td>{{ player.aces }}</td>
                   <td>{{ player.blocks }}</td>
                   <td>{{ player.points_won }}</td>
-                  <td>{{ player.attack_eff }}</td>
-                  <td>{{ player.three_pass_pct }}</td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -408,8 +384,6 @@
                   <span class="ae-kpi-chip">{{ player.aces }} A</span>
                   <span class="ae-kpi-chip">{{ player.blocks }} B</span>
                   <span class="ae-kpi-chip">{{ player.points_won }} Pts</span>
-                  <span class="ae-kpi-chip">{{ player.attack_eff }}</span>
-                  <span class="ae-kpi-chip">{{ player.three_pass_pct }}</span>
                 </div>
               </div>
             {% if player.player_id %}</a>{% else %}</div>{% endif %}
@@ -433,8 +407,6 @@
                     <th scope="col" data-ae-sort-key="aces" data-ae-sort-type="number">Aces</th>
                     <th scope="col" data-ae-sort-key="blocks" data-ae-sort-type="number">Blocks</th>
                     <th scope="col" data-ae-sort-key="pts" data-ae-sort-type="number">Pts</th>
-                    <th scope="col" data-ae-sort-key="atteff" data-ae-sort-type="number">Att Eff</th>
-                    <th scope="col" data-ae-sort-key="pass" data-ae-sort-type="number">3P%</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -446,8 +418,6 @@
                     <td>{{ player.aces }}</td>
                     <td>{{ player.blocks }}</td>
                     <td>{{ player.points_won }}</td>
-                    <td>{{ player.attack_eff }}</td>
-                    <td>{{ player.three_pass_pct }}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -465,8 +435,6 @@
                     <span class="ae-kpi-chip">{{ player.aces }} A</span>
                     <span class="ae-kpi-chip">{{ player.blocks }} B</span>
                     <span class="ae-kpi-chip">{{ player.points_won }} Pts</span>
-                    <span class="ae-kpi-chip">{{ player.attack_eff }}</span>
-                    <span class="ae-kpi-chip">{{ player.three_pass_pct }}</span>
                   </div>
                 </div>
               {% if player.player_id %}</a>{% else %}</div>{% endif %}
@@ -486,8 +454,6 @@
                     <th scope="col" data-ae-sort-key="aces" data-ae-sort-type="number">Aces</th>
                     <th scope="col" data-ae-sort-key="blocks" data-ae-sort-type="number">Blocks</th>
                     <th scope="col" data-ae-sort-key="pts" data-ae-sort-type="number">Pts</th>
-                    <th scope="col" data-ae-sort-key="atteff" data-ae-sort-type="number">Att Eff</th>
-                    <th scope="col" data-ae-sort-key="pass" data-ae-sort-type="number">3P%</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -499,8 +465,6 @@
                     <td>{{ player.aces }}</td>
                     <td>{{ player.blocks }}</td>
                     <td>{{ player.points_won }}</td>
-                    <td>{{ player.attack_eff }}</td>
-                    <td>{{ player.three_pass_pct }}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -518,8 +482,6 @@
                     <span class="ae-kpi-chip">{{ player.aces }} A</span>
                     <span class="ae-kpi-chip">{{ player.blocks }} B</span>
                     <span class="ae-kpi-chip">{{ player.points_won }} Pts</span>
-                    <span class="ae-kpi-chip">{{ player.attack_eff }}</span>
-                    <span class="ae-kpi-chip">{{ player.three_pass_pct }}</span>
                   </div>
                 </div>
               {% if player.player_id %}</a>{% else %}</div>{% endif %}

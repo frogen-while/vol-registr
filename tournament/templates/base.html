@@ -56,12 +56,14 @@
             >Gallery</a
           >
 
+          {% if not registration_closed %}
           <a
             href="{% url 'register' %}"
             class="site-nav__cta"
             data-i18n="nav_register"
             >Register Team</a
           >
+          {% endif %}
         </div>
 
         <div class="site-nav__controls">
@@ -99,7 +101,9 @@
           <ul class="site-footer__links">
             <li><a href="{% url 'index' %}">Home</a></li>
             <li><a href="{% url 'tournament_hub' %}">Match Centre</a></li>
+            {% if not registration_closed %}
             <li><a href="{% url 'register' %}">Register Team</a></li>
+            {% endif %}
             <li><a href="{% url 'faq' %}">FAQ</a></li>
             <li><a href="{% url 'tournament_gallery' %}">Gallery</a></li>
           </ul>

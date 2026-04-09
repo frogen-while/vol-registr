@@ -167,42 +167,24 @@ def validate_against_db(
                 "errors": ["Selected team is not part of this match."],
             }
 
-    team_names = {t.name.lower() for t in teams}
-
-    # Build jersey → Player index
-    roster: dict[tuple[str, str], Player] = {}
+    # Build jersey → Player index (jersey-only key)
+    roster: dict[str, tuple[Player, int]] = {}
     for team in teams:
         for p in team.players.all():
             if p.jersey_number is not None:
-                roster[(team.name.lower(), p.jersey_number)] = p
+                roster[p.jersey_number] = (p, team.pk)
 
     for row in parsed_rows:
-        team_key = row.get("_team_name", "").lower()
         jersey = row.get("jersey_number")
 
-        if team_key and team_key not in team_names:
-            errors.append(
-                f"Row player '{row.get('player_name')}': team '{row.get('_team_name')}' "
-                f"does not match either team in match M{match.match_number}."
-            )
-            continue
+        match_tuple = roster.get(jersey) if jersey else None
 
-        # Resolve player from roster
-        player = roster.get((team_key, jersey)) if team_key and jersey else None
-
-        if player is None:
-            # Try matching by jersey only across both teams
-            for tn in team_names:
-                player = roster.get((tn, jersey))
-                if player:
-                    team_key = tn
-                    break
-
-        if player is None:
+        if match_tuple is None:
             unmatched.append(row)
         else:
+            player, tid = match_tuple
             row["_player_id"] = player.pk
-            row["_team_id"] = player.team_id
+            row["_team_id"] = tid
             valid_rows.append(row)
 
     return {

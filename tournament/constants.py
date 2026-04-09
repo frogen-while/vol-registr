@@ -8,6 +8,9 @@ so they can be changed in one place.
 # ── Slot / Capacity ─────────────────────────────────────
 MAX_TOURNAMENT_SLOTS = 12
 
+# ── Registration Gate ───────────────────────────────────
+REGISTRATION_CLOSED = True
+
 # ── League Level Choices ────────────────────────────────────
 LEAGUE_LEVEL_1ST = "1st"
 LEAGUE_LEVEL_2ND = "2nd"
@@ -130,6 +133,50 @@ MVP_TYPE_CHOICES = [
     (MVP_MATCH, "Match MVP"),
     (MVP_TOURNAMENT, "Tournament MVP"),
 ]
+
+# ── MVP Weighted Scoring (per-set) ────────────────────────
+# Each position uses: sum(field * weight for field, weight) / sets_played
+# Positive = good stats, negative = errors to penalise
+# OH: Outside Hitter
+# OPP: Opposite
+# MB: Middle Blocker
+# S: Setter
+# L: Libero — uses -pass_errors / sets (closest to 0 wins)
+MVP_WEIGHTS = {
+    POSITION_OH: [
+        ("kills", 1.0),
+        ("aces", 1.5),
+        ("blocks", 1.5),
+        ("attack_errors", -1.0),
+        ("serve_errors", -0.8),
+        ("pass_errors", -0.5),
+    ],
+    POSITION_OPP: [
+        ("kills", 1.0),
+        ("aces", 1.5),
+        ("blocks", 1.5),
+        ("attack_errors", -1.0),
+        ("serve_errors", -0.8),
+    ],
+    POSITION_MB: [
+        ("kills", 1.0),
+        ("blocks", 2.0),
+        ("aces", 1.5),
+        ("attack_errors", -1.0),
+        ("serve_errors", -0.8),
+    ],
+    POSITION_S: [
+        ("assists", 1.0),
+        ("aces", 2.0),
+        ("kills", 2.0),
+        ("setting_errors", -1.5),
+        ("serve_errors", -1.0),
+        ("attack_errors", -1.0),
+    ],
+    POSITION_L: [
+        ("pass_errors", -1.0),
+    ],
+}
 
 # ── Roster Access ─────────────────────────────────────
 ROSTER_CODE_LENGTH = 6

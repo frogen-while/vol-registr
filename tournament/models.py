@@ -262,6 +262,9 @@ class PlayerMatchStats(models.Model):
     assists = models.PositiveIntegerField(default=0)
     setting_errors = models.PositiveIntegerField(default=0)
 
+    # Games (sets) played
+    sets_played = models.PositiveIntegerField(default=0)
+
     class Meta:
         db_table = TABLE_PLAYER_MATCH_STATS
         unique_together = [("match", "player")]
@@ -274,28 +277,10 @@ class PlayerMatchStats(models.Model):
         return self.kills + self.aces + self.blocks
 
     @property
-    def attack_efficiency(self):
-        if not self.attack_attempts:
-            return None
-        return (self.kills - self.attack_errors) / self.attack_attempts * 100
-
-    @property
     def ace_pct(self):
         if not self.serve_attempts:
             return None
         return self.aces / self.serve_attempts * 100
-
-    @property
-    def pass_3_pct(self):
-        if not self.pass_attempts:
-            return None
-        return self.perfect_passes / self.pass_attempts * 100
-
-    @property
-    def pass_error_pct(self):
-        if not self.pass_attempts:
-            return None
-        return self.pass_errors / self.pass_attempts * 100
 
 
 class TeamMatchStats(models.Model):

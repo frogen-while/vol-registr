@@ -68,12 +68,6 @@ def _pct_label(value) -> str:
     return f"{value:.1f}%"
 
 
-def _attack_eff(kills: int, errors: int, attempts: int):
-    if not attempts:
-        return None
-    return ((kills - errors) / attempts) * 100
-
-
 def _points_won(kills: int, aces: int, blocks: int) -> int:
     return kills + aces + blocks
 
@@ -81,30 +75,20 @@ def _points_won(kills: int, aces: int, blocks: int) -> int:
 def _player_stat_dict(ps: PlayerMatchStats, *, image: str = "assets/team/vol/team.png") -> dict:
     """Convert a PlayerMatchStats row into a template-ready dict."""
     pw = _points_won(ps.kills, ps.aces, ps.blocks)
-    att_eff = _attack_eff(ps.kills, ps.attack_errors, ps.attack_attempts)
-    three_p = _safe_pct(ps.perfect_passes, ps.pass_attempts)
-    ace_p = _safe_pct(ps.aces, ps.serve_attempts)
 
     return {
         "number": ps.jersey_number,
         "name": f"{ps.player.first_name} {ps.player.last_name}",
         "player_id": ps.player_id,
         "position": ps.position,
+        "sets_played": ps.sets_played,
         "points_won": pw,
-        "attack_eff_value": att_eff or 0.0,
-        "attack_eff": _pct_label(att_eff),
-        "three_pass_value": three_p or 0.0,
-        "three_pass_pct": _pct_label(three_p),
-        "ace_pct": _pct_label(ace_p),
         "aces": ps.aces,
         "blocks": ps.blocks,
         "kills": ps.kills,
-        "attack_attempts": ps.attack_attempts,
         "attack_errors": ps.attack_errors,
         "serve_attempts": ps.serve_attempts,
         "serve_errors": ps.serve_errors,
-        "pass_attempts": ps.pass_attempts,
-        "perfect_passes": ps.perfect_passes,
         "pass_errors": ps.pass_errors,
         "assists": ps.assists,
         "setting_errors": ps.setting_errors,
@@ -117,22 +101,12 @@ def _aggregate_players(player_dicts: list[dict]) -> dict:
     """Sum raw fields and compute derived metrics for a list of player dicts."""
     keys = (
         "serve_attempts", "aces", "serve_errors",
-        "attack_attempts", "attack_errors", "kills",
-        "pass_attempts", "perfect_passes", "pass_errors",
+        "attack_errors", "kills",
+        "pass_errors",
         "blocks", "assists", "setting_errors",
     )
     totals = {k: sum(p.get(k, 0) for p in player_dicts) for k in keys}
     totals["points_won"] = sum(p.get("points_won", 0) for p in player_dicts)
-
-    att_eff = _attack_eff(totals["kills"], totals["attack_errors"], totals["attack_attempts"])
-    three_p = _safe_pct(totals["perfect_passes"], totals["pass_attempts"])
-
-    totals.update({
-        "attack_eff_value": att_eff or 0.0,
-        "attack_eff": _pct_label(att_eff),
-        "three_pass_value": three_p or 0.0,
-        "three_pass_pct": _pct_label(three_p),
-    })
     return totals
 
 
@@ -364,11 +338,6 @@ def get_match_detail(match_id: int) -> dict | None:
     if home_totals and away_totals:
         team_stats = [
             _comparison_row(
-                "match_page.stat_attack_eff", "Attack efficiency",
-                home_totals["attack_eff_value"], away_totals["attack_eff_value"],
-                home_totals["attack_eff"], away_totals["attack_eff"],
-            ),
-            _comparison_row(
                 "match_page.stat_kills", "Kills",
                 home_totals.get("kills", 0), away_totals.get("kills", 0),
                 str(home_totals.get("kills", 0)), str(away_totals.get("kills", 0)),
@@ -377,11 +346,6 @@ def get_match_detail(match_id: int) -> dict | None:
                 "match_page.stat_aces", "Aces",
                 home_totals.get("aces", 0), away_totals.get("aces", 0),
                 str(home_totals.get("aces", 0)), str(away_totals.get("aces", 0)),
-            ),
-            _comparison_row(
-                "match_page.stat_three_pass", "3-pass %",
-                home_totals.get("three_pass_value", 0), away_totals.get("three_pass_value", 0),
-                home_totals.get("three_pass_pct", "-"), away_totals.get("three_pass_pct", "-"),
             ),
             _comparison_row(
                 "match_page.stat_blocks", "Blocks",
@@ -522,7 +486,7 @@ def get_match_detail(match_id: int) -> dict | None:
             _pick_match_leader(all_player_dicts, "points_won", "Top Scorer"),
             _pick_match_leader(all_player_dicts, "aces", "Best Server"),
             _pick_match_leader(all_player_dicts, "blocks", "Top Blocker"),
-            _pick_match_leader(all_player_dicts, "perfect_passes", "Best Receiver"),
+            _pick_match_leader(all_player_dicts, "assists", "Best Setter"),
         ] if ldr is not None
     ]
 
@@ -561,12 +525,9 @@ def get_team_detail(team_id: int) -> dict | None:
             total_kills=Sum("kills"),
             total_aces=Sum("aces"),
             total_blocks=Sum("blocks"),
-            total_attack_attempts=Sum("attack_attempts"),
             total_attack_errors=Sum("attack_errors"),
             total_serve_attempts=Sum("serve_attempts"),
             total_serve_errors=Sum("serve_errors"),
-            total_pass_attempts=Sum("pass_attempts"),
-            total_perfect_passes=Sum("perfect_passes"),
             total_pass_errors=Sum("pass_errors"),
             total_assists=Sum("assists"),
             total_setting_errors=Sum("setting_errors"),
@@ -585,8 +546,6 @@ def get_team_detail(team_id: int) -> dict | None:
     team_roster = []
     for rs in roster_stats:
         pw = _points_won(rs["total_kills"] or 0, rs["total_aces"] or 0, rs["total_blocks"] or 0)
-        att_eff = _attack_eff(rs["total_kills"] or 0, rs["total_attack_errors"] or 0, rs["total_attack_attempts"] or 0)
-        three_p = _safe_pct(rs["total_perfect_passes"] or 0, rs["total_pass_attempts"] or 0)
 
         name = f"{rs['player__first_name']} {rs['player__last_name']}"
         team_roster.append({
@@ -596,16 +555,11 @@ def get_team_detail(team_id: int) -> dict | None:
             "position": rs["position"],
             "kills": rs["total_kills"] or 0,
             "points_won": pw,
-            "attack_eff": _pct_label(att_eff),
-            "attack_attempts": rs["total_attack_attempts"] or 0,
             "attack_errors": rs["total_attack_errors"] or 0,
             "serve_attempts": rs["total_serve_attempts"] or 0,
             "serve_errors": rs["total_serve_errors"] or 0,
-            "pass_attempts": rs["total_pass_attempts"] or 0,
-            "perfect_passes": rs["total_perfect_passes"] or 0,
             "pass_errors": rs["total_pass_errors"] or 0,
             "setting_errors": rs["total_setting_errors"] or 0,
-            "three_pass_pct": _pct_label(three_p),
             "aces": rs["total_aces"] or 0,
             "blocks": rs["total_blocks"] or 0,
             "assists": rs["total_assists"] or 0,
@@ -623,10 +577,10 @@ def get_team_detail(team_id: int) -> dict | None:
                 "player_id": p.pk,
                 "position": p.position,
                 "kills": 0, "points_won": 0,
-                "attack_eff": "-", "attack_attempts": 0, "attack_errors": 0,
+                "attack_errors": 0,
                 "serve_attempts": 0, "serve_errors": 0,
-                "pass_attempts": 0, "perfect_passes": 0, "pass_errors": 0,
-                "setting_errors": 0, "three_pass_pct": "-",
+                "pass_errors": 0,
+                "setting_errors": 0,
                 "aces": 0, "blocks": 0, "assists": 0,
                 "is_captain": name == captain_full,
                 "image": _resolve_photo(p.photo_path),
@@ -701,11 +655,6 @@ def get_team_detail(team_id: int) -> dict | None:
         "image": team.logo_path or _DEFAULT_TEAM_IMAGE,
         "group_points": group_points,
         "set_ratio": _sets_label(total_sets_won, total_sets_lost),
-        "attack_eff_value": totals.get("attack_eff_value", 0.0),
-        "attack_eff_chart": max(0.0, min(100.0, totals.get("attack_eff_value", 0.0))),
-        "attack_eff": totals.get("attack_eff", "-"),
-        "three_pass_pct": totals.get("three_pass_pct", "-"),
-        "three_pass_value": totals.get("three_pass_value", 0.0),
         "points_won": totals.get("points_won", 0),
     }
 
@@ -724,7 +673,7 @@ def get_team_detail(team_id: int) -> dict | None:
         {"label_key": "team_page.stat_aces", "label": "Total Aces", "value": totals.get("aces", 0)},
         {"label_key": "team_page.stat_blocks", "label": "Total Blocks", "value": totals.get("blocks", 0)},
         {"label_key": "team_page.stat_points", "label": "Points Won", "value": totals.get("points_won", 0)},
-        {"label_key": "team_page.stat_attack_eff", "label": "Attack Efficiency", "value": team_profile["attack_eff"]},
+        {"label_key": "team_page.stat_assists", "label": "Total Assists", "value": totals.get("assists", 0)},
     ]
 
     team_breakdown_bars = [
@@ -768,7 +717,7 @@ def get_team_detail(team_id: int) -> dict | None:
             _pick_leader(team_roster, "points_won", "Points"),
             _pick_leader(team_roster, "aces", "Aces"),
             _pick_leader(team_roster, "blocks", "Blocks"),
-            _pick_leader(team_roster, "perfect_passes", "Reception"),
+            _pick_leader(team_roster, "assists", "Assists"),
         ] if ldr is not None
     ]
 
@@ -781,12 +730,12 @@ def get_team_detail(team_id: int) -> dict | None:
     identity_stats = [
         {
             "key": "attack",
-            "label": "Attack Conversion",
+            "label": "Kill Power",
             "label_key": "tp.id_attack_label",
             "copy_key": "tp.id_attack_copy",
-            "value": totals.get("attack_eff", "-"),
-            "raw": totals.get("attack_eff_value", 0),
-            "copy": "Efficiency of turning attacks into points after errors.",
+            "value": str(totals.get("kills", 0)),
+            "raw": totals.get("kills", 0),
+            "copy": "Total kills scored across all matches.",
         },
         {
             "key": "serve",
@@ -808,12 +757,12 @@ def get_team_detail(team_id: int) -> dict | None:
         },
         {
             "key": "reception",
-            "label": "Reception Stability",
+            "label": "Assist Output",
             "label_key": "tp.id_reception_label",
             "copy_key": "tp.id_reception_copy",
-            "value": totals.get("three_pass_pct", "-"),
-            "raw": totals.get("three_pass_value", 0),
-            "copy": "Share of perfect passes from total reception attempts.",
+            "value": str(totals.get("assists", 0)),
+            "raw": totals.get("assists", 0),
+            "copy": "Total assists delivered across all matches.",
         },
     ]
 
@@ -847,10 +796,10 @@ def get_player_detail(player_id: int) -> dict | None:
     match_log = []
     cumulative = {
         "kills": 0, "aces": 0, "blocks": 0,
-        "attack_attempts": 0, "attack_errors": 0,
-        "serve_attempts": 0, "pass_attempts": 0,
-        "perfect_passes": 0, "pass_errors": 0,
-        "assists": 0,
+        "attack_errors": 0,
+        "serve_attempts": 0,
+        "pass_errors": 0,
+        "assists": 0, "sets_played": 0,
     }
     position = ""
 
@@ -861,8 +810,6 @@ def get_player_detail(player_id: int) -> dict | None:
         position = ps.position
 
         pw = _points_won(ps.kills, ps.aces, ps.blocks)
-        att_eff = _attack_eff(ps.kills, ps.attack_errors, ps.attack_attempts)
-        three_p = _safe_pct(ps.perfect_passes, ps.pass_attempts)
 
         match_log.append({
             "stage": _stage_label(m.stage, m.group),
@@ -870,10 +817,9 @@ def get_player_detail(player_id: int) -> dict | None:
             "opponent": opp.name if opp else "TBD",
             "kills": ps.kills,
             "points_won": pw,
-            "attack_eff": _pct_label(att_eff),
-            "three_pass_pct": _pct_label(three_p),
             "aces": ps.aces,
             "blocks": ps.blocks,
+            "sets_played": ps.sets_played,
             "match_id": m.pk,
         })
 
@@ -881,8 +827,6 @@ def get_player_detail(player_id: int) -> dict | None:
             cumulative[k] += getattr(ps, k, 0)
 
     total_pw = _points_won(cumulative["kills"], cumulative["aces"], cumulative["blocks"])
-    total_att = _attack_eff(cumulative["kills"], cumulative["attack_errors"], cumulative["attack_attempts"])
-    total_3p = _safe_pct(cumulative["perfect_passes"], cumulative["pass_attempts"])
     total_ace = _safe_pct(cumulative["aces"], cumulative["serve_attempts"])
 
     # TOTAL / AVERAGE row
@@ -893,8 +837,6 @@ def get_player_detail(player_id: int) -> dict | None:
         "opponent": f"{len(match_log)} matches",
         "kills": cumulative["kills"],
         "points_won": total_pw,
-        "attack_eff": _pct_label(total_att),
-        "three_pass_pct": _pct_label(total_3p),
         "aces": cumulative["aces"],
         "blocks": cumulative["blocks"],
         "match_id": None,
@@ -907,7 +849,7 @@ def get_player_detail(player_id: int) -> dict | None:
     ).get(position, position)
 
     # ── Rank calculation ──
-    ranks = _compute_player_ranks(player_id, cumulative, total_att, total_3p)
+    ranks = _compute_player_ranks(player_id, cumulative)
 
     # Awards: MVP selections + Dream Team entries
     awards = []
@@ -929,7 +871,7 @@ def get_player_detail(player_id: int) -> dict | None:
         "position_short": position,
         "number": player.jersey_number or 0,
         "matches_played": len(match_log),
-        "image": _resolve_photo(player.photo_path),
+        "image": player.photo_path or "",
         "awards": awards,
     }
 
@@ -945,8 +887,7 @@ def get_player_detail(player_id: int) -> dict | None:
         {"label_key": "player_page.stat_kills", "label": "Kills", "value": cumulative["kills"], "rank": ranks.get("kills")},
         {"label_key": "player_page.stat_aces", "label": "Aces", "value": cumulative["aces"], "rank": ranks.get("aces")},
         {"label_key": "player_page.stat_blocks", "label": "Blocks", "value": cumulative["blocks"], "rank": ranks.get("blocks")},
-        {"label_key": "player_page.stat_attack_eff", "label": "Attack Eff%", "value": _pct_label(total_att), "rank": ranks.get("attack_efficiency")},
-        {"label_key": "player_page.stat_three_pass", "label": "3-Pass%", "value": _pct_label(total_3p), "rank": ranks.get("pass_3_pct")},
+        {"label_key": "player_page.stat_assists", "label": "Assists", "value": cumulative["assists"], "rank": ranks.get("assists")},
     ]
 
     player_hero_stats = [
@@ -960,25 +901,25 @@ def get_player_detail(player_id: int) -> dict | None:
     # ── Position Fingerprint ── role-based stat emphasis ──
     _fingerprint_map = {
         "S": [
-            ("Assists", cumulative.get("assists", 0) if hasattr(cumulative, "get") or True else 0),
+            ("Assists", cumulative.get("assists", 0)),
             ("Serve Pressure", _pct_label(total_ace)),
             ("Points Won", total_pw),
         ],
         "MB": [
             ("Blocks", cumulative["blocks"]),
-            ("Attack Eff%", _pct_label(total_att)),
+            ("Kills", cumulative["kills"]),
             ("Points Won", total_pw),
         ],
         "L": [
-            ("3-Pass%", _pct_label(total_3p)),
-            ("Pass Attempts", cumulative["pass_attempts"]),
-            ("Error Rate", _pct_label(_safe_pct(cumulative["pass_errors"], cumulative["pass_attempts"]))),
+            ("Sets Played", cumulative["sets_played"]),
+            ("Pass Errors", cumulative["pass_errors"]),
+            ("Assists", cumulative.get("assists", 0)),
         ],
     }
     # OH, OPP and default share the same emphasis
     _default_fp = [
         ("Kills", cumulative["kills"]),
-        ("Attack Eff%", _pct_label(total_att)),
+        ("Aces", cumulative["aces"]),
         ("Points Won", total_pw),
     ]
     fingerprint_raw = _fingerprint_map.get(position, _default_fp)
@@ -1006,6 +947,19 @@ def get_player_detail(player_id: int) -> dict | None:
             ordinal = {1: "1st", 2: "2nd", 3: "3rd"}.get(best[1]["rank"], f"{best[1]['rank']}th")
             role_statement = f"{ordinal} in {best[0].replace('_', ' ').title()}"
 
+    # ── Player radar stats (4-axis, same shape as team) ──
+    p_serve_att = cumulative.get("serve_attempts", 0)
+    p_serve_pressure = None
+    if p_serve_att:
+        p_serve_pressure = ((cumulative["aces"] - cumulative.get("serve_errors", 0)) / p_serve_att) * 100
+
+    player_radar_stats = [
+        {"key": "attack", "label": "Attack", "value": str(cumulative["kills"]), "raw": cumulative["kills"]},
+        {"key": "serve", "label": "Serve", "value": _pct_label(p_serve_pressure), "raw": p_serve_pressure or 0},
+        {"key": "block", "label": "Block", "value": str(cumulative["blocks"]), "raw": cumulative["blocks"]},
+        {"key": "reception", "label": "Reception", "value": str(cumulative["assists"]), "raw": cumulative["assists"]},
+    ]
+
     return {
         "player_profile": player_profile,
         "player_meta": player_meta,
@@ -1016,10 +970,11 @@ def get_player_detail(player_id: int) -> dict | None:
         "position_fingerprint": position_fingerprint,
         "form_strip": form_strip,
         "role_statement": role_statement,
+        "player_radar_stats": player_radar_stats,
     }
 
 
-def _compute_player_ranks(player_id: int, cumulative: dict, att_eff, three_p) -> dict:
+def _compute_player_ranks(player_id: int, cumulative: dict) -> dict:
     """
     Compute rank of a player in each stat category among all tournament players.
     Returns dict of category → {value, rank, total}.
@@ -1032,10 +987,7 @@ def _compute_player_ranks(player_id: int, cumulative: dict, att_eff, three_p) ->
             total_kills=Sum("kills"),
             total_aces=Sum("aces"),
             total_blocks=Sum("blocks"),
-            total_attack_attempts=Sum("attack_attempts"),
-            total_attack_errors=Sum("attack_errors"),
-            total_pass_attempts=Sum("pass_attempts"),
-            total_perfect_passes=Sum("perfect_passes"),
+            total_assists=Sum("assists"),
         )
     )
 
@@ -1046,27 +998,23 @@ def _compute_player_ranks(player_id: int, cumulative: dict, att_eff, three_p) ->
         aces = p["total_aces"] or 0
         blocks = p["total_blocks"] or 0
         pw = _points_won(kills, aces, blocks)
-        ae = _attack_eff(kills, p["total_attack_errors"] or 0, p["total_attack_attempts"] or 0)
-        tp = _safe_pct(p["total_perfect_passes"] or 0, p["total_pass_attempts"] or 0)
         player_totals.append({
             "player_id": p["player_id"],
             "points_won": pw,
             "kills": kills,
             "aces": aces,
             "blocks": blocks,
-            "attack_efficiency": ae or 0.0,
-            "pass_3_pct": tp or 0.0,
+            "assists": p["total_assists"] or 0,
         })
 
     total_players = len(player_totals)
-    categories = ["points_won", "kills", "aces", "blocks", "attack_efficiency", "pass_3_pct"]
+    categories = ["points_won", "kills", "aces", "blocks", "assists"]
     my_values = {
         "points_won": _points_won(cumulative["kills"], cumulative["aces"], cumulative["blocks"]),
         "kills": cumulative["kills"],
         "aces": cumulative["aces"],
         "blocks": cumulative["blocks"],
-        "attack_efficiency": att_eff or 0.0,
-        "pass_3_pct": three_p or 0.0,
+        "assists": cumulative.get("assists", 0),
     }
 
     ranks = {}
@@ -1113,7 +1061,6 @@ def get_category_leaders() -> list[dict]:
     Returns list of ``{category, label, player_name, team, value, player_id}``.
     """
     MIN_SERVE_ATTEMPTS = 5
-    MIN_PASS_ATTEMPTS = 5
 
     all_players = (
         PlayerMatchStats.objects
@@ -1124,10 +1071,6 @@ def get_category_leaders() -> list[dict]:
             total_blocks=Sum("blocks"),
             total_assists=Sum("assists"),
             total_serve_attempts=Sum("serve_attempts"),
-            total_attack_attempts=Sum("attack_attempts"),
-            total_attack_errors=Sum("attack_errors"),
-            total_pass_attempts=Sum("pass_attempts"),
-            total_perfect_passes=Sum("perfect_passes"),
         )
     )
 
@@ -1135,7 +1078,6 @@ def get_category_leaders() -> list[dict]:
     categories = [
         ("top_scorer", "Top Scorer", "points_won"),
         ("best_server", "Best Server", "ace_pct"),
-        ("best_receiver", "Best Receiver", "pass_3_pct"),
         ("best_blocker", "Best Blocker", "blocks"),
         ("best_setter", "Best Setter", "assists"),
     ]
@@ -1147,8 +1089,6 @@ def get_category_leaders() -> list[dict]:
         blocks = p["total_blocks"] or 0
         assists = p["total_assists"] or 0
         sa = p["total_serve_attempts"] or 0
-        pa = p["total_pass_attempts"] or 0
-        pp = p["total_perfect_passes"] or 0
 
         player_list.append({
             "player_id": p["player_id"],
@@ -1156,10 +1096,9 @@ def get_category_leaders() -> list[dict]:
             "image": _resolve_photo(p.get("player__photo_path", "")),
             "team": p["team__name"],
             "team_id": p.get("team_id"),
-            "team_logo": p.get("team__logo_path") or "",  # from DB
+            "team_logo": p.get("team__logo_path") or "",
             "points_won": _points_won(kills, aces, blocks),
             "ace_pct": _safe_pct(aces, sa) if sa >= MIN_SERVE_ATTEMPTS else None,
-            "pass_3_pct": _safe_pct(pp, pa) if pa >= MIN_PASS_ATTEMPTS else None,
             "blocks": blocks,
             "assists": assists,
         })
@@ -1170,7 +1109,7 @@ def get_category_leaders() -> list[dict]:
             continue
         best = max(eligible, key=lambda x: x[stat_key])
         val = best[stat_key]
-        if stat_key in ("ace_pct", "pass_3_pct"):
+        if stat_key == "ace_pct":
             display = f"{val:.1f}%"
         else:
             display = str(val)

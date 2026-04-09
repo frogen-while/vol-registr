@@ -19,49 +19,11 @@
   <div class="container sp-page__container">
 
     <div class="page-hero">
-      <div class="page-hero__accent" aria-hidden="true"></div>
       <p class="page-hero__eyebrow" data-i18n="teams_list_page.eyebrow">Teams</p>
       <h1 class="page-hero__title" data-i18n="teams_list_page.title">All Teams</h1>
       <p class="page-hero__sub" data-i18n="teams_list_page.subtitle">A simpler team directory with the all-star selection right at the top and every squad just one click away.</p>
       {% include 'tournament/partials/preview_nav.html' with active='teams' %}
     </div>
-
-    <section class="sp-section sp-reveal" id="all-stars">
-      <div class="sp-dream-inline">
-        <article class="sp-dream-inline__intro">
-          <span class="sp-eyebrow">All-star corner</span>
-          <h2>Dream Team</h2>
-          <p>{% if dream_team_spotlight %}{{ dream_team_total }} selected players. The standout group now lives inside the main teams directory instead of sitting in a separate top-level tab.{% else %}The Dream Team block stays here even while the final selection is still being assembled.{% endif %}</p>
-          <a href="{% url 'tournament_dream_team' %}" class="sp-inline-link">Open full Dream Team</a>
-        </article>
-        <div class="sp-allstar-rail sp-allstar-rail--teams">
-          {% if dream_team_spotlight %}
-          {% for player in dream_team_spotlight %}
-          {% if player.player_id %}<a href="{% url 'tournament_player' player.player_id %}" class="sp-allstar-card sp-allstar-card--compact">{% else %}<article class="sp-allstar-card sp-allstar-card--compact">{% endif %}
-            <div class="sp-allstar-card__avatar">
-              <img src="{{ player.image|asset_url }}" alt="{{ player.name }}" loading="lazy">
-            </div>
-            <div class="sp-allstar-card__body">
-              <span class="sp-allstar-card__position">{{ player.position }}</span>
-              <strong>{{ player.name }}</strong>
-              <span class="sp-allstar-card__team">{% if player.team_logo %}<img src="{{ player.team_logo|asset_url }}" alt="" class="sp-court-player__logo">{% endif %}{{ player.team }}</span>
-              <span class="sp-allstar-card__metric">{{ player.metric }}</span>
-            </div>
-          {% if player.player_id %}</a>{% else %}</article>{% endif %}
-          {% endfor %}
-          {% else %}
-          <article class="sp-allstar-card sp-allstar-card--compact sp-allstar-card--placeholder">
-            <div class="sp-allstar-card__body">
-              <span class="sp-allstar-card__position">Coming soon</span>
-              <strong>Dream Team preview</strong>
-              <span class="sp-allstar-card__team">Player selections will appear here once they are confirmed.</span>
-              <span class="sp-allstar-card__metric">Selection pending</span>
-            </div>
-          </article>
-          {% endif %}
-        </div>
-      </div>
-    </section>
 
     <div id="groups">
       {% if standings %}

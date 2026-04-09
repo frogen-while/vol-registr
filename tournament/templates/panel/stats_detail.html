@@ -13,7 +13,7 @@
     </a>
     {% endif %}
     <a href="{% url 'panel:stats_import' match.pk %}" class="pnl-btn pnl-btn--outline">
-      <i class="fas fa-upload"></i> {% if match.stats_imported %}Re-import{% else %}Import{% endif %} CSV
+      <i class="fas fa-upload"></i> {% if match.stats_imported %}Re-import{% else %}Import{% endif %}
     </a>
   </div>
 
@@ -42,7 +42,7 @@
   <div class="pnl-alert pnl-alert--warning">
     <i class="fas fa-info-circle"></i>
     No stats imported for this match yet.
-    <a href="{% url 'panel:stats_import' match.pk %}" style="color:var(--pnl-accent);">Import CSV</a>
+    <a href="{% url 'panel:stats_import' match.pk %}" style="color:var(--pnl-accent);">Import stats</a>
   </div>
   {% endif %}
 
@@ -57,16 +57,14 @@
             <th>#</th>
             <th>Player</th>
             <th>Pos</th>
+            <th title="Sets Played">GP</th>
             <th title="Kills">K</th>
             <th title="Aces">A</th>
             <th title="Blocks">B</th>
             <th title="Points Won">Pts</th>
-            <th title="Attack Attempts">Att</th>
             <th title="Attack Errors">AE</th>
             <th title="Serve Attempts">SA</th>
             <th title="Serve Errors">SE</th>
-            <th title="Pass Attempts">PA</th>
-            <th title="Perfect Passes">PP</th>
             <th title="Pass Errors">PE</th>
             <th title="Assists">Ast</th>
             <th title="Setting Errors">StE</th>
@@ -78,16 +76,14 @@
             <td>{{ s.jersey_number }}</td>
             <td>{{ s.player }}</td>
             <td>{{ s.get_position_display }}</td>
+            <td class="pnl-mono">{{ s.sets_played }}</td>
             <td><strong>{{ s.kills }}</strong></td>
             <td>{{ s.aces }}</td>
             <td>{{ s.blocks }}</td>
             <td class="pnl-stat-highlight">{{ s.points_won }}</td>
-            <td>{{ s.attack_attempts }}</td>
             <td>{{ s.attack_errors }}</td>
             <td>{{ s.serve_attempts }}</td>
             <td>{{ s.serve_errors }}</td>
-            <td>{{ s.pass_attempts }}</td>
-            <td>{{ s.perfect_passes }}</td>
             <td>{{ s.pass_errors }}</td>
             <td>{{ s.assists }}</td>
             <td>{{ s.setting_errors }}</td>
@@ -97,17 +93,14 @@
         {% if team_stats_a %}
         <tfoot>
           <tr class="pnl-stats-total">
-            <td colspan="3"><strong>TOTAL</strong></td>
+            <td colspan="4"><strong>TOTAL</strong></td>
             <td><strong>{{ team_stats_a.kills }}</strong></td>
             <td>{{ team_stats_a.aces }}</td>
             <td>{{ team_stats_a.blocks }}</td>
             <td class="pnl-stat-highlight">—</td>
-            <td>{{ team_stats_a.attack_attempts }}</td>
             <td>{{ team_stats_a.attack_errors }}</td>
             <td>{{ team_stats_a.serve_attempts }}</td>
             <td>{{ team_stats_a.serve_errors }}</td>
-            <td>{{ team_stats_a.pass_attempts }}</td>
-            <td>{{ team_stats_a.perfect_passes }}</td>
             <td>{{ team_stats_a.pass_errors }}</td>
             <td>—</td>
             <td>—</td>
@@ -130,16 +123,14 @@
             <th>#</th>
             <th>Player</th>
             <th>Pos</th>
+            <th title="Sets Played">GP</th>
             <th title="Kills">K</th>
             <th title="Aces">A</th>
             <th title="Blocks">B</th>
             <th title="Points Won">Pts</th>
-            <th title="Attack Attempts">Att</th>
             <th title="Attack Errors">AE</th>
             <th title="Serve Attempts">SA</th>
             <th title="Serve Errors">SE</th>
-            <th title="Pass Attempts">PA</th>
-            <th title="Perfect Passes">PP</th>
             <th title="Pass Errors">PE</th>
             <th title="Assists">Ast</th>
             <th title="Setting Errors">StE</th>
@@ -151,16 +142,14 @@
             <td>{{ s.jersey_number }}</td>
             <td>{{ s.player }}</td>
             <td>{{ s.get_position_display }}</td>
+            <td class="pnl-mono">{{ s.sets_played }}</td>
             <td><strong>{{ s.kills }}</strong></td>
             <td>{{ s.aces }}</td>
             <td>{{ s.blocks }}</td>
             <td class="pnl-stat-highlight">{{ s.points_won }}</td>
-            <td>{{ s.attack_attempts }}</td>
             <td>{{ s.attack_errors }}</td>
             <td>{{ s.serve_attempts }}</td>
             <td>{{ s.serve_errors }}</td>
-            <td>{{ s.pass_attempts }}</td>
-            <td>{{ s.perfect_passes }}</td>
             <td>{{ s.pass_errors }}</td>
             <td>{{ s.assists }}</td>
             <td>{{ s.setting_errors }}</td>
@@ -170,17 +159,14 @@
         {% if team_stats_b %}
         <tfoot>
           <tr class="pnl-stats-total">
-            <td colspan="3"><strong>TOTAL</strong></td>
+            <td colspan="4"><strong>TOTAL</strong></td>
             <td><strong>{{ team_stats_b.kills }}</strong></td>
             <td>{{ team_stats_b.aces }}</td>
             <td>{{ team_stats_b.blocks }}</td>
             <td class="pnl-stat-highlight">—</td>
-            <td>{{ team_stats_b.attack_attempts }}</td>
             <td>{{ team_stats_b.attack_errors }}</td>
             <td>{{ team_stats_b.serve_attempts }}</td>
             <td>{{ team_stats_b.serve_errors }}</td>
-            <td>{{ team_stats_b.pass_attempts }}</td>
-            <td>{{ team_stats_b.perfect_passes }}</td>
             <td>{{ team_stats_b.pass_errors }}</td>
             <td>—</td>
             <td>—</td>

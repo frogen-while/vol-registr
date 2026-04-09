@@ -4,17 +4,301 @@
 {% block title %}{% if page_title %}{{ page_title }}{% else %}{{ player_profile.name }} — Pocket Aces Tournament{% endif %}{% endblock %}
 
 {% block extra_head %}
-<meta name="description" content="{{ page_description|default:'Player stats and match log.' }}">
+<meta name="description" content="{{ page_description|default:'Player stats.' }}">
 <link rel="canonical" href="{{ request.build_absolute_uri }}">
 <meta property="og:title" content="{{ page_title|default:'Player — Pocket Aces Tournament' }}">
-<meta property="og:description" content="{{ page_description|default:'Player stats and match log.' }}">
+<meta property="og:description" content="{{ page_description|default:'Player stats.' }}">
 <meta property="og:type" content="profile">
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 {% if player_profile.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ player_profile.image|asset_url }}">{% endif %}
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="{{ page_title|default:'Player — Pocket Aces Tournament' }}">
-<meta name="twitter:description" content="{{ page_description|default:'Player stats and match log.' }}">
+<meta name="twitter:description" content="{{ page_description|default:'Player stats.' }}">
 <link rel="stylesheet" href="{% static_v 'css/arena-editorial.css' %}" />
+<style>
+/* ── Player Stats Dashboard ───────────────────────── */
+.ps-hero-card {
+  display: flex;
+  gap: 2rem;
+  background: rgba(15,23,42,.65);
+  border: 1px solid rgba(56,189,248,.12);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+}
+@media (max-width: 767px) {
+  .ps-hero-card { flex-direction: column; align-items: center; text-align: center; padding: 1.5rem 1rem; }
+}
+.ps-hero-card__photo {
+  position: relative;
+  flex-shrink: 0;
+  width: 160px;
+  height: 160px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid rgba(56,189,248,.18);
+}
+.ps-hero-card__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ps-hero-card__photo__number {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(15,23,42,.85);
+  color: #38bdf8;
+  font-family: var(--font-display, sans-serif);
+  font-size: 1.1rem;
+  font-weight: 800;
+  padding: .25rem .6rem;
+  border-radius: 10px 0 0 0;
+}
+.ps-hero-card__body { flex: 1; display: flex; flex-direction: column; gap: .5rem; }
+.ps-hero-card__team {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #94a3b8;
+}
+.ps-hero-card__team img { width: 18px; height: 18px; object-fit: contain; }
+.ps-hero-card__team a { color: #38bdf8; text-decoration: none; }
+.ps-hero-card__team a:hover { text-decoration: underline; }
+.ps-hero-card__name {
+  font-family: var(--font-display, sans-serif);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+}
+.ps-hero-card__badges { display: flex; flex-wrap: wrap; gap: .4rem; }
+@media (max-width: 767px) { .ps-hero-card__badges { justify-content: center; } }
+.ps-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: .3rem .65rem;
+  border-radius: 8px;
+  background: rgba(56,189,248,.08);
+  border: 1px solid rgba(56,189,248,.15);
+  color: #94a3b8;
+}
+.ps-chip--pos { color: #38bdf8; }
+/* Hero stat strip */
+.ps-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: .5rem;
+}
+@media (max-width: 767px) { .ps-hero-stats { justify-content: center; } }
+.ps-hero-stat { display: flex; flex-direction: column; align-items: center; }
+.ps-hero-stat__value {
+  font-family: var(--font-display, sans-serif);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+.ps-hero-stat__label {
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #64748b;
+  margin-top: .15rem;
+}
+
+/* Stat tiles */
+.ps-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+.ps-tile {
+  background: rgba(15,23,42,.55);
+  border: 1px solid rgba(56,189,248,.08);
+  border-radius: 14px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  position: relative;
+}
+.ps-tile__value {
+  font-family: var(--font-display, sans-serif);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: .35rem;
+}
+.ps-tile__label {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: #94a3b8;
+}
+.ps-tile__rank {
+  display: inline-block;
+  margin-top: .5rem;
+  font-size: .65rem;
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(56,189,248,.08);
+  padding: .15rem .5rem;
+  border-radius: 6px;
+}
+
+/* Fingerprint bars */
+.ps-fingerprint { display: flex; flex-direction: column; gap: .65rem; }
+.ps-fp-bar {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+.ps-fp-bar__label {
+  width: 100px;
+  flex-shrink: 0;
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #94a3b8;
+  text-align: right;
+}
+.ps-fp-bar__track {
+  flex: 1;
+  height: 26px;
+  background: rgba(15,23,42,.6);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.ps-fp-bar__fill {
+  height: 100%;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #38bdf8, #a78bfa);
+  min-width: 2px;
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+.ps-fp-bar__val {
+  width: 60px;
+  flex-shrink: 0;
+  font-family: var(--font-display, sans-serif);
+  font-size: .95rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* Radar chart */
+.ps-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+@media (max-width: 767px) {
+  .ps-dashboard { grid-template-columns: 1fr; }
+}
+.ps-radar-card {
+  background: rgba(15,23,42,.65);
+  border: 1px solid rgba(56,189,248,.12);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ps-radar-card__title {
+  font-family: var(--font-display, sans-serif);
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: rgba(148,163,184,.7);
+  margin-bottom: 1.5rem;
+}
+.ps-radar-svg { width: 100%; max-width: 320px; }
+.ps-radar-poly {
+  fill: rgba(56,189,248,.12);
+  stroke: #38bdf8;
+  stroke-width: 2;
+  transition: fill .3s;
+}
+.ps-radar-svg:hover .ps-radar-poly { fill: rgba(56,189,248,.22); }
+.ps-radar-grid { fill: none; stroke: rgba(148,163,184,.12); stroke-width: 1; }
+.ps-radar-axis { stroke: rgba(148,163,184,.08); stroke-width: 1; }
+.ps-radar-label {
+  fill: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.ps-radar-dot {
+  fill: #38bdf8;
+  filter: drop-shadow(0 0 4px rgba(56,189,248,.6));
+}
+.ps-ring-card {
+  background: rgba(15,23,42,.65);
+  border: 1px solid rgba(56,189,248,.12);
+  border-radius: 16px;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.ps-rings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+}
+.ps-rings > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+@media (max-width: 480px) { .ps-rings { grid-template-columns: 1fr 1fr; } }
+.ps-ring-svg { width: 80px; height: 80px; margin-bottom: .5rem; }
+.ps-ring-track { fill: none; stroke: rgba(148,163,184,.1); stroke-width: 6; }
+.ps-ring-fill {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset .8s cubic-bezier(.4,0,.2,1);
+}
+.ps-ring-fill--attack { stroke: #38bdf8; }
+.ps-ring-fill--serve  { stroke: #a78bfa; }
+.ps-ring-fill--block  { stroke: #34d399; }
+.ps-ring-fill--reception { stroke: #fbbf24; }
+.ps-ring-value {
+  font-family: var(--font-display, sans-serif);
+  font-size: 16px;
+  font-weight: 800;
+  fill: #fff;
+}
+.ps-ring-card__label {
+  font-size: .8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #94a3b8;
+  margin-bottom: .2rem;
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -35,70 +319,29 @@
 
     <div class="page-hero">
       <a href="{% url 'tournament_hub' %}" class="page-hero__crumb"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Tournament Hub</a>
-      <div class="page-hero__accent" aria-hidden="true"></div>
       <p class="page-hero__eyebrow">
-        {% if player_profile.team_id %}{{ player_profile.team }} · {% endif %}#{{ player_profile.number }}
+        {% if player_profile.team_id %}{{ player_profile.team }}{% endif %}{% if player_profile.position %} · {{ player_profile.position }}{% endif %} · #{{ player_profile.number }}
       </p>
       <h1 class="page-hero__title">{{ player_profile.name }}</h1>
     </div>
 
-    {# ══════════════════════════════════════════════════════════════
-       HERO — Player Profile
-       ══════════════════════════════════════════════════════════════ #}
-    <header class="ae-hero ae-hero--player ae-reveal">
-      <div class="ae-player-hero__photo">
+    <div class="ps-hero-card ae-reveal">
+      {% if player_profile.image %}
+      <div class="ps-hero-card__photo">
         <img src="{{ player_profile.image|asset_url }}" alt="{{ player_profile.name }}">
-        <span class="ae-player-hero__photo__number">#{{ player_profile.number }}</span>
+        <span class="ps-hero-card__photo__number">#{{ player_profile.number }}</span>
       </div>
+      {% endif %}
+      <div class="ps-hero-card__body">
+        <div class="ps-hero-card__name">{{ player_profile.name }}</div>
 
-      <div class="ae-player-hero__body">
-        <span class="ae-eyebrow">
-          {% if player_profile.team_logo %}<img src="{{ player_profile.team_logo|asset_url }}" alt="{{ player_profile.team }}" class="ae-inline-logo">{% endif %}{% if player_profile.team_id %}<a href="{% url 'tournament_team' player_profile.team_id %}">{{ player_profile.team }}</a>{% else %}{{ player_profile.team }}{% endif %}
-        </span>
-        <div class="ae-title-hero">{{ player_profile.name }}</div>
-
-        <div class="ae-player-hero__badges">
-          <span class="ae-chip">#{{ player_profile.number }}</span>
-          <span class="ae-chip ae-chip--pos">{{ player_profile.position }}</span>
-          {% if player_profile.awards %}<span class="ae-chip ae-chip--award">★ {{ player_profile.awards|length }}</span>{% endif %}
+        <div class="ps-hero-card__badges">
+          <span class="ps-chip">#{{ player_profile.number }}</span>
+          {% if player_profile.position %}<span class="ps-chip ps-chip--pos">{{ player_profile.position }}</span>{% endif %}
         </div>
-
-        {% if role_statement %}
-        <div class="ae-player-hero__role"><i class="fas fa-bolt"></i> {{ role_statement }}</div>
-        {% endif %}
-
-        {% if player_hero_stats %}
-        <div class="ae-hero-stats">
-          {% for s in player_hero_stats %}
-          <div class="ae-hero-stat">
-            <span class="ae-hero-stat__value">{{ s.value }}</span>
-            <span class="ae-hero-stat__label">{{ s.label }}</span>
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %}
-
-        {% if form_strip %}
-        <div class="ae-player-form-strip">
-          {% for f in form_strip %}
-          <a href="{% url 'tournament_match' f.match_id %}" class="ae-player-form-chip" title="{{ f.stage }} vs {{ f.opponent }}">vs {{ f.opponent }} <strong>{{ f.points_won }}pts</strong></a>
-          {% endfor %}
-        </div>
-        {% endif %}
       </div>
-    </header>
+    </div>
 
-    {# ── Anchor Nav ── #}
-    <nav class="ae-anchor-nav ae-reveal" aria-label="Player sections">
-      {% if position_fingerprint %}<a href="#fingerprint" class="ae-anchor-nav__link is-active" data-ae-target="fingerprint">Fingerprint</a>{% endif %}
-      <a href="#season" class="ae-anchor-nav__link{% if not position_fingerprint %} is-active{% endif %}" data-ae-target="season">Stats</a>
-      <a href="#player-matches" class="ae-anchor-nav__link" data-ae-target="player-matches">Match Log</a>
-      {% if player_profile.awards %}<a href="#awards" class="ae-anchor-nav__link" data-ae-target="awards">Awards</a>{% endif %}
-    </nav>
-
-    {# ══════════════════════════════════════════════════════════════
-       SECTION — Position Fingerprint
-       ══════════════════════════════════════════════════════════════ #}
     {% if position_fingerprint %}
     <section class="ae-section ae-reveal" id="fingerprint" data-ae-section>
       <div class="ae-section__head">
@@ -108,20 +351,69 @@
         </div>
       </div>
 
-      <div class="ae-fingerprint">
+      <div class="ps-fingerprint">
         {% for fp in position_fingerprint %}
-        <div class="ae-fingerprint__band">
-          <span class="ae-fingerprint__label">{{ fp.label }}</span>
-          <span class="ae-fingerprint__value">{{ fp.value }}</span>
+        <div class="ps-fp-bar">
+          <span class="ps-fp-bar__label">{{ fp.label }}</span>
+          <div class="ps-fp-bar__track">
+            <div class="ps-fp-bar__fill" style="width:0%" data-target-width="{{ fp.value }}"></div>
+          </div>
+          <span class="ps-fp-bar__val">{{ fp.value }}</span>
         </div>
         {% endfor %}
       </div>
     </section>
     {% endif %}
 
-    {# ══════════════════════════════════════════════════════════════
-       SECTION — Season Snapshot (stat cards with ranks)
-       ══════════════════════════════════════════════════════════════ #}
+    {% if player_radar_stats %}
+    <section class="ae-section ae-reveal" id="skill-profile" data-ae-section>
+      <div class="ae-section__head">
+        <div class="ae-section__cluster">
+          <span class="ae-eyebrow">Overview</span>
+          <h2 class="ae-title-section">Skill Profile</h2>
+        </div>
+      </div>
+
+      <div class="ps-dashboard">
+        <div class="ps-radar-card">
+          <span class="ps-radar-card__title">Radar</span>
+          <svg class="ps-radar-svg" viewBox="-40 -40 380 380" id="ps-radar">
+            {% for i in "0123" %}
+            <polygon class="ps-radar-grid" points="" data-ring="{{ forloop.counter }}"/>
+            {% endfor %}
+            {% for stat in player_radar_stats %}
+            <line class="ps-radar-axis" x1="150" y1="150" x2="0" y2="0" data-axis="{{ forloop.counter0 }}"/>
+            {% endfor %}
+            <polygon class="ps-radar-poly" points="" id="ps-radar-shape"/>
+            {% for stat in player_radar_stats %}
+            <circle class="ps-radar-dot" r="4" cx="0" cy="0" data-dot="{{ forloop.counter0 }}"/>
+            <text class="ps-radar-label" x="0" y="0" text-anchor="middle" data-lbl="{{ forloop.counter0 }}">{{ stat.label }}</text>
+            {% endfor %}
+          </svg>
+        </div>
+
+        <div class="ps-ring-card">
+          <div class="ps-rings">
+            {% for stat in player_radar_stats %}
+            <div>
+              <svg class="ps-ring-svg" viewBox="0 0 100 100">
+                <circle class="ps-ring-track" cx="50" cy="50" r="40"/>
+                <circle class="ps-ring-fill ps-ring-fill--{{ stat.key }}" cx="50" cy="50" r="40"
+                  stroke-dasharray="251.33"
+                  stroke-dashoffset="251.33"
+                  data-target-pct="{{ stat.raw }}"
+                  transform="rotate(-90 50 50)"/>
+                <text class="ps-ring-value" x="50" y="54" text-anchor="middle">{{ stat.value }}</text>
+              </svg>
+              <span class="ps-ring-card__label">{{ stat.label }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
     <section class="ae-section ae-reveal" id="season" data-ae-section>
       <div class="ae-section__head">
         <div class="ae-section__cluster">
@@ -130,150 +422,119 @@
         </div>
       </div>
 
-      <div class="ae-stat-grid">
+      <div class="ps-tiles">
         {% for item in player_summary_cards %}
-        <article class="ae-stat-card">
-          <span class="ae-stat-card__label">{{ item.label }}</span>
-          <span class="ae-stat-card__value">{{ item.value }}</span>
+        <div class="ps-tile">
+          <div class="ps-tile__value">{{ item.value }}</div>
+          <div class="ps-tile__label">{{ item.label }}</div>
           {% if item.rank %}
-          <span class="ae-stat-card__rank">{{ item.rank.rank }}<sup>{% if item.rank.rank == 1 %}st{% elif item.rank.rank == 2 %}nd{% elif item.rank.rank == 3 %}rd{% else %}th{% endif %}</sup> of {{ item.rank.total }}</span>
+          <span class="ps-tile__rank">{{ item.rank.rank }}<sup>{% if item.rank.rank == 1 %}st{% elif item.rank.rank == 2 %}nd{% elif item.rank.rank == 3 %}rd{% else %}th{% endif %}</sup> of {{ item.rank.total }}</span>
           {% endif %}
-        </article>
+        </div>
         {% endfor %}
       </div>
     </section>
 
-    {# ══════════════════════════════════════════════════════════════
-       SECTION — Match Timeline
-       ══════════════════════════════════════════════════════════════ #}
-    <section class="ae-section ae-reveal" id="player-matches" data-ae-section>
-      <div class="ae-section__head">
-        <div class="ae-section__cluster">
-          <span class="ae-eyebrow">Performance</span>
-          <h2 class="ae-title-section">Match Log</h2>
-        </div>
-      </div>
-
-      {% if player_match_log %}
-      <article class="ae-card">
-        <div class="ae-table-wrap ae-desktop-only">
-          <table class="ae-table" data-ae-sortable>
-            <thead>
-              <tr>
-                <th scope="col" data-ae-sort-key="date" data-ae-sort-type="string">Date</th>
-                <th scope="col" data-ae-sort-key="stage" data-ae-sort-type="string">Stage</th>
-                <th scope="col" data-ae-sort-key="opponent" data-ae-sort-type="string">Opponent</th>
-                <th scope="col" data-ae-sort-key="kills" data-ae-sort-type="number">Kills</th>
-                <th scope="col" data-ae-sort-key="aces" data-ae-sort-type="number">Aces</th>
-                <th scope="col" data-ae-sort-key="blocks" data-ae-sort-type="number">Blocks</th>
-                <th scope="col" data-ae-sort-key="pts" data-ae-sort-type="number">Pts</th>
-                <th scope="col" data-ae-sort-key="atteff" data-ae-sort-type="number">Att Eff</th>
-                <th scope="col" data-ae-sort-key="pass" data-ae-sort-type="number">3P%</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in player_match_log %}
-              <tr>
-                <td>{% if item.match_id %}<a href="{% url 'tournament_match' item.match_id %}">{{ item.date }}</a>{% else %}{{ item.date }}{% endif %}</td>
-                <td>{{ item.stage }}</td>
-                <td>{{ item.opponent }}</td>
-                <td>{{ item.kills }}</td>
-                <td>{{ item.aces }}</td>
-                <td>{{ item.blocks }}</td>
-                <td>{{ item.points_won }}</td>
-                <td>{{ item.attack_eff }}</td>
-                <td>{{ item.three_pass_pct }}</td>
-              </tr>
-              {% endfor %}
-              {# TOTAL row #}
-              <tr class="ae-table-total">
-                <td colspan="3"><strong>{{ player_totals_row.opponent }}</strong></td>
-                <td><strong>{{ player_totals_row.kills }}</strong></td>
-                <td><strong>{{ player_totals_row.aces }}</strong></td>
-                <td><strong>{{ player_totals_row.blocks }}</strong></td>
-                <td><strong>{{ player_totals_row.points_won }}</strong></td>
-                <td><strong>{{ player_totals_row.attack_eff }}</strong></td>
-                <td><strong>{{ player_totals_row.three_pass_pct }}</strong></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="ae-player-cards ae-mobile-only">
-          {% for item in player_match_log %}
-          {% if item.match_id %}<a href="{% url 'tournament_match' item.match_id %}" class="ae-player-card">{% else %}<div class="ae-player-card">{% endif %}
-            <div class="ae-player-card__body">
-              <div class="ae-player-card__header">
-                <span class="ae-player-card__position">{{ item.date }}</span>
-                <span class="ae-player-card__position">{{ item.stage }}</span>
-              </div>
-              <h3>vs {{ item.opponent }}</h3>
-              <div class="ae-kpi-row">
-                <span class="ae-kpi-chip">{{ item.kills }} K</span>
-                <span class="ae-kpi-chip">{{ item.aces }} A</span>
-                <span class="ae-kpi-chip">{{ item.blocks }} B</span>
-                <span class="ae-kpi-chip">{{ item.points_won }} Pts</span>
-                <span class="ae-kpi-chip">{{ item.attack_eff }}</span>
-              </div>
-            </div>
-          {% if item.match_id %}</a>{% else %}</div>{% endif %}
-          {% endfor %}
-          {# TOTAL card #}
-          <div class="ae-player-card ae-player-card--total">
-            <div class="ae-player-card__body">
-              <h3>Total — {{ player_totals_row.opponent }}</h3>
-              <div class="ae-kpi-row">
-                <span class="ae-kpi-chip">{{ player_totals_row.kills }} K</span>
-                <span class="ae-kpi-chip">{{ player_totals_row.aces }} A</span>
-                <span class="ae-kpi-chip">{{ player_totals_row.blocks }} B</span>
-                <span class="ae-kpi-chip">{{ player_totals_row.points_won }} Pts</span>
-                <span class="ae-kpi-chip">{{ player_totals_row.attack_eff }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
-      {% else %}
-      <p class="ae-body ae-body--muted">No matches played yet.</p>
-      {% endif %}
-    </section>
-
-    {# ══════════════════════════════════════════════════════════════
-       SECTION — Awards & Recognition
-       ══════════════════════════════════════════════════════════════ #}
-    {% if player_profile.awards %}
-    <section class="ae-section ae-reveal" id="awards" data-ae-section>
-      <div class="ae-section__head">
-        <div class="ae-section__cluster">
-          <span class="ae-eyebrow">Recognition</span>
-          <h2 class="ae-title-section">Awards</h2>
-        </div>
-      </div>
-
-      <article class="ae-card">
-        <ul class="ae-awards-list">
-          {% for award in player_profile.awards %}
-          <li>
-            {% if award.type == 'mvp' %}
-            <span class="ae-badge ae-badge--live">MVP</span>
-            {% elif award.type == 'dream_team' %}
-            <span class="ae-badge ae-badge--finished">★</span>
-            {% elif award.type == 'leader' %}
-            <span class="ae-badge ae-badge--scheduled">#1</span>
-            {% endif %}
-            {{ award.label }}
-          </li>
-          {% endfor %}
-        </ul>
-      </article>
-    </section>
     {% endif %}
-
-    {% endif %}{# end empty check #}
   </div>
 </section>
 {% endblock %}
 
 {% block scripts %}
 <script src="{% static_v 'js/arena-editorial.js' %}"></script>
+<script>
+(function(){
+  /* Animate fingerprint bars */
+  var bars = document.querySelectorAll('.ps-fp-bar__fill[data-target-width]');
+  if (!bars.length) return;
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        var raw = e.target.getAttribute('data-target-width');
+        var num = parseFloat(raw);
+        if (!isNaN(num)) {
+          e.target.style.width = Math.min(num, 100) + '%';
+        } else {
+          e.target.style.width = '60%';
+        }
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  bars.forEach(function(b) { observer.observe(b); });
+})();
+</script>
+<script>
+(function(){
+  /* ── Radar chart ── */
+  var svg = document.getElementById('ps-radar');
+  if (!svg) return;
+
+  var rawData = [
+    {% for stat in player_radar_stats %}{ raw: {{ stat.raw }}, key: "{{ stat.key }}" }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  var cx = 150, cy = 150, R = 110, N = rawData.length;
+  if (N < 3) return;
+
+  var maxVals = { attack: 60, serve: 30, block: 30, reception: 80 };
+  var angleStep = (2 * Math.PI) / N;
+  var startAngle = -Math.PI / 2;
+
+  function polar(i, r) {
+    var a = startAngle + i * angleStep;
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  }
+
+  /* Grid rings */
+  [0.25, 0.5, 0.75, 1].forEach(function(frac, ri) {
+    var pts = [];
+    for (var i = 0; i < N; i++) pts.push(polar(i, R * frac).join(','));
+    var ring = svg.querySelector('[data-ring="' + (ri + 1) + '"]');
+    if (ring) ring.setAttribute('points', pts.join(' '));
+  });
+
+  /* Axis lines */
+  for (var i = 0; i < N; i++) {
+    var p = polar(i, R);
+    var axis = svg.querySelector('[data-axis="' + i + '"]');
+    if (axis) { axis.setAttribute('x2', p[0]); axis.setAttribute('y2', p[1]); }
+  }
+
+  /* Data polygon + dots */
+  var dataPts = [];
+  rawData.forEach(function(d, i) {
+    var maxV = maxVals[d.key] || 100;
+    var norm = Math.max(0, Math.min(1, Math.abs(d.raw) / maxV));
+    var pt = polar(i, R * norm);
+    dataPts.push(pt[0] + ',' + pt[1]);
+    var dot = svg.querySelector('[data-dot="' + i + '"]');
+    if (dot) { dot.setAttribute('cx', pt[0]); dot.setAttribute('cy', pt[1]); }
+  });
+  document.getElementById('ps-radar-shape').setAttribute('points', dataPts.join(' '));
+
+  /* Labels */
+  rawData.forEach(function(_, i) {
+    var lp = polar(i, R + 30);
+    var lbl = svg.querySelector('[data-lbl="' + i + '"]');
+    if (lbl) { lbl.setAttribute('x', lp[0]); lbl.setAttribute('y', lp[1] + 4); }
+  });
+
+  /* ── Ring gauge animation ── */
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (!e.isIntersecting) return;
+      e.target.querySelectorAll('.ps-ring-fill').forEach(function(c) {
+        var pct = Math.min(Math.abs(parseFloat(c.dataset.targetPct) || 0), 100);
+        var circ = 2 * Math.PI * 40;
+        c.style.strokeDashoffset = circ - (circ * pct / 100);
+      });
+      io.unobserve(e.target);
+    });
+  }, { threshold: 0.2 });
+  var dashboard = document.querySelector('.ps-dashboard');
+  if (dashboard) io.observe(dashboard);
+})();
+</script>
 {% endblock %}

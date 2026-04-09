@@ -13,11 +13,8 @@ CSV_TO_MODEL = {
     "Serve Attempts": "serve_attempts",
     "Aces": "aces",
     "Serve Errors": "serve_errors",
-    "Attack Attempts": "attack_attempts",
     "Kills": "kills",
     "Attack Errors": "attack_errors",
-    "Pass Attempts": "pass_attempts",
-    "3-pass": "perfect_passes",
     "Total Pass Errors": "pass_errors",
     "Blocks": "blocks",
     "Assists": "assists",
@@ -27,7 +24,6 @@ CSV_TO_MODEL = {
 # Alternative header names that map to the same canonical name.
 COLUMN_ALIASES = {
     "Jersey": "Player Number",
-    "Perfect Passes": "3-pass",
     "Pass Errors": "Total Pass Errors",
 }
 

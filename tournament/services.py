@@ -17,6 +17,7 @@ from .constants import (
     MAX_TOURNAMENT_SLOTS,
     MATCH_FINISHED,
     MATCH_SCHEDULED,
+    MVP_WEIGHTS,
     PAYMENT_ACCEPTED,
     PAYMENT_WAITING,
     POSITION_L,
@@ -309,24 +310,49 @@ def import_schedule_csv(rows: list[dict]) -> int:
     return len(matches)
 
 
-# ── CSV Import ───────────────────────────────────────────
+# ── Stats Import (CSV / XML) ─────────────────────────────
 
 
-def preview_csv_import(file_obj, match_id: int, team_id: int | None = None) -> dict:
+def _detect_format(raw: str) -> str:
+    """Return 'xml' if content looks like XML, else 'csv'."""
+    stripped = raw.lstrip()
+    if stripped.startswith("<") or stripped.startswith("<?xml"):
+        return "xml"
+    return "csv"
+
+
+def preview_stats_import(file_obj, match_id: int, team_id: int | None = None) -> dict:
     """
-    Parse CSV and validate against DB without writing anything.
+    Parse CSV or XML and validate against DB without writing anything.
 
-    Returns dict with ``preview``, ``errors``, ``warnings``, ``can_import``.
+    Returns dict with ``preview``, ``errors``, ``warnings``, ``can_import``, ``format``.
     """
     from .csv_import import parse_csv, validate_against_db
+    from .xml_import import parse_xml
 
-    parsed = parse_csv(file_obj)
+    # Read raw content to detect format
+    if hasattr(file_obj, "read"):
+        raw = file_obj.read()
+        if isinstance(raw, bytes):
+            raw = raw.decode("utf-8-sig")
+    else:
+        raw = str(file_obj)
+
+    fmt = _detect_format(raw)
+
+    import io
+    if fmt == "xml":
+        parsed = parse_xml(io.StringIO(raw))
+    else:
+        parsed = parse_csv(io.StringIO(raw))
+
     if parsed["errors"]:
         return {
             "preview": [],
             "errors": parsed["errors"],
             "warnings": parsed["warnings"],
             "can_import": False,
+            "format": fmt,
         }
 
     validated = validate_against_db(parsed["rows"], match_id, team_id)
@@ -347,20 +373,26 @@ def preview_csv_import(file_obj, match_id: int, team_id: int | None = None) -> d
         "errors": all_errors,
         "warnings": all_warnings,
         "can_import": can_import,
+        "format": fmt,
     }
 
 
+# Keep old name as alias for backwards compat
+def preview_csv_import(file_obj, match_id: int, team_id: int | None = None) -> dict:
+    return preview_stats_import(file_obj, match_id, team_id)
+
+
 @transaction.atomic
-def confirm_csv_import(
+def confirm_stats_import(
     file_obj, match_id: int, team_id: int | None = None,
 ) -> dict:
     """
-    Import player stats from CSV into the database.
+    Import player stats from CSV or XML into the database.
 
     When *team_id* is given only that team's stats are replaced;
     otherwise all stats for the match are wiped (legacy mode).
     """
-    result = preview_csv_import(file_obj, match_id, team_id)
+    result = preview_stats_import(file_obj, match_id, team_id)
     if not result["can_import"]:
         raise ValueError(
             "Cannot import: " + "; ".join(result["errors"] or ["no valid rows"])
@@ -378,9 +410,17 @@ def confirm_csv_import(
         TeamMatchStats.objects.filter(match=match).delete()
         GameSet.objects.filter(match=match).delete()
 
+    # Fallback sets_played: total sets in the match (score_a + score_b)
+    fallback_sets = (match.score_a or 0) + (match.score_b or 0)
+
     # Create PlayerMatchStats
     stats_objects = []
     for row in result["preview"]:
+        # Use per-player sets_played from XML if available, else fallback
+        sp = row.get("sets_played", 0)
+        if not sp and fallback_sets:
+            sp = fallback_sets
+
         stats_objects.append(
             PlayerMatchStats(
                 match=match,
@@ -391,15 +431,13 @@ def confirm_csv_import(
                 serve_attempts=row.get("serve_attempts", 0),
                 aces=row.get("aces", 0),
                 serve_errors=row.get("serve_errors", 0),
-                attack_attempts=row.get("attack_attempts", 0),
                 kills=row.get("kills", 0),
                 attack_errors=row.get("attack_errors", 0),
-                pass_attempts=row.get("pass_attempts", 0),
-                perfect_passes=row.get("perfect_passes", 0),
                 pass_errors=row.get("pass_errors", 0),
                 blocks=row.get("blocks", 0),
                 assists=row.get("assists", 0),
                 setting_errors=row.get("setting_errors", 0),
+                sets_played=sp,
             )
         )
     PlayerMatchStats.objects.bulk_create(stats_objects)
@@ -431,17 +469,22 @@ def confirm_csv_import(
 
     recalculate_dream_team()
 
-    logger.info("CSV import complete for match M%s: %d rows", match.match_number, len(stats_objects))
+    logger.info("Stats import complete for match M%s: %d rows", match.match_number, len(stats_objects))
 
     return {"imported": len(stats_objects), "warnings": result["warnings"]}
+
+
+# Keep old name as alias for backwards compat
+def confirm_csv_import(file_obj, match_id: int, team_id: int | None = None) -> dict:
+    return confirm_stats_import(file_obj, match_id, team_id)
 
 
 def _aggregate_team_stats(match: Match, only_team=None) -> None:
     """Sum player stats into TeamMatchStats for each team in a match."""
     agg_fields = [
         "serve_attempts", "aces", "serve_errors",
-        "attack_attempts", "kills", "attack_errors",
-        "pass_attempts", "perfect_passes", "pass_errors",
+        "kills", "attack_errors",
+        "pass_errors",
         "blocks",
     ]
     if only_team:
@@ -548,13 +591,13 @@ def recalculate_standings() -> None:
 
 def recalculate_dream_team() -> None:
     """
-    Select 7 best players by position across all matches.
+    Select 7 best players by position across all matches using weighted
+    per-set MVP formulas.
 
-    OH/OPP → max kills, MB → max blocks, S → max assists, L → max perfect_passes.
+    OH/OPP/MB/S → highest weighted score per set.
+    L → closest to 0 (fewest pass errors per set) — inverted ranking.
     Produces 7 entries: OH×2, MB×2, OPP×1, S×1, L×1.
     """
-    from django.db.models import Sum as DjSum
-
     SLOT_MAP = {
         POSITION_OH: ["front-left", "back-right"],
         POSITION_MB: ["front-center", "back-center"],
@@ -562,42 +605,74 @@ def recalculate_dream_team() -> None:
         POSITION_S: ["back-left"],
         POSITION_L: ["libero"],
     }
-    METRIC_MAP = {
-        POSITION_OH: ("kills", DjSum("kills")),
-        POSITION_MB: ("blocks", DjSum("blocks")),
-        POSITION_OPP: ("kills", DjSum("kills")),
-        POSITION_S: ("assists", DjSum("assists")),
-        POSITION_L: ("perfect_passes", DjSum("perfect_passes")),
-    }
 
     # Remove previous auto-calculated entries
     DreamTeamEntry.objects.filter(is_auto=True).delete()
 
     entries = []
     for pos, slots in SLOT_MAP.items():
-        metric_name, agg_expr = METRIC_MAP[pos]
-        # Aggregate across all matches for players who played this position
-        leaders = (
-            PlayerMatchStats.objects.filter(position=pos)
-            .values("player_id", "team_id")
-            .annotate(total=agg_expr)
-            .order_by("-total")[:len(slots)]
+        weights = MVP_WEIGHTS[pos]
+        needed = len(slots)
+
+        # Get all stat rows for this position
+        qs = PlayerMatchStats.objects.filter(position=pos)
+
+        # Aggregate per player: sum each stat field and total sets_played
+        agg_fields = list({f for f, _ in weights}) + ["sets_played"]
+        agg_kwargs = {f: Sum(f) for f in agg_fields}
+        leaders_qs = (
+            qs.values("player_id", "team_id")
+            .annotate(**agg_kwargs)
         )
-        for i, leader in enumerate(leaders):
-            if i >= len(slots):
-                break
+
+        scored: list[tuple[float, dict]] = []
+        for row in leaders_qs:
+            total_sets = row["sets_played"] or 0
+            if total_sets == 0:
+                continue  # can't compute per-set score
+
+            # "Did they play?" filter:
+            # S: skip if assists==0 AND setting_errors==0
+            # L: skip if pass_errors==0
+            # Others: skip if all weighted fields are 0
+            if pos == POSITION_S:
+                if (row.get("assists") or 0) == 0 and (row.get("setting_errors") or 0) == 0:
+                    continue
+            elif pos == POSITION_L:
+                if (row.get("pass_errors") or 0) == 0:
+                    continue
+            else:
+                if all((row.get(f) or 0) == 0 for f, _ in weights):
+                    continue
+
+            # Compute weighted score
+            raw_score = sum(
+                (row.get(field) or 0) * weight
+                for field, weight in weights
+            )
+            per_set = raw_score / total_sets
+            scored.append((per_set, row))
+
+        # Sort: L → closest to 0 (ascending by abs), others → descending
+        if pos == POSITION_L:
+            scored.sort(key=lambda x: abs(x[0]))
+        else:
+            scored.sort(key=lambda x: x[0], reverse=True)
+
+        for i, (score, row) in enumerate(scored[:needed]):
             try:
-                player = Player.objects.get(pk=leader["player_id"])
+                player = Player.objects.get(pk=row["player_id"])
             except Player.DoesNotExist:
                 continue
+            total_sets = row["sets_played"] or 1
             entries.append(
                 DreamTeamEntry(
                     position=pos,
                     slot=slots[i],
                     player=player,
-                    team_id=leader["team_id"],
-                    metric_label=f"{leader['total']} {metric_name}",
-                    metric_value=float(leader["total"] or 0),
+                    team_id=row["team_id"],
+                    metric_label=f"{score:+.2f} / set",
+                    metric_value=float(score),
                     is_auto=True,
                 )
             )

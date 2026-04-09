@@ -8,7 +8,7 @@ import logging
 from django.conf import settings
 
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.core.mail import send_mail
 
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -25,7 +25,6 @@ from .models import GalleryPhoto, GalleryVideo, Match, Team
 from .services import get_available_slots, register_team
 from .sports_data import (
     get_category_leaders,
-    get_dream_team,
     get_highlights,
     get_match_detail,
     get_mvp,
@@ -40,6 +39,7 @@ logger = logging.getLogger(__name__)
 
 def index(request):
     """Landing page with live slot counter."""
+    from .constants import REGISTRATION_CLOSED
     available = get_available_slots()
     teams = Team.objects.all().order_by('created_at')
     context = {
@@ -47,6 +47,7 @@ def index(request):
         "registered_teams": MAX_TOURNAMENT_SLOTS - available,
         "max_slots": MAX_TOURNAMENT_SLOTS,
         "teams": teams,
+        "registration_closed": REGISTRATION_CLOSED,
     }
     return render(request, "tournament/index.html", context)
 
@@ -80,22 +81,6 @@ def tournament_teams(request):
     """Teams list page grouped by group."""
     standings = get_standings("groups")
     overall = get_standings("overall")
-    dream_team_entries = get_dream_team()
-    if dream_team_entries:
-        dream_team_spotlight = dream_team_entries[:3]
-    else:
-        dream_team_spotlight = [
-            {
-                "position": leader["label"],
-                "name": leader["player_name"],
-                "team": leader["team"],
-                "team_logo": leader.get("team_logo", ""),
-                "metric": leader["value"],
-                "player_id": leader.get("player_id"),
-                "image": leader["image"],
-            }
-            for leader in get_category_leaders()[:3]
-        ]
 
     # Fallback: show registered teams when no standings computed yet
     teams = []
@@ -111,26 +96,10 @@ def tournament_teams(request):
         "standings": standings,
         "overall_standings": overall,
         "teams": teams,
-        "dream_team_spotlight": dream_team_spotlight,
-        "dream_team_total": len(dream_team_entries) or len(dream_team_spotlight),
         "page_title": "All Teams — Pocket Aces Tournament",
         "page_description": "Browse all teams competing in the Pocket Aces Spring Volleyball Tournament.",
     }
     return render(request, "tournament/teams_preview.html", context)
-
-
-def tournament_dream_team(request):
-    """Visual Dream Team court page."""
-    from .constants import MVP_TOURNAMENT
-    context = {
-        "active": "dream_team",
-        "dream_team": get_dream_team(),
-        "category_leaders": get_category_leaders(),
-        "mvp": get_mvp(MVP_TOURNAMENT),
-        "page_title": "Dream Team — Pocket Aces Tournament",
-        "page_description": "The best players of the tournament selected for the Pocket Aces Dream Team.",
-    }
-    return render(request, "tournament/dream_team_preview.html", context)
 
 
 def tournament_match(request, match_id):
@@ -186,6 +155,9 @@ def tournament_gallery(request):
 @ensure_csrf_cookie
 def register(request):
     """Registration form page (renders the empty form + CSRF cookie)."""
+    from .constants import REGISTRATION_CLOSED
+    if REGISTRATION_CLOSED:
+        return redirect('index')
     return render(request, "tournament/register.html")
 
 
@@ -200,6 +172,11 @@ def api_register_team(request):
     -------
     JsonResponse  {success: bool, team_id?: int, error?: str}
     """
+    from .constants import REGISTRATION_CLOSED
+    if REGISTRATION_CLOSED:
+        return JsonResponse(
+            {"success": False, "error": "Registration is closed."}, status=403
+        )
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:

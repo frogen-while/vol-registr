@@ -84,8 +84,6 @@
               <th>Aces</th>
               <th>Blk</th>
               <th>Ast</th>
-              <th>Att</th>
-              <th>Pass</th>
             </tr>
           </thead>
           <tbody>
@@ -98,8 +96,6 @@
               <td class="pnl-mono">{{ r.aces }}</td>
               <td class="pnl-mono">{{ r.blocks }}</td>
               <td class="pnl-mono">{{ r.assists }}</td>
-              <td class="pnl-mono">{{ r.attack_attempts }}</td>
-              <td class="pnl-mono">{{ r.pass_attempts }}</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -187,7 +183,7 @@
   {# ── Upload form ───────────────────────────────────── #}
   {% if not preview_rows %}
   <div class="pnl-dash-card">
-    <h3 class="pnl-dash-card__title">Upload CSV File</h3>
+    <h3 class="pnl-dash-card__title">Upload Stats File</h3>
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="pnl-csv-upload" style="margin-bottom:12px;">
@@ -207,8 +203,8 @@
         </select>
       </div>
       <div class="pnl-csv-upload">
-        <label for="csv_file">Select CSV file (SoloStats Live export):</label>
-        <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+        <label for="csv_file">Select file (SoloStats Live CSV or XML export):</label>
+        <input type="file" name="csv_file" id="csv_file" accept=".csv,.xml" required>
       </div>
       <div class="pnl-form__actions" style="margin-top:16px;">
         <button type="submit" class="pnl-btn pnl-btn--primary">
@@ -218,8 +214,9 @@
     </form>
 
     <div class="pnl-code-block" style="margin-top:20px;">
-      <h4 style="margin-top:0;">Expected CSV format (SoloStats Live):</h4>
-      <code>Multi-section CSV — one file per team, sections separated by blank lines.</code>
+      <h4 style="margin-top:0;">Accepted formats (SoloStats Live):</h4>
+      <code>CSV — multi-section file, one per team, sections separated by blank lines.<br>
+      XML — WebReports export (&lt;vbgame&gt; format).</code>
     </div>
   </div>
   {% endif %}

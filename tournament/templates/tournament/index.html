@@ -48,10 +48,16 @@
                     <span class="rt-link__text" data-i18n="registered.cta">See registered teams -></span>
                 </a>
 
+                {% if registration_closed %}
+                <div class="btn-cta btn-cta--closed">
+                    <span class="btn-cta__text" data-i18n="hero.closed">Registration Closed</span>
+                </div>
+                {% else %}
                 <a href="{% url 'register' %}" class="btn-cta">
                     <span class="btn-cta__text" data-i18n="hero.cta">Secure Your Spot</span>
                     <div class="btn-cta__shimmer"></div>
                 </a>
+                {% endif %}
             </div>
         </div>
 

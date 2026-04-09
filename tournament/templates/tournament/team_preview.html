@@ -252,8 +252,6 @@
                   <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_kills">Kills</span><span class="ae-roster__stat__value">{{ player.kills }}</span></div>
                   <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_aces">Aces</span><span class="ae-roster__stat__value">{{ player.aces }}</span></div>
                   <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_blocks">Blocks</span><span class="ae-roster__stat__value">{{ player.blocks }}</span></div>
-                  <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_att_eff">Att Eff</span><span class="ae-roster__stat__value">{{ player.attack_eff }}</span></div>
-                  <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_3p">3P%</span><span class="ae-roster__stat__value">{{ player.three_pass_pct }}</span></div>
                   <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_assists">Assists</span><span class="ae-roster__stat__value">{{ player.assists }}</span></div>
                   <div class="ae-roster__stat"><span class="ae-roster__stat__label" data-i18n="tp.stat_srv_att">Srv Att</span><span class="ae-roster__stat__value">{{ player.serve_attempts }}</span></div>
                 </div>
@@ -289,7 +287,7 @@
       <div class="ts-dashboard">
         <div class="ts-radar-card">
           <span class="ts-radar-card__title" data-i18n="tp.skill_profile">Skill Profile</span>
-          <svg class="ts-radar-svg" viewBox="0 0 300 300" id="ts-radar">
+          <svg class="ts-radar-svg" viewBox="-40 -40 380 380" id="ts-radar">
             {% for i in "0123" %}
             <polygon class="ts-radar-grid" points="" data-ring="{{ forloop.counter }}"/>
             {% endfor %}
@@ -396,7 +394,7 @@
 
   /* Labels */
   rawData.forEach(function(_, i) {
-    const [lx, ly] = polar(i, R + 22);
+    const [lx, ly] = polar(i, R + 30);
     const lbl = svg.querySelector('[data-lbl="' + i + '"]');
     if (lbl) { lbl.setAttribute('x', lx); lbl.setAttribute('y', ly + 4); }
   });
