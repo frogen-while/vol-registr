@@ -9,16 +9,17 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 
-from ..admin_forms import AdminMatchForm
+from ..admin_forms import AdminMatchForm, AdminScheduleEventForm
 from ..constants import (
     COURT_CHOICES,
+    EVENT_TYPE_CHOICES,
     MATCH_FINISHED,
     MATCH_LIVE,
     MATCH_SCHEDULED,
     MATCH_STATUS_CHOICES,
     STAGE_CHOICES,
 )
-from ..models import AUDIT_CATEGORY_MATCH, Match
+from ..models import AUDIT_CATEGORY_MATCH, Match, ScheduleEvent
 from .audit import log_audit
 
 
@@ -95,6 +96,7 @@ def schedule_list_view(request):
         "page_title": "Schedule",
         "nav_section": "schedule",
         "matches": qs,
+        "events": ScheduleEvent.objects.all(),
         "stage_filter": stage,
         "status_filter": status,
         "court_filter": court,
@@ -104,6 +106,7 @@ def schedule_list_view(request):
         "courts": COURT_CHOICES,
         "stage_choices": STAGE_CHOICES,
         "match_status_choices": MATCH_STATUS_CHOICES,
+        "event_type_choices": EVENT_TYPE_CHOICES,
         "groups": groups,
         "conflict_pks": conflict_pks,
     }
@@ -325,3 +328,50 @@ def match_conflict_check(request):
                 })
 
     return JsonResponse({"conflicts": conflicts})
+
+
+# ── Schedule Events CRUD ─────────────────────────────────
+
+@staff_member_required(login_url="/panel/login/")
+def event_create_view(request):
+    if request.method == "POST":
+        form = AdminScheduleEventForm(request.POST)
+        if form.is_valid():
+            event = form.save()
+            messages.success(request, f"Event '{event.title}' created.")
+            return redirect("panel:schedule")
+    else:
+        form = AdminScheduleEventForm()
+    return render(
+        request,
+        "panel/event_form.html",
+        {"page_title": "Create Event", "nav_section": "schedule", "form": form},
+    )
+
+
+@staff_member_required(login_url="/panel/login/")
+def event_edit_view(request, pk):
+    event = get_object_or_404(ScheduleEvent, pk=pk)
+    if request.method == "POST":
+        form = AdminScheduleEventForm(request.POST, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Event '{event.title}' updated.")
+            return redirect("panel:schedule")
+    else:
+        form = AdminScheduleEventForm(instance=event)
+    return render(
+        request,
+        "panel/event_form.html",
+        {"page_title": f"Edit Event: {event.title}", "nav_section": "schedule", "form": form, "event": event},
+    )
+
+
+@staff_member_required(login_url="/panel/login/")
+@require_POST
+def event_delete_view(request, pk):
+    event = get_object_or_404(ScheduleEvent, pk=pk)
+    title = event.title
+    event.delete()
+    messages.success(request, f"Event '{title}' deleted.")
+    return redirect("panel:schedule")

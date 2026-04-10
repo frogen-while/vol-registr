@@ -7,7 +7,7 @@ from django.db.models import Max
 from django.forms import inlineformset_factory
 
 from .constants import STAGE_GROUP
-from .models import GalleryPhoto, GalleryVideo, Match, Player, Team
+from .models import GalleryPhoto, GalleryVideo, Match, Player, ScheduleEvent, Team
 
 
 class AdminTeamForm(forms.ModelForm):
@@ -56,7 +56,9 @@ class AdminMatchForm(forms.ModelForm):
             "court",
             "start_time",
             "team_a",
+            "placeholder_a",
             "team_b",
+            "placeholder_b",
             "score_a",
             "score_b",
             "status",
@@ -111,6 +113,30 @@ class AdminMatchForm(forms.ModelForm):
             ).first() or 0
             cleaned["match_number"] = max_num + 1
 
+        return cleaned
+
+
+class AdminScheduleEventForm(forms.ModelForm):
+    class Meta:
+        model = ScheduleEvent
+        fields = ["event_type", "title", "start_time", "end_time", "description"]
+        widgets = {
+            "start_time": forms.DateTimeInput(
+                attrs={"type": "datetime-local"},
+                format="%Y-%m-%dT%H:%M",
+            ),
+            "end_time": forms.DateTimeInput(
+                attrs={"type": "datetime-local"},
+                format="%Y-%m-%dT%H:%M",
+            ),
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+        start = cleaned.get("start_time")
+        end = cleaned.get("end_time")
+        if start and end and end <= start:
+            self.add_error("end_time", "End time must be after start time.")
         return cleaned
 
 

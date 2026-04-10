@@ -15,6 +15,7 @@ from django.db.models import Sum, F, Value, FloatField, IntegerField, Case, When
 from django.db.models.functions import Cast
 
 from .constants import (
+    EVENT_TYPE_CHOICES,
     MATCH_FINISHED,
     MVP_MATCH,
     MVP_TOURNAMENT,
@@ -30,6 +31,7 @@ from .models import (
     MVPSelection,
     Player,
     PlayerMatchStats,
+    ScheduleEvent,
     Team,
     TeamMatchStats,
 )
@@ -150,48 +152,77 @@ def get_tournament_summary() -> dict:
     }
 
 
+_EVENT_TYPE_DISPLAY = dict(EVENT_TYPE_CHOICES)
+
+
 def get_schedule_slots() -> list[dict]:
     """
     Build time-grouped schedule for the tournament preview page.
 
-    Returns list of ``{time: "09:00", games: [{court, stage, home, away, score, status, match_id}]}``.
+    Merges matches and schedule events (opening, breaks, ceremony)
+    into a single timeline sorted by start_time.
+
+    Returns list of ``{time, games: [...], events: [...]}``.
     """
-    matches = (
+    matches = list(
         Match.objects
         .select_related("team_a", "team_b")
         .order_by("start_time", "court")
     )
-    if not matches.exists():
+    events = list(
+        ScheduleEvent.objects.order_by("start_time")
+    )
+
+    if not matches and not events:
         return []
 
+    # Build unified items list: (start_time, type, object)
+    items = []
+    for m in matches:
+        items.append((m.start_time, "match", m))
+    for e in events:
+        items.append((e.start_time, "event", e))
+    items.sort(key=lambda x: x[0])
+
     slots: list[dict] = []
-    for _, group in groupby(matches, key=attrgetter("start_time")):
+    for start_time, group in groupby(items, key=lambda x: x[0]):
+        time_label = start_time.strftime("%H:%M")
         games = []
-        time_label = None
-        for m in group:
-            if time_label is None:
-                time_label = m.start_time.strftime("%H:%M")
-            score = f"{m.score_a}:{m.score_b}" if m.is_finished else "NEXT"
-            games.append({
-                "court": f"Court {m.court}",
-                "stage": _stage_label(m.stage, m.group),
-                "stage_raw": m.stage,
-                "status_raw": m.status,
-                "home": m.team_a.name if m.team_a else "TBD",
-                "home_logo": m.team_a.logo_path if m.team_a and m.team_a.logo_path else "",
-                "home_short": (m.team_a.name[:2]).upper() if m.team_a else "??",
-                "home_id": m.team_a_id,
-                "away": m.team_b.name if m.team_b else "TBD",
-                "away_logo": m.team_b.logo_path if m.team_b and m.team_b.logo_path else "",
-                "away_short": (m.team_b.name[:2]).upper() if m.team_b else "??",
-                "away_id": m.team_b_id,
-                "score_home": str(m.score_a) if m.is_finished else "",
-                "score_away": str(m.score_b) if m.is_finished else "",
-                "score": score,
-                "status": _match_status_label(m),
-                "match_id": m.pk,
-            })
-        slots.append({"time": time_label, "games": games})
+        slot_events = []
+        for _st, item_type, obj in group:
+            if item_type == "match":
+                m = obj
+                score = f"{m.score_a}:{m.score_b}" if m.is_finished else "NEXT"
+                games.append({
+                    "court": f"Court {m.court}",
+                    "stage": _stage_label(m.stage, m.group),
+                    "stage_raw": m.stage,
+                    "status_raw": m.status,
+                    "home": m.display_name_a,
+                    "home_logo": m.team_a.logo_path if m.team_a and m.team_a.logo_path else "",
+                    "home_short": (m.display_name_a[:2]).upper(),
+                    "home_id": m.team_a_id,
+                    "away": m.display_name_b,
+                    "away_logo": m.team_b.logo_path if m.team_b and m.team_b.logo_path else "",
+                    "away_short": (m.display_name_b[:2]).upper(),
+                    "away_id": m.team_b_id,
+                    "score_home": str(m.score_a) if m.is_finished else "",
+                    "score_away": str(m.score_b) if m.is_finished else "",
+                    "score": score,
+                    "status": _match_status_label(m),
+                    "match_id": m.pk,
+                })
+            else:
+                e = obj
+                end_label = e.end_time.strftime("%H:%M") if e.end_time else ""
+                slot_events.append({
+                    "title": e.title,
+                    "type": e.event_type,
+                    "type_label": _EVENT_TYPE_DISPLAY.get(e.event_type, e.event_type),
+                    "description": e.description or "",
+                    "end_time": end_label,
+                })
+        slots.append({"time": time_label, "games": games, "events": slot_events})
 
     return slots
 

@@ -69,7 +69,15 @@
   transition:color var(--ae-motion-1) var(--ae-ease-standard);
 }
 .th-team-link:hover{color:var(--ae-net-500);}
-.th-team-logo{height:1.6rem;width:1.6rem;object-fit:contain;border-radius:4px;}
+.th-team-logo{height:1.6rem;width:1.6rem;min-height:1.6rem;min-width:1.6rem;object-fit:contain;border-radius:4px;display:block;}
+.th-team-logo--placeholder{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:1.6rem;height:1.6rem;min-width:1.6rem;min-height:1.6rem;border-radius:4px;
+  background:var(--ae-accent-surface-2);color:#fff;
+  font-family:var(--ae-font-display);font-size:.65rem;font-weight:800;
+  letter-spacing:.03em;text-transform:uppercase;
+}
+.th-table td:first-child{width:2.2rem;min-width:2.2rem;padding-right:0;}
 
 /* Hidden panel */
 .is-hidden{display:none!important;}
@@ -104,6 +112,31 @@
 .th-sched__row:hover{border-color:rgba(56,189,248,.18);background:rgba(15,23,42,.7);}
 .th-sched__row--live{border-color:rgba(255,159,74,.3);background:rgba(255,159,74,.06);}
 .th-sched__row--done{opacity:.7;}
+
+/* Schedule event row (opening, break, ceremony) */
+.th-sched__event{
+  display:flex;align-items:center;gap:1rem;
+  background:rgba(56,189,248,.06);border:1px dashed rgba(56,189,248,.2);
+  border-radius:14px;padding:.85rem 1.25rem;
+}
+.th-sched__event-icon{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:2rem;height:2rem;border-radius:8px;
+  background:var(--ae-accent-surface-2);color:#fff;font-size:.75rem;font-weight:800;
+  letter-spacing:.04em;flex-shrink:0;
+}
+.th-sched__event-body{flex:1;min-width:0;}
+.th-sched__event-title{
+  font-family:var(--ae-font-display);font-size:.95rem;font-weight:700;
+  color:var(--ae-ink-950);
+}
+.th-sched__event-desc{
+  font-size:.8rem;color:var(--ae-sand-500);margin-top:.15rem;
+}
+.th-sched__event-time{
+  font-family:var(--ae-font-display);font-size:.82rem;font-weight:600;
+  color:var(--ae-sand-500);white-space:nowrap;flex-shrink:0;
+}
 
 .th-sched__battle{flex:1;min-width:0;}
 .th-sched__battle-meta{
@@ -168,10 +201,19 @@
 /* ── Responsive ──────────────────────────────────────────────── */
 @media(max-width:640px){
   .th-dual-grid{grid-template-columns:1fr;}
+  .th-hide-mobile{display:none!important;}
+  .th-table th,.th-table td{padding:.5rem .4rem;font-size:.8rem;}
+  .th-table td:first-child{width:1.8rem;min-width:1.8rem;}
+  .th-team-logo,.th-team-logo--placeholder{width:1.4rem;height:1.4rem;min-width:1.4rem;min-height:1.4rem;}
+  .th-team-logo--placeholder{font-size:.55rem;}
   .th-sched__row{flex-direction:column;align-items:stretch;}
   .th-sched__result{align-items:flex-start;flex-direction:row;gap:.75rem;}
   .th-sched__list{padding-left:.75rem;}
   .th-sched__name{max-width:18ch;}
+  .th-sched__event{padding:.7rem 1rem;}
+  .th-sched__battle-main{display:grid;grid-template-columns:1fr auto;gap:.25rem .6rem;}
+  .th-sched__team{grid-column:1;}
+  .th-sched__versus{grid-column:2;grid-row:1/3;align-self:center;}
 }
 </style>
 {% endblock %}
@@ -208,24 +250,24 @@
             <table class="th-table">
               <thead>
                 <tr>
-                  <th scope="col">#</th>
+                  <th scope="col"></th>
                   <th scope="col" data-i18n="sports_hub.col_team">Team</th>
-                  <th scope="col" data-i18n="sports_hub.col_played">P</th>
+                  <th scope="col" class="th-hide-mobile" data-i18n="sports_hub.col_played">P</th>
                   <th scope="col" data-i18n="sports_hub.col_wins">W</th>
                   <th scope="col" data-i18n="sports_hub.col_losses">L</th>
-                  <th scope="col" data-i18n="sports_hub.col_sets">Sets</th>
+                  <th scope="col" class="th-hide-mobile" data-i18n="sports_hub.col_sets">Sets</th>
                   <th scope="col" data-i18n="sports_hub.col_points">Pts</th>
                 </tr>
               </thead>
               <tbody>
                 {% for row in group.rows %}
                 <tr>
-                  <td><span class="th-rank">{{ forloop.counter }}</span></td>
-                  <td>{% if row.team_id %}<a href="{% url 'tournament_team' row.team_id %}" class="th-team-link">{% if row.logo %}<img src="{{ row.logo|asset_url }}" alt="" class="th-team-logo">{% endif %}<span>{{ row.name }}</span></a>{% else %}{{ row.name }}{% endif %}</td>
-                  <td>{{ row.played }}</td>
+                  <td>{% if row.logo %}<img src="{{ row.logo|asset_url }}" alt="{{ row.name }}" class="th-team-logo">{% else %}<span class="th-team-logo--placeholder">{{ row.short }}</span>{% endif %}</td>
+                  <td>{% if row.team_id %}<a href="{% url 'tournament_team' row.team_id %}" class="th-team-link"><span>{{ row.name }}</span></a>{% else %}{{ row.name }}{% endif %}</td>
+                  <td class="th-hide-mobile">{{ row.played }}</td>
                   <td>{{ row.wins }}</td>
                   <td>{{ row.losses }}</td>
-                  <td>{{ row.sets }}</td>
+                  <td class="th-hide-mobile">{{ row.sets }}</td>
                   <td><strong>{{ row.points }}</strong></td>
                 </tr>
                 {% endfor %}
@@ -242,26 +284,26 @@
           <table class="th-table">
             <thead>
               <tr>
-                <th scope="col">#</th>
+                <th scope="col"></th>
                 <th scope="col" data-i18n="sports_hub.col_team">Team</th>
-                <th scope="col" data-i18n="sports_hub.col_group">Group</th>
-                <th scope="col" data-i18n="sports_hub.col_played">P</th>
+                <th scope="col" class="th-hide-mobile" data-i18n="sports_hub.col_group">Group</th>
+                <th scope="col" class="th-hide-mobile" data-i18n="sports_hub.col_played">P</th>
                 <th scope="col" data-i18n="sports_hub.col_wins">W</th>
                 <th scope="col" data-i18n="sports_hub.col_losses">L</th>
-                <th scope="col" data-i18n="sports_hub.col_sets">Sets</th>
+                <th scope="col" class="th-hide-mobile" data-i18n="sports_hub.col_sets">Sets</th>
                 <th scope="col" data-i18n="sports_hub.col_points">Pts</th>
               </tr>
             </thead>
             <tbody>
               {% for row in overall_standings %}
               <tr>
-                <td><span class="th-rank">{{ row.rank }}</span></td>
-                <td>{% if row.team_id %}<a href="{% url 'tournament_team' row.team_id %}" class="th-team-link">{% if row.logo %}<img src="{{ row.logo|asset_url }}" alt="" class="th-team-logo">{% endif %}<span>{{ row.name }}</span></a>{% else %}{{ row.name }}{% endif %}</td>
-                <td>{{ row.group }}</td>
-                <td>{{ row.played }}</td>
+                <td>{% if row.logo %}<img src="{{ row.logo|asset_url }}" alt="{{ row.name }}" class="th-team-logo">{% else %}<span class="th-team-logo--placeholder">{{ row.short }}</span>{% endif %}</td>
+                <td>{% if row.team_id %}<a href="{% url 'tournament_team' row.team_id %}" class="th-team-link"><span>{{ row.name }}</span></a>{% else %}{{ row.name }}{% endif %}</td>
+                <td class="th-hide-mobile">{{ row.group }}</td>
+                <td class="th-hide-mobile">{{ row.played }}</td>
                 <td>{{ row.wins }}</td>
                 <td>{{ row.losses }}</td>
-                <td>{{ row.sets }}</td>
+                <td class="th-hide-mobile">{{ row.sets }}</td>
                 <td><strong>{{ row.points }}</strong></td>
               </tr>
               {% endfor %}
@@ -289,6 +331,16 @@
             <span class="th-sched__time-dash" aria-hidden="true"></span>
           </div>
           <div class="th-sched__list">
+            {% for ev in slot.events %}
+            <article class="th-sched__event">
+              <span class="th-sched__event-icon" aria-hidden="true">{% if ev.type == 'OPENING' %}&#9654;{% elif ev.type == 'BREAK' %}&#9646;&#9646;{% elif ev.type == 'CEREMONY' %}&#9733;{% else %}&#9679;{% endif %}</span>
+              <div class="th-sched__event-body">
+                <div class="th-sched__event-title">{{ ev.title }}</div>
+                {% if ev.description %}<div class="th-sched__event-desc">{{ ev.description }}</div>{% endif %}
+              </div>
+              {% if ev.end_time %}<span class="th-sched__event-time">{{ slot.time }} – {{ ev.end_time }}</span>{% endif %}
+            </article>
+            {% endfor %}
             {% for item in slot.games %}
             <article class="th-sched__row{% if item.status_raw == 'LIVE' %} th-sched__row--live{% endif %}{% if item.status_raw == 'FINISHED' %} th-sched__row--done{% endif %}">
               <div class="th-sched__battle">
@@ -337,31 +389,6 @@
       {% endif %}
     </section>
 
-    <section class="ae-section ae-reveal" id="highlights" data-ae-section>
-      <div class="ae-section__head">
-        <div class="ae-section__cluster">
-          <span class="ae-eyebrow" data-i18n="sports_hub.highlights_eyebrow">Top Moments</span>
-          <h2 class="ae-title-section" data-i18n="sports_hub.highlights_title">Highlights</h2>
-        </div>
-      </div>
-
-      {% if highlights %}
-      <div class="th-highlight-grid">
-        {% for item in highlights %}
-        <article class="th-highlight-card">
-          <span class="th-highlight-card__tag">{{ item.match }}</span>
-          <h3>{{ item.title }}</h3>
-          <p>{{ item.copy }}</p>
-          {% if item.match_id %}
-          <a href="{% url 'tournament_match' item.match_id %}" class="th-highlight-card__link" data-i18n="sports_hub.view_match">View match →</a>
-          {% endif %}
-        </article>
-        {% endfor %}
-      </div>
-      {% else %}
-      <p class="ae-body ae-body--muted" data-i18n="sports_hub.no_highlights">No highlights yet.</p>
-      {% endif %}
-    </section>
   </div>
 </section>
 {% endblock %}

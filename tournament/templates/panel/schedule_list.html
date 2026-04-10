@@ -50,6 +50,9 @@
     <a href="{% url 'panel:match_create' %}" class="pnl-btn pnl-btn--primary" style="margin-right:8px;">
       <i class="fas fa-plus"></i> New Match
     </a>
+    <a href="{% url 'panel:event_create' %}" class="pnl-btn" style="margin-right:8px;">
+      <i class="fas fa-clock"></i> New Event
+    </a>
     <a href="{% url 'panel:schedule_csv_import' %}" class="pnl-btn" style="margin-right:auto;">
       <i class="fas fa-file-csv"></i> Import CSV
     </a>
@@ -96,13 +99,13 @@
           <td>
             {% if m.team_a %}
               <a href="{% url 'panel:team_detail' pk=m.team_a_id %}">{{ m.team_a.name }}</a>
-            {% else %}TBD{% endif %}
+            {% else %}<span class="pnl-placeholder" title="Placeholder">{{ m.display_name_a }}</span>{% endif %}
           </td>
           <td class="pnl-vs">vs</td>
           <td>
             {% if m.team_b %}
               <a href="{% url 'panel:team_detail' pk=m.team_b_id %}">{{ m.team_b.name }}</a>
-            {% else %}TBD{% endif %}
+            {% else %}<span class="pnl-placeholder" title="Placeholder">{{ m.display_name_b }}</span>{% endif %}
           </td>
           <td class="pnl-score">{{ m.score_a }} : {{ m.score_b }}</td>
           <td>
@@ -149,9 +152,9 @@
         {% if m %}
           <div class="pnl-grid-schedule__match-num"><a href="#" class="pnl-match-panel-link" data-panel-url="{% url 'panel:match_panel' pk=m.pk %}">#{{ m.match_number }}</a></div>
           <div class="pnl-grid-schedule__teams">
-            {{ m.team_a.name|default:"TBD" }}<br>
+            {{ m.display_name_a }}<br>
             <span class="pnl-vs">vs</span><br>
-            {{ m.team_b.name|default:"TBD" }}
+            {{ m.display_name_b }}
           </div>
           {% if m.status == 'FINISHED' or m.status == 'LIVE' %}
             <div class="pnl-grid-schedule__score">{{ m.score_a }} : {{ m.score_b }}</div>
@@ -179,6 +182,45 @@
       <p>Try adjusting your filters.</p>
     </div>
   {% endif %}
+  {% endif %}
+
+  {# ── SCHEDULE EVENTS ──────────────────────────────── #}
+  {% if events %}
+  <div class="pnl-dash-card" style="margin-top:24px;">
+    <h3 class="pnl-dash-card__title"><i class="fas fa-clock"></i> Schedule Events</h3>
+    <div class="pnl-table-wrap">
+      <table class="pnl-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Title</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Duration</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ev in events %}
+          <tr>
+            <td>
+              <span class="pnl-badge pnl-badge--{% if ev.event_type == 'OPENING' %}purple{% elif ev.event_type == 'BREAK' %}yellow{% elif ev.event_type == 'CEREMONY' %}green{% else %}cyan{% endif %}">
+                {{ ev.get_event_type_display }}
+              </span>
+            </td>
+            <td>{{ ev.title }}</td>
+            <td>{{ ev.start_time|date:"d M H:i" }}</td>
+            <td>{% if ev.end_time %}{{ ev.end_time|date:"d M H:i" }}{% else %}—{% endif %}</td>
+            <td>{% if ev.duration_minutes %}{{ ev.duration_minutes }} min{% else %}—{% endif %}</td>
+            <td>
+              <a href="{% url 'panel:event_edit' pk=ev.pk %}" class="pnl-btn pnl-btn--small"><i class="fas fa-edit"></i></a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
   {% endif %}
 
 </div>

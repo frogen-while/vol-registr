@@ -110,6 +110,19 @@ COURT_CHOICES = [
     (3, "Court 3"),
 ]
 
+# ── Schedule Event Types ──────────────────────────────────
+EVENT_OPENING = "OPENING"
+EVENT_BREAK = "BREAK"
+EVENT_CEREMONY = "CEREMONY"
+EVENT_OTHER = "OTHER"
+
+EVENT_TYPE_CHOICES = [
+    (EVENT_OPENING, "Opening Ceremony"),
+    (EVENT_BREAK, "Break"),
+    (EVENT_CEREMONY, "Award Ceremony"),
+    (EVENT_OTHER, "Other"),
+]
+
 # ── Player Position ───────────────────────────────────────
 POSITION_OH = "OH"
 POSITION_MB = "MB"
@@ -195,3 +208,4 @@ TABLE_MATCH_HIGHLIGHTS = "match_highlights"
 TABLE_GALLERY_PHOTOS = "gallery_photos"
 TABLE_GALLERY_VIDEOS = "gallery_videos"
 TABLE_AUDIT_ENTRIES = "audit_entries"
+TABLE_SCHEDULE_EVENTS = "schedule_events"

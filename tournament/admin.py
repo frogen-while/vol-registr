@@ -8,6 +8,7 @@ from .models import (
     Team, Player, Match, GameSet, PlayerMatchStats,
     TeamMatchStats, GroupStanding, DreamTeamEntry,
     MVPSelection, MatchHighlight, GalleryPhoto, GalleryVideo,
+    ScheduleEvent,
 )
 from .services import preview_csv_import, confirm_csv_import
 
@@ -68,12 +69,13 @@ class PlayerAdmin(admin.ModelAdmin):
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
     list_display = (
-        'match_number', 'stage', 'team_a', 'team_b',
+        'match_number', 'stage', 'team_a', 'placeholder_a',
+        'team_b', 'placeholder_b',
         'score_a', 'score_b', 'status', 'court',
         'start_time', 'stats_imported',
     )
     list_filter = ('stage', 'status', 'court', 'stats_imported')
-    search_fields = ('team_a__name', 'team_b__name')
+    search_fields = ('team_a__name', 'team_b__name', 'placeholder_a', 'placeholder_b')
     readonly_fields = ('stats_imported_at',)
     inlines = [GameSetInline]
     actions = ['import_csv_stats']
@@ -191,4 +193,11 @@ class GalleryPhotoAdmin(admin.ModelAdmin):
 class GalleryVideoAdmin(admin.ModelAdmin):
     list_display = ('title', 'drive_file_id', 'order')
     list_editable = ('order',)
+    search_fields = ('title',)
+
+
+@admin.register(ScheduleEvent)
+class ScheduleEventAdmin(admin.ModelAdmin):
+    list_display = ('event_type', 'title', 'start_time', 'end_time')
+    list_filter = ('event_type',)
     search_fields = ('title',)

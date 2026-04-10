@@ -12,6 +12,9 @@ from .panel.dreamteam_views import (
 )
 from .panel.rankings_views import rankings_recalculate_view, rankings_view
 from .panel.match_views import (
+    event_create_view,
+    event_delete_view,
+    event_edit_view,
     match_conflict_check,
     match_create_view,
     match_delete_view,
@@ -93,6 +96,9 @@ urlpatterns = [
     path("schedule/<int:pk>/status/", match_status_change, name="match_status_change"),
     path("schedule/<int:pk>/score/", match_score_update, name="match_score_update"),
     path("schedule/import-csv/", schedule_csv_import_view, name="schedule_csv_import"),
+    path("schedule/events/create/", event_create_view, name="event_create"),
+    path("schedule/events/<int:pk>/edit/", event_edit_view, name="event_edit"),
+    path("schedule/events/<int:pk>/delete/", event_delete_view, name="event_delete"),
     path("stats/", stats_list_view, name="stats"),
     path("stats/<int:pk>/import/", stats_import_view, name="stats_import"),
     path("stats/<int:pk>/", stats_detail_view, name="stats_detail"),

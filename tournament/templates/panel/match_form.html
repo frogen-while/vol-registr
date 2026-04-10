@@ -83,6 +83,22 @@
           {% for err in form.team_b.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
         </div>
 
+        {# placeholder_a — shown when team_a is empty #}
+        <div class="pnl-field{% if form.placeholder_a.errors %} pnl-field--error{% endif %}">
+          <label for="{{ form.placeholder_a.id_for_label }}">Placeholder A</label>
+          {{ form.placeholder_a }}
+          <span class="pnl-field__help">e.g. "1st Group A", "Winner QF1"</span>
+          {% for err in form.placeholder_a.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+
+        {# placeholder_b — shown when team_b is empty #}
+        <div class="pnl-field{% if form.placeholder_b.errors %} pnl-field--error{% endif %}">
+          <label for="{{ form.placeholder_b.id_for_label }}">Placeholder B</label>
+          {{ form.placeholder_b }}
+          <span class="pnl-field__help">e.g. "2nd Group B", "Loser SF2"</span>
+          {% for err in form.placeholder_b.errors %}<span class="pnl-field__error">{{ err }}</span>{% endfor %}
+        </div>
+
         {# score_a #}
         <div class="pnl-field{% if form.score_a.errors %} pnl-field--error{% endif %}">
           <label for="{{ form.score_a.id_for_label }}">Score A</label>

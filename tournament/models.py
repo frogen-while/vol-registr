@@ -3,6 +3,7 @@ from django.db import models
 from .constants import (
     COURT_CHOICES,
     EMAIL_MAX_LENGTH,
+    EVENT_TYPE_CHOICES,
     GROUP_NAME_MAX_LENGTH,
     LEAGUE_LEVEL_CHOICES,
     LEAGUE_LEVEL_INDEPENDENT,
@@ -27,6 +28,7 @@ from .constants import (
     TABLE_MATCHES,
     TABLE_PLAYER_MATCH_STATS,
     TABLE_PLAYERS,
+    TABLE_SCHEDULE_EVENTS,
     TABLE_TEAM_MATCH_STATS,
     TABLE_TEAMS,
     TABLE_MVP_SELECTIONS,
@@ -171,6 +173,16 @@ class Match(models.Model):
         Team, on_delete=models.CASCADE, related_name="matches_as_away",
         null=True, blank=True,
     )
+    placeholder_a = models.CharField(
+        max_length=80, blank=True, default="",
+        verbose_name="Placeholder A",
+        help_text="e.g. '1st Group A', 'Winner QF1'",
+    )
+    placeholder_b = models.CharField(
+        max_length=80, blank=True, default="",
+        verbose_name="Placeholder B",
+        help_text="e.g. '2nd Group B', 'Loser SF2'",
+    )
     score_a = models.IntegerField(default=0)
     score_b = models.IntegerField(default=0)
     status = models.CharField(
@@ -186,7 +198,21 @@ class Match(models.Model):
         verbose_name_plural = "Matches"
 
     def __str__(self) -> str:
-        return f"M{self.match_number}: {self.team_a} vs {self.team_b}"
+        return f"M{self.match_number}: {self.display_name_a} vs {self.display_name_b}"
+
+    @property
+    def display_name_a(self) -> str:
+        """Team A name or placeholder text for schedule display."""
+        if self.team_a:
+            return self.team_a.name
+        return self.placeholder_a or "TBD"
+
+    @property
+    def display_name_b(self) -> str:
+        """Team B name or placeholder text for schedule display."""
+        if self.team_b:
+            return self.team_b.name
+        return self.placeholder_b or "TBD"
 
     @property
     def winner(self):
@@ -228,6 +254,32 @@ class GameSet(models.Model):
 
     def __str__(self) -> str:
         return f"Set {self.set_number}: {self.score_a}-{self.score_b}"
+
+
+# ── Schedule Events (non-match) ──────────────────────────
+
+
+class ScheduleEvent(models.Model):
+    """Non-match schedule entry: breaks, ceremonies, etc."""
+
+    event_type = models.CharField(max_length=20, choices=EVENT_TYPE_CHOICES)
+    title = models.CharField(max_length=120)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField(null=True, blank=True)
+    description = models.TextField(blank=True, default="")
+
+    class Meta:
+        db_table = TABLE_SCHEDULE_EVENTS
+        ordering = ["start_time"]
+
+    def __str__(self) -> str:
+        return f"{self.get_event_type_display()}: {self.title}"
+
+    @property
+    def duration_minutes(self):
+        if self.end_time:
+            return int((self.end_time - self.start_time).total_seconds() / 60)
+        return None
 
 
 # ── Stats ────────────────────────────────────────────────
