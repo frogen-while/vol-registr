@@ -2,15 +2,16 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.tournament_hub, name='tournament_hub'),
+    path('home/', views.index, name='index'),
     # ── Tournament section ──────────────────────────────
-    path('tournament/', views.tournament_hub, name='tournament_hub'),
-    path('tournament-demo/', views.tournament_demo, name='tournament_demo'),
+    path('tournament/', views.tournament_hub),  # backwards-compat redirect
     path('tournament/teams/', views.tournament_teams, name='tournament_teams'),
     path('tournament/match/<int:match_id>/', views.tournament_match, name='tournament_match'),
     path('tournament/team/<int:team_id>/', views.tournament_team, name='tournament_team'),
     path('tournament/player/<int:player_id>/', views.tournament_player, name='tournament_player'),
     path('tournament/gallery/', views.tournament_gallery, name='tournament_gallery'),
+    path('api/live-scores/', views.api_live_scores, name='api_live_scores'),
     # ── Other pages ─────────────────────────────────────
     path('register/', views.register, name='register'),
     path('faq/', views.faq, name='faq'),

@@ -1,0 +1,128 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-player-form">
+
+  <a href="{% url 'panel:players' %}" class="pnl-back-link">
+    <i class="fas fa-arrow-left"></i> Back to Players
+  </a>
+
+  <div class="pnl-card" style="margin-top:16px;">
+    <h2 class="pnl-card__header">
+      <i class="fas fa-{% if player %}pen{% else %}plus{% endif %}"></i>
+      {% if player %}Edit Player{% else %}Add Player{% endif %}
+    </h2>
+
+    <form method="post" enctype="multipart/form-data" class="pnl-form">
+      {% csrf_token %}
+
+      <div style="display:flex;gap:24px;flex-wrap:wrap;">
+        {# ── Left: Photo ───────────────────── #}
+        <div style="flex:0 0 160px;text-align:center;">
+          <div id="photoPreview" style="width:120px;height:120px;border-radius:50%;margin:0 auto 12px;overflow:hidden;background:var(--pnl-surface-alt,#2a2a3a);display:flex;align-items:center;justify-content:center;">
+            {% if player and player.photo_path %}
+            <img src="/media/{{ player.photo_path }}" alt="Photo"
+                 style="width:100%;height:100%;object-fit:cover;" id="previewImg">
+            {% else %}
+            <i class="fas fa-user" style="font-size:2.5rem;opacity:.3;" id="previewIcon"></i>
+            <img src="" alt="Photo" style="width:100%;height:100%;object-fit:cover;display:none;" id="previewImg">
+            {% endif %}
+          </div>
+
+          <label class="pnl-btn pnl-btn--outline pnl-btn--sm" style="cursor:pointer;display:inline-block;">
+            <i class="fas fa-upload"></i> Upload Photo
+            <input type="file" name="photo_file" id="photoFileInput" accept="image/*" style="display:none;">
+          </label>
+
+          {% if player and player.photo_path %}
+          <div style="margin-top:6px;">
+            <label style="font-size:.75rem;color:var(--pnl-muted,#888);cursor:pointer;">
+              <input type="checkbox" name="remove_photo" value="1"> Remove photo
+            </label>
+          </div>
+          {% endif %}
+
+          <div class="pnl-field" style="margin-top:8px;">
+            <input type="url" name="photo_url" class="pnl-input pnl-input--sm"
+                   placeholder="or paste image URL">
+          </div>
+        </div>
+
+        {# ── Right: Fields ─────────────────── #}
+        <div style="flex:1;min-width:260px;">
+          <div class="pnl-field">
+            <label for="id_team">Team</label>
+            <select name="team" id="id_team" class="pnl-input" required>
+              <option value="">— Select Team —</option>
+              {% for t in teams %}
+              <option value="{{ t.pk }}" {% if player and player.team_id == t.pk %}selected{% endif %}>
+                {{ t.name }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div style="display:flex;gap:12px;">
+            <div class="pnl-field" style="flex:1;">
+              <label for="id_first_name">First Name</label>
+              <input type="text" name="first_name" id="id_first_name" class="pnl-input"
+                     value="{{ player.first_name|default:'' }}" required>
+            </div>
+            <div class="pnl-field" style="flex:1;">
+              <label for="id_last_name">Last Name</label>
+              <input type="text" name="last_name" id="id_last_name" class="pnl-input"
+                     value="{{ player.last_name|default:'' }}" required>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;">
+            <div class="pnl-field" style="flex:0 0 100px;">
+              <label for="id_jersey_number">Jersey #</label>
+              <input type="text" name="jersey_number" id="id_jersey_number" class="pnl-input"
+                     value="{{ player.jersey_number|default:'' }}" maxlength="3">
+            </div>
+            <div class="pnl-field" style="flex:1;">
+              <label for="id_position">Position</label>
+              <select name="position" id="id_position" class="pnl-input">
+                <option value="">— None —</option>
+                {% for code, label in positions %}
+                <option value="{{ code }}" {% if player and player.position == code %}selected{% endif %}>
+                  {{ label }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="pnl-form-actions">
+            <button type="submit" class="pnl-btn pnl-btn--primary">
+              <i class="fas fa-save"></i> Save
+            </button>
+            <a href="{% url 'panel:players' %}" class="pnl-btn pnl-btn--outline">Cancel</a>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+  var input = document.getElementById('photoFileInput');
+  var previewImg = document.getElementById('previewImg');
+  var previewIcon = document.getElementById('previewIcon');
+  if (!input || !previewImg) return;
+  input.addEventListener('change', function(){
+    if (this.files && this.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+        previewImg.style.display = '';
+        if (previewIcon) previewIcon.style.display = 'none';
+      };
+      reader.readAsDataURL(this.files[0]);
+    }
+  });
+})();
+</script>
+{% endblock %}

@@ -519,13 +519,22 @@ def recalculate_standings() -> None:
     # Collect per-team accumulators
     team_data: dict[int, dict] = {}
 
-    # Ensure all teams with standings are initialised
-    for gs in GroupStanding.objects.select_related("team"):
-        team_data[gs.team_id] = {
-            "group": gs.group,
+    # Ensure ALL grouped teams are present (not just those with existing standings)
+    for team in Team.objects.filter(group_name__isnull=False).exclude(group_name=""):
+        team_data[team.pk] = {
+            "group": team.group_name,
             "played": 0, "wins": 0, "losses": 0,
             "sets_won": 0, "sets_lost": 0, "points": 0,
         }
+
+    # Also keep any existing standings data as seed (covers edge cases)
+    for gs in GroupStanding.objects.select_related("team"):
+        if gs.team_id not in team_data:
+            team_data[gs.team_id] = {
+                "group": gs.group,
+                "played": 0, "wins": 0, "losses": 0,
+                "sets_won": 0, "sets_lost": 0, "points": 0,
+            }
 
     for m in group_matches:
         for team, opp, score, opp_score in [

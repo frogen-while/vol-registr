@@ -206,11 +206,12 @@ def get_schedule_slots() -> list[dict]:
                     "away_logo": m.team_b.logo_path if m.team_b and m.team_b.logo_path else "",
                     "away_short": (m.display_name_b[:2]).upper(),
                     "away_id": m.team_b_id,
-                    "score_home": str(m.score_a) if m.is_finished else "",
-                    "score_away": str(m.score_b) if m.is_finished else "",
+                    "score_home": str(m.score_a) if m.status in ("FINISHED", "LIVE") else "",
+                    "score_away": str(m.score_b) if m.status in ("FINISHED", "LIVE") else "",
                     "score": score,
                     "status": _match_status_label(m),
                     "match_id": m.pk,
+                    "match_number": m.match_number,
                 })
             else:
                 e = obj
@@ -787,15 +788,19 @@ def get_team_detail(team_id: int) -> dict | None:
             "copy": "Total blocks won across all matches.",
         },
         {
-            "key": "reception",
+            "key": "assist",
             "label": "Assist Output",
-            "label_key": "tp.id_reception_label",
-            "copy_key": "tp.id_reception_copy",
+            "label_key": "tp.id_assist_label",
+            "copy_key": "tp.id_assist_copy",
             "value": str(totals.get("assists", 0)),
             "raw": totals.get("assists", 0),
             "copy": "Total assists delivered across all matches.",
         },
     ]
+
+    # ── Team gallery photos ──
+    from .models import GalleryPhoto
+    team_gallery = GalleryPhoto.objects.filter(team=team).order_by("order", "-uploaded_at")
 
     return {
         "team_profile": team_profile,
@@ -807,6 +812,7 @@ def get_team_detail(team_id: int) -> dict | None:
         "form_strip": form_strip,
         "team_leaders": team_leaders,
         "identity_stats": identity_stats,
+        "team_gallery": team_gallery,
     }
 
 
@@ -988,7 +994,7 @@ def get_player_detail(player_id: int) -> dict | None:
         {"key": "attack", "label": "Attack", "value": str(cumulative["kills"]), "raw": cumulative["kills"]},
         {"key": "serve", "label": "Serve", "value": _pct_label(p_serve_pressure), "raw": p_serve_pressure or 0},
         {"key": "block", "label": "Block", "value": str(cumulative["blocks"]), "raw": cumulative["blocks"]},
-        {"key": "reception", "label": "Reception", "value": str(cumulative["assists"]), "raw": cumulative["assists"]},
+        {"key": "assist", "label": "Assists", "value": str(cumulative["assists"]), "raw": cumulative["assists"]},
     ]
 
     return {

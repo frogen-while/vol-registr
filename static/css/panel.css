@@ -56,12 +56,26 @@ a:hover { text-decoration: underline; }
   position: fixed;
   top: 0; left: 0; bottom: 0;
   width: var(--pnl-sidebar-w);
-  background: var(--pnl-surface);
+  background:
+    linear-gradient(180deg, var(--pnl-surface) 0%, rgba(20, 28, 37, 0.97) 100%);
   border-right: 1px solid var(--pnl-border);
   display: flex;
   flex-direction: column;
   z-index: 100;
   transition: transform 0.25s ease;
+}
+
+/* Subtle accent glow at top of sidebar */
+.pnl-sidebar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(93, 227, 255, 0.06), transparent 80%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .pnl-sidebar__header {
@@ -213,6 +227,27 @@ a:hover { text-decoration: underline; }
 .pnl-content {
   flex: 1;
   padding: 24px;
+  position: relative;
+}
+
+/* Subtle ambient texture for panel content area */
+.pnl-content::before {
+  content: "";
+  position: fixed;
+  top: var(--pnl-topbar-h);
+  left: var(--pnl-sidebar-w);
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 40% 35% at 80% 15%, rgba(93, 227, 255, 0.025), transparent),
+    radial-gradient(ellipse 35% 40% at 15% 80%, rgba(96, 165, 250, 0.02), transparent);
+}
+
+.pnl-content > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Messages / Alerts ──────────────────────────────── */
@@ -414,8 +449,6 @@ a:hover { text-decoration: underline; }
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  position: sticky;
-  top: var(--pnl-topbar-h);
 }
 
 .pnl-table tr:hover td { background: rgba(93, 227, 255, 0.03); }

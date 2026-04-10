@@ -1,7 +1,10 @@
 """Gallery — photos + videos CRUD, bulk add, drag-reorder, entity linking."""
 
 import json
+import os
+import uuid
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Count, Max
@@ -71,6 +74,22 @@ def gallery_add_view(request):
         "page_title": "Add Photo",
         "nav_section": "gallery",
         "form": form,
+    })
+
+
+@staff_member_required(login_url="/panel/login/")
+def gallery_photo_edit_view(request, pk):
+    """Edit title of an existing photo."""
+    photo = get_object_or_404(GalleryPhoto, pk=pk)
+    if request.method == "POST":
+        photo.title = request.POST.get("title", "").strip()
+        photo.save(update_fields=["title"])
+        messages.success(request, "Photo updated.")
+        return redirect("panel:gallery")
+    return render(request, "panel/gallery_photo_edit.html", {
+        "page_title": "Edit Photo",
+        "nav_section": "gallery",
+        "photo": photo,
     })
 
 
@@ -161,6 +180,20 @@ def video_add_view(request):
 @staff_member_required(login_url="/panel/login/")
 def video_edit_view(request, pk):
     video = get_object_or_404(GalleryVideo, pk=pk)
+    is_local = video.drive_file_id.startswith("local_")
+    if is_local:
+        # Local upload — simple title/description edit without Drive validation
+        if request.method == "POST":
+            video.title = request.POST.get("title", "").strip()
+            video.description = request.POST.get("description", "").strip()
+            video.save(update_fields=["title", "description"])
+            messages.success(request, "Video updated.")
+            return redirect("panel:gallery")
+        return render(request, "panel/video_edit_local.html", {
+            "page_title": "Edit Video",
+            "nav_section": "gallery",
+            "video": video,
+        })
     form = GalleryVideoForm(instance=video)
     if request.method == "POST":
         form = GalleryVideoForm(request.POST, instance=video)
@@ -268,3 +301,96 @@ def video_bulk_link_view(request):
     else:
         messages.warning(request, "Select a match or team to link.")
     return redirect("panel:gallery")
+
+
+# ── Local File Upload ────────────────────────────────────
+
+_PHOTO_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
+_VIDEO_EXTENSIONS = {".mp4", ".mov", ".avi", ".webm", ".mkv"}
+
+
+def _save_upload(file, subdir):
+    """Save an uploaded file to media/<subdir>/, return relative media path."""
+    dest_dir = os.path.join(settings.MEDIA_ROOT, subdir)
+    os.makedirs(dest_dir, exist_ok=True)
+    ext = os.path.splitext(file.name)[1].lower()
+    filename = f"{uuid.uuid4().hex[:12]}{ext}"
+    filepath = os.path.join(dest_dir, filename)
+    with open(filepath, "wb") as f:
+        for chunk in file.chunks():
+            f.write(chunk)
+    return f"{subdir}/{filename}"
+
+
+@staff_member_required(login_url="/panel/login/")
+def gallery_upload_view(request):
+    """Upload photo(s) from the local computer."""
+    if request.method == "POST":
+        files = request.FILES.getlist("photos")
+        title = request.POST.get("title", "").strip()
+        if not files:
+            messages.error(request, "No files selected.")
+            return redirect("panel:gallery_upload")
+        added = 0
+        max_order = GalleryPhoto.objects.aggregate(m=Max("order"))["m"] or 0
+        for f in files:
+            ext = os.path.splitext(f.name)[1].lower()
+            if ext not in _PHOTO_EXTENSIONS:
+                messages.warning(request, f"Skipped {f.name} — unsupported format.")
+                continue
+            rel_path = _save_upload(f, "gallery/photos")
+            media_url = f"{settings.MEDIA_URL}{rel_path}"
+            max_order += 1
+            GalleryPhoto.objects.create(
+                title=title,
+                drive_file_id=f"local_{uuid.uuid4().hex[:16]}",
+                drive_url=media_url,
+                thumbnail_url=media_url,
+                order=max_order,
+            )
+            added += 1
+        if added:
+            messages.success(request, f"{added} photo(s) uploaded.")
+        return redirect("panel:gallery")
+    return render(request, "panel/gallery_upload.html", {
+        "page_title": "Upload Photos",
+        "nav_section": "gallery",
+        "upload_type": "photos",
+    })
+
+
+@staff_member_required(login_url="/panel/login/")
+def video_upload_view(request):
+    """Upload video(s) from the local computer."""
+    if request.method == "POST":
+        files = request.FILES.getlist("videos")
+        title = request.POST.get("title", "").strip()
+        if not files:
+            messages.error(request, "No files selected.")
+            return redirect("panel:video_upload")
+        added = 0
+        max_order = GalleryVideo.objects.aggregate(m=Max("order"))["m"] or 0
+        for f in files:
+            ext = os.path.splitext(f.name)[1].lower()
+            if ext not in _VIDEO_EXTENSIONS:
+                messages.warning(request, f"Skipped {f.name} — unsupported format.")
+                continue
+            rel_path = _save_upload(f, "gallery/videos")
+            media_url = f"{settings.MEDIA_URL}{rel_path}"
+            max_order += 1
+            GalleryVideo.objects.create(
+                title=title,
+                drive_file_id=f"local_{uuid.uuid4().hex[:16]}",
+                drive_url=media_url,
+                thumbnail_url="",
+                order=max_order,
+            )
+            added += 1
+        if added:
+            messages.success(request, f"{added} video(s) uploaded.")
+        return redirect("panel:gallery")
+    return render(request, "panel/gallery_upload.html", {
+        "page_title": "Upload Videos",
+        "nav_section": "gallery",
+        "upload_type": "videos",
+    })

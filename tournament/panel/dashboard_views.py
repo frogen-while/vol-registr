@@ -157,6 +157,20 @@ def dashboard_view(request):
     ).count()
     stats_pct = round(stats_done / stats_total * 100) if stats_total > 0 else 0
 
+    # ── Live widgets: matches today, LIVE now, next match ─
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = today_start + _dt.timedelta(days=1)
+    matches_today = Match.objects.filter(
+        start_time__gte=today_start, start_time__lt=today_end,
+    ).count()
+    matches_live = Match.objects.filter(status="LIVE").count()
+    next_match = (
+        Match.objects.filter(status=MATCH_SCHEDULED, start_time__gte=now)
+        .select_related("team_a", "team_b")
+        .order_by("start_time")
+        .first()
+    )
+
     recent_teams = Team.objects.order_by("-created_at")[:5]
 
     ctx = {
@@ -186,5 +200,9 @@ def dashboard_view(request):
         "stats_total": stats_total,
         # Recent
         "recent_teams": recent_teams,
+        # Live widgets
+        "matches_today": matches_today,
+        "matches_live": matches_live,
+        "next_match": next_match,
     }
     return render(request, "panel/control_room.html", ctx)

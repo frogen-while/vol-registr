@@ -1,0 +1,83 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-gallery-form">
+
+  <a href="{% url 'panel:gallery' %}{% if upload_type == 'videos' %}?tab=videos{% endif %}" class="pnl-back-link">
+    <i class="fas fa-arrow-left"></i> Back to Gallery
+  </a>
+
+  <div class="pnl-card" style="margin-top:16px;">
+    <h2 class="pnl-card__header">
+      {% if upload_type == "videos" %}
+      <i class="fas fa-video"></i> Upload Videos from Computer
+      {% else %}
+      <i class="fas fa-cloud-upload-alt"></i> Upload Photos from Computer
+      {% endif %}
+    </h2>
+
+    <form method="post" enctype="multipart/form-data" class="pnl-form">
+      {% csrf_token %}
+
+      {% if upload_type == "videos" %}
+      <div class="pnl-field">
+        <label for="id_title">Title <small class="pnl-help">(optional, applied to all)</small></label>
+        <input type="text" name="title" id="id_title" class="pnl-input" placeholder="Video title">
+      </div>
+      <div class="pnl-field">
+        <label for="id_videos">Select Video Files</label>
+        <input type="file" name="videos" id="id_videos" class="pnl-input"
+               accept="video/mp4,video/quicktime,video/x-msvideo,video/webm,.mp4,.mov,.avi,.webm,.mkv"
+               multiple>
+        <small class="pnl-help">Supported: MP4, MOV, AVI, WebM, MKV. Multiple files allowed.</small>
+      </div>
+      {% else %}
+      <div class="pnl-field">
+        <label for="id_title">Title <small class="pnl-help">(optional, applied to all photos)</small></label>
+        <input type="text" name="title" id="id_title" class="pnl-input" placeholder="Photo title">
+      </div>
+      <div class="pnl-field">
+        <label for="id_photos">Select Photo Files</label>
+        <input type="file" name="photos" id="id_photos" class="pnl-input"
+               accept="image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp"
+               multiple>
+        <small class="pnl-help">Supported: JPG, PNG, GIF, WebP. Multiple files allowed.</small>
+      </div>
+      {% endif %}
+
+      <div id="uploadPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;"></div>
+
+      <div class="pnl-form-actions">
+        <button type="submit" class="pnl-btn pnl-btn--primary">
+          <i class="fas fa-upload"></i> Upload
+        </button>
+        <a href="{% url 'panel:gallery' %}{% if upload_type == 'videos' %}?tab=videos{% endif %}"
+           class="pnl-btn pnl-btn--outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+  var input = document.getElementById('id_photos') || document.getElementById('id_videos');
+  var preview = document.getElementById('uploadPreview');
+  if (!input || !preview) return;
+
+  input.addEventListener('change', function(){
+    preview.innerHTML = '';
+    Array.from(this.files).forEach(function(file){
+      if (!file.type.startsWith('image/')) return;
+      var reader = new FileReader();
+      reader.onload = function(e){
+        var img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.cssText = 'width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #ddd;';
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+})();
+</script>
+{% endblock %}

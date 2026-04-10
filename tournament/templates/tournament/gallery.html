@@ -25,6 +25,34 @@
       {% include 'tournament/partials/preview_nav.html' with active='gallery' %}
     </div>
 
+    {# ── FILTER BAR ──────────────────────────────────── #}
+    {% if teams_with_media or matches_with_media %}
+    <div class="sp-filter-bar sp-reveal" style="display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem;align-items:center;">
+      <form method="get" style="display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;width:100%;">
+        {% if teams_with_media %}
+        <select name="team" class="sp-filter-select" style="background:rgba(15,23,42,.7);color:#e2e8f0;border:1px solid rgba(56,189,248,.2);border-radius:8px;padding:.45rem .75rem;font-size:.85rem;">
+          <option value="">All Teams</option>
+          {% for t in teams_with_media %}
+          <option value="{{ t.pk }}"{% if team_filter == t.pk|stringformat:"d" %} selected{% endif %}>{{ t.name }}</option>
+          {% endfor %}
+        </select>
+        {% endif %}
+        {% if matches_with_media %}
+        <select name="match" class="sp-filter-select" style="background:rgba(15,23,42,.7);color:#e2e8f0;border:1px solid rgba(56,189,248,.2);border-radius:8px;padding:.45rem .75rem;font-size:.85rem;">
+          <option value="">All Matches</option>
+          {% for m in matches_with_media %}
+          <option value="{{ m.pk }}"{% if match_filter == m.pk|stringformat:"d" %} selected{% endif %}>M{{ m.match_number }}: {{ m.display_name_a }} vs {{ m.display_name_b }}</option>
+          {% endfor %}
+        </select>
+        {% endif %}
+        <button type="submit" class="sp-filter-btn" style="background:linear-gradient(135deg,#38bdf8,#a78bfa);color:#fff;border:none;border-radius:8px;padding:.45rem 1.2rem;font-size:.85rem;font-weight:700;cursor:pointer;">Filter</button>
+        {% if team_filter or match_filter %}
+        <a href="{% url 'tournament_gallery' %}" style="color:#94a3b8;font-size:.85rem;text-decoration:underline;">Clear</a>
+        {% endif %}
+      </form>
+    </div>
+    {% endif %}
+
     {# ── PHOTOS SECTION ──────────────────────────────── #}
     {% if photos %}
     <section class="sp-gallery-section sp-reveal" id="photos">
@@ -34,8 +62,8 @@
       <div class="sp-gallery-grid">
         {% for photo in photos %}
         <div class="sp-gallery-item sp-reveal" tabindex="0"
-             data-full="https://drive.google.com/thumbnail?id={{ photo.drive_file_id }}&sz=w1200"
-             data-title="{{ photo.title|default:'Photo' }}">
+             data-full="{% if photo.drive_file_id|slice:':6' == 'local_' %}{{ photo.drive_url }}{% else %}https://drive.google.com/thumbnail?id={{ photo.drive_file_id }}&sz=w1200{% endif %}"
+             data-title="{{ photo.title }}">
           <img src="{{ photo.thumbnail_url }}"
                alt="{{ photo.title|default:'Tournament photo' }}"
                loading="lazy" class="sp-gallery-item__img">
@@ -56,8 +84,9 @@
       </h2>
       <div class="sp-gallery-videos">
         {% for video in videos %}
-        <a href="{{ video.drive_url }}" target="_blank" rel="noopener"
-           class="sp-video-card sp-reveal">
+        <div class="sp-video-card sp-reveal" tabindex="0"
+             data-video-src="{{ video.drive_url }}"
+             data-title="{{ video.title }}">
           <div class="sp-video-card__thumb">
             {% if video.thumbnail_url %}
             <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
@@ -66,14 +95,17 @@
               <i class="fas fa-play"></i>
             </div>
           </div>
+          {% if video.title or video.description %}
           <div class="sp-video-card__body">
+            {% if video.title %}
             <h3 class="sp-video-card__title">{{ video.title }}</h3>
+            {% endif %}
             {% if video.description %}
             <p class="sp-video-card__desc">{{ video.description|truncatewords:20 }}</p>
             {% endif %}
-            <span class="sp-video-card__date">{{ video.uploaded_at|date:"d M Y" }}</span>
           </div>
-        </a>
+          {% endif %}
+        </div>
         {% endfor %}
       </div>
     </section>
@@ -96,6 +128,7 @@
   <button class="sp-lightbox__prev" aria-label="Previous photo" title="Previous">&#10094;</button>
   <button class="sp-lightbox__next" aria-label="Next photo" title="Next">&#10095;</button>
   <img class="sp-lightbox__img" src="" alt="">
+  <video class="sp-lightbox__video" controls playsinline style="display:none"></video>
   <div class="sp-lightbox__caption"></div>
 </div>
 {% endblock %}
@@ -104,44 +137,75 @@
 <script>
 (function() {
   const items = document.querySelectorAll('.sp-gallery-item');
+  const videoCards = document.querySelectorAll('.sp-video-card');
   const lightbox = document.getElementById('spLightbox');
-  if (!items.length || !lightbox) return;
+  if (!lightbox) return;
 
   const lbImg = lightbox.querySelector('.sp-lightbox__img');
+  const lbVideo = lightbox.querySelector('.sp-lightbox__video');
   const lbCaption = lightbox.querySelector('.sp-lightbox__caption');
   const btnClose = lightbox.querySelector('.sp-lightbox__close');
   const btnPrev = lightbox.querySelector('.sp-lightbox__prev');
   const btnNext = lightbox.querySelector('.sp-lightbox__next');
   let currentIdx = 0;
+  let mode = 'photo'; // 'photo' or 'video'
 
-  function show(idx) {
+  function showPhoto(idx) {
+    mode = 'photo';
     currentIdx = idx;
     const item = items[idx];
+    lbVideo.pause(); lbVideo.src = ''; lbVideo.style.display = 'none';
+    lbImg.style.display = '';
     lbImg.src = item.dataset.full;
     lbImg.alt = item.dataset.title || '';
     lbCaption.textContent = item.dataset.title || '';
+    lbCaption.style.display = item.dataset.title ? '' : 'none';
     lightbox.hidden = false;
     document.body.style.overflow = 'hidden';
     btnPrev.style.display = idx > 0 ? '' : 'none';
     btnNext.style.display = idx < items.length - 1 ? '' : 'none';
   }
 
+  function showVideo(card) {
+    mode = 'video';
+    lbImg.style.display = 'none'; lbImg.src = '';
+    lbVideo.style.display = '';
+    lbVideo.src = card.dataset.videoSrc;
+    lbVideo.play();
+    var t = card.dataset.title || '';
+    lbCaption.textContent = t;
+    lbCaption.style.display = t ? '' : 'none';
+    btnPrev.style.display = 'none';
+    btnNext.style.display = 'none';
+    lightbox.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
   function hide() {
     lightbox.hidden = true;
     document.body.style.overflow = '';
     lbImg.src = '';
+    lbVideo.pause(); lbVideo.src = ''; lbVideo.style.display = 'none';
+    lbImg.style.display = '';
   }
 
   items.forEach(function(item, i) {
-    item.addEventListener('click', function() { show(i); });
+    item.addEventListener('click', function() { showPhoto(i); });
     item.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(i); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showPhoto(i); }
+    });
+  });
+
+  videoCards.forEach(function(card) {
+    card.addEventListener('click', function() { showVideo(card); });
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showVideo(card); }
     });
   });
 
   btnClose.addEventListener('click', hide);
-  btnPrev.addEventListener('click', function() { if (currentIdx > 0) show(currentIdx - 1); });
-  btnNext.addEventListener('click', function() { if (currentIdx < items.length - 1) show(currentIdx + 1); });
+  btnPrev.addEventListener('click', function() { if (mode === 'photo' && currentIdx > 0) showPhoto(currentIdx - 1); });
+  btnNext.addEventListener('click', function() { if (mode === 'photo' && currentIdx < items.length - 1) showPhoto(currentIdx + 1); });
 
   lightbox.addEventListener('click', function(e) {
     if (e.target === lightbox) hide();
@@ -150,8 +214,8 @@
   document.addEventListener('keydown', function(e) {
     if (lightbox.hidden) return;
     if (e.key === 'Escape') hide();
-    if (e.key === 'ArrowLeft' && currentIdx > 0) show(currentIdx - 1);
-    if (e.key === 'ArrowRight' && currentIdx < items.length - 1) show(currentIdx + 1);
+    if (mode === 'photo' && e.key === 'ArrowLeft' && currentIdx > 0) showPhoto(currentIdx - 1);
+    if (mode === 'photo' && e.key === 'ArrowRight' && currentIdx < items.length - 1) showPhoto(currentIdx + 1);
   });
 })();
 </script>

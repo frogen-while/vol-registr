@@ -97,7 +97,7 @@
 .ts-ring-fill--attack { stroke: #38bdf8; }
 .ts-ring-fill--serve  { stroke: #a78bfa; }
 .ts-ring-fill--block  { stroke: #34d399; }
-.ts-ring-fill--reception { stroke: #fbbf24; }
+.ts-ring-fill--assist { stroke: #fbbf24; }
 .ts-ring-value {
   font-family: var(--font-display, sans-serif);
   font-size: 16px;
@@ -335,6 +335,34 @@
     </section>
 
     {% endif %}
+
+    {# ── Team Gallery ──────────────────────────────────── #}
+    {% if team_gallery %}
+    <section class="ae-section ae-reveal" id="gallery" data-ae-section>
+      <div class="ae-section__head">
+        <div class="ae-section__cluster">
+          <span class="ae-eyebrow" data-i18n="tp.gallery_eyebrow">Moments</span>
+          <h2 class="ae-title-section" data-i18n="tp.gallery_title">Team Gallery</h2>
+        </div>
+        <span class="ae-badge ae-badge--status">{{ team_gallery|length }} photo{{ team_gallery|length|pluralize }}</span>
+      </div>
+      <div class="sp-gallery-grid" style="margin-top:1rem;">
+        {% for photo in team_gallery %}
+        <div class="sp-gallery-item sp-reveal" tabindex="0"
+             data-full="{% if photo.drive_file_id|slice:':6' == 'local_' %}{{ photo.drive_url }}{% else %}https://drive.google.com/thumbnail?id={{ photo.drive_file_id }}&sz=w1200{% endif %}"
+             data-title="{{ photo.title }}">
+          <img src="{{ photo.thumbnail_url }}"
+               alt="{{ photo.title|default:'Team photo' }}"
+               loading="lazy" style="width:100%;border-radius:10px;aspect-ratio:4/3;object-fit:cover;">
+          {% if photo.title %}
+          <div style="font-size:.75rem;color:#94a3b8;margin-top:.35rem;">{{ photo.title }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
   </div>
 </section>
 {% endblock %}
@@ -355,7 +383,7 @@
   const cx = 150, cy = 150, R = 110, N = rawData.length;
   if (N < 3) return;
 
-  const maxVals = { attack: 60, serve: 30, block: 30, reception: 80 };
+  const maxVals = { attack: 60, serve: 30, block: 30, assist: 80 };
   const angleStep = (2 * Math.PI) / N;
   const startAngle = -Math.PI / 2;
 

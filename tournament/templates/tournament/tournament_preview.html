@@ -252,10 +252,8 @@
                 <tr>
                   <th scope="col"></th>
                   <th scope="col" data-i18n="sports_hub.col_team">Team</th>
-                  <th scope="col" class="th-hide-mobile" data-i18n="sports_hub.col_played">P</th>
                   <th scope="col" data-i18n="sports_hub.col_wins">W</th>
                   <th scope="col" data-i18n="sports_hub.col_losses">L</th>
-                  <th scope="col" class="th-hide-mobile" data-i18n="sports_hub.col_sets">Sets</th>
                   <th scope="col" data-i18n="sports_hub.col_points">Pts</th>
                 </tr>
               </thead>
@@ -264,10 +262,8 @@
                 <tr>
                   <td>{% if row.logo %}<img src="{{ row.logo|asset_url }}" alt="{{ row.name }}" class="th-team-logo">{% else %}<span class="th-team-logo--placeholder">{{ row.short }}</span>{% endif %}</td>
                   <td>{% if row.team_id %}<a href="{% url 'tournament_team' row.team_id %}" class="th-team-link"><span>{{ row.name }}</span></a>{% else %}{{ row.name }}{% endif %}</td>
-                  <td class="th-hide-mobile">{{ row.played }}</td>
                   <td>{{ row.wins }}</td>
                   <td>{{ row.losses }}</td>
-                  <td class="th-hide-mobile">{{ row.sets }}</td>
                   <td><strong>{{ row.points }}</strong></td>
                 </tr>
                 {% endfor %}
@@ -286,11 +282,9 @@
               <tr>
                 <th scope="col"></th>
                 <th scope="col" data-i18n="sports_hub.col_team">Team</th>
-                <th scope="col" class="th-hide-mobile" data-i18n="sports_hub.col_group">Group</th>
-                <th scope="col" class="th-hide-mobile" data-i18n="sports_hub.col_played">P</th>
+                <th scope="col" data-i18n="sports_hub.col_group">Group</th>
                 <th scope="col" data-i18n="sports_hub.col_wins">W</th>
                 <th scope="col" data-i18n="sports_hub.col_losses">L</th>
-                <th scope="col" class="th-hide-mobile" data-i18n="sports_hub.col_sets">Sets</th>
                 <th scope="col" data-i18n="sports_hub.col_points">Pts</th>
               </tr>
             </thead>
@@ -299,11 +293,9 @@
               <tr>
                 <td>{% if row.logo %}<img src="{{ row.logo|asset_url }}" alt="{{ row.name }}" class="th-team-logo">{% else %}<span class="th-team-logo--placeholder">{{ row.short }}</span>{% endif %}</td>
                 <td>{% if row.team_id %}<a href="{% url 'tournament_team' row.team_id %}" class="th-team-link"><span>{{ row.name }}</span></a>{% else %}{{ row.name }}{% endif %}</td>
-                <td class="th-hide-mobile">{{ row.group }}</td>
-                <td class="th-hide-mobile">{{ row.played }}</td>
+                <td>{{ row.group }}</td>
                 <td>{{ row.wins }}</td>
                 <td>{{ row.losses }}</td>
-                <td class="th-hide-mobile">{{ row.sets }}</td>
                 <td><strong>{{ row.points }}</strong></td>
               </tr>
               {% endfor %}
@@ -342,7 +334,7 @@
             </article>
             {% endfor %}
             {% for item in slot.games %}
-            <article class="th-sched__row{% if item.status_raw == 'LIVE' %} th-sched__row--live{% endif %}{% if item.status_raw == 'FINISHED' %} th-sched__row--done{% endif %}">
+            <article class="th-sched__row{% if item.status_raw == 'LIVE' %} th-sched__row--live{% endif %}{% if item.status_raw == 'FINISHED' %} th-sched__row--done{% endif %}" data-match-id="{{ item.match_id }}" data-match-num="{{ item.match_number }}">
               <div class="th-sched__battle">
                 <div class="th-sched__battle-meta">
                   <span class="th-sched__stage-badge">{{ item.stage }}</span>
@@ -395,4 +387,60 @@
 
 {% block scripts %}
 <script src="{% static_v 'js/arena-editorial.js' %}"></script>
+<script>
+(function(){
+  var REFRESH_MS = 30000;
+  function refreshScores() {
+    fetch('/api/live-scores/')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        (data.matches || []).forEach(function(m){
+          var row = document.querySelector('[data-match-id="' + m.id + '"]');
+          if (!row) return;
+          // Update scores
+          var scoreline = row.querySelector('.th-sched__scoreline');
+          if (m.status === 'LIVE' || m.status === 'FINISHED') {
+            if (scoreline) {
+              var scores = scoreline.querySelectorAll('.th-sched__score');
+              if (scores.length >= 2) {
+                scores[0].textContent = m.score_a;
+                scores[1].textContent = m.score_b;
+              }
+            } else {
+              // Create scoreline if not existing
+              var result = row.querySelector('.th-sched__result');
+              if (result) {
+                var clock = result.querySelector('.th-sched__clock');
+                if (clock) clock.remove();
+                var sl = document.createElement('div');
+                sl.className = 'th-sched__scoreline';
+                sl.innerHTML = '<span class="th-sched__score">' + m.score_a + '</span>' +
+                  '<span class="th-sched__score-sep">:</span>' +
+                  '<span class="th-sched__score">' + m.score_b + '</span>';
+                result.insertBefore(sl, result.firstChild);
+              }
+            }
+          }
+          // Update status badge & row class
+          row.classList.remove('th-sched__row--live', 'th-sched__row--done');
+          if (m.status === 'LIVE') row.classList.add('th-sched__row--live');
+          else if (m.status === 'FINISHED') row.classList.add('th-sched__row--done');
+          // Update badge
+          var badges = row.querySelectorAll('.ae-badge');
+          badges.forEach(function(b){ b.remove(); });
+          var result2 = row.querySelector('.th-sched__result');
+          if (result2) {
+            var badge = document.createElement('span');
+            if (m.status === 'LIVE') { badge.className = 'ae-badge ae-badge--live'; badge.textContent = 'LIVE'; }
+            else if (m.status === 'FINISHED') { badge.className = 'ae-badge ae-badge--finished'; badge.textContent = 'Final'; }
+            else { badge.className = 'ae-badge ae-badge--scheduled'; badge.textContent = m.status_display; }
+            result2.appendChild(badge);
+          }
+        });
+      })
+      .catch(function(){});
+  }
+  setInterval(refreshScores, REFRESH_MS);
+})();
+</script>
 {% endblock %}

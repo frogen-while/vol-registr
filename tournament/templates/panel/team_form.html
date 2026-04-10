@@ -7,12 +7,20 @@
     <i class="fas fa-arrow-left"></i> Back
   </a>
 
-  <form method="post" class="pnl-form">
+  <form method="post" enctype="multipart/form-data" class="pnl-form">
     {% csrf_token %}
 
     {# ── Team fields ─────────────────────────────────── #}
     <div class="pnl-dash-card">
       <h3 class="pnl-dash-card__title">Team Info</h3>
+
+      {% if is_edit and team.logo_path %}
+      <div style="margin-bottom:12px; display:flex; align-items:center; gap:12px;">
+        <img src="/media/{{ team.logo_path }}" alt="logo" style="height:48px; width:48px; object-fit:contain; border-radius:6px; border:1px solid var(--pnl-border);">
+        <span class="pnl-muted">Current logo: {{ team.logo_path }}</span>
+      </div>
+      {% endif %}
+
       <div class="pnl-form__grid">
         {% for field in form %}
         <div class="pnl-field{% if field.errors %} pnl-field--error{% endif %}">

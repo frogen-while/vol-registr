@@ -1,0 +1,501 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<style>
+  /* ── Match detail — Scoreboard hero ────────────────── */
+  .md-back { margin-bottom:16px; }
+  .md-scoreboard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 32px 24px;
+    background: linear-gradient(135deg, rgba(20,28,37,.95), rgba(11,17,23,.98));
+    border: 1px solid var(--pnl-border);
+    border-radius: var(--pnl-radius);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .md-scoreboard::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 80% at 20% 50%, rgba(93,227,255,.06), transparent),
+      radial-gradient(ellipse 50% 80% at 80% 50%, rgba(255,159,74,.04), transparent);
+    pointer-events: none;
+  }
+  .md-team-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .md-team-side--a { align-items: flex-end; text-align: right; }
+  .md-team-side--b { align-items: flex-start; text-align: left; }
+  .md-team-logo {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid var(--pnl-border);
+    background: var(--pnl-surface-2);
+  }
+  .md-team-logo--placeholder {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--pnl-muted); font-size: 1.4rem;
+  }
+  .md-team-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--pnl-text);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .md-team-link {
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--pnl-accent);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .md-team-link:hover { text-decoration: underline; }
+
+  .md-score-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 0 clamp(16px, 4vw, 48px);
+    position: relative;
+    z-index: 1;
+  }
+  .md-score-big {
+    font-family: var(--pnl-font-mono);
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: .04em;
+    line-height: 1;
+  }
+  .md-score-big span { color: var(--pnl-muted); margin: 0 6px; font-weight: 400; }
+  .md-match-num {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--pnl-muted);
+  }
+
+  /* ── Info chips strip ──────────────────────────────── */
+  .md-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .md-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--pnl-surface);
+    border: 1px solid var(--pnl-border);
+    border-radius: 6px;
+    font-size: .8rem;
+    color: var(--pnl-text);
+  }
+  .md-chip i { color: var(--pnl-muted); font-size: .75rem; width: 14px; text-align: center; }
+  .md-chip strong { font-weight: 600; }
+
+  /* ── Status quick-actions ──────────────────────────── */
+  .md-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: var(--pnl-surface);
+    border: 1px solid var(--pnl-border);
+    border-radius: var(--pnl-radius);
+  }
+  .md-status-bar__label {
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--pnl-muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-right: auto;
+  }
+
+  /* ── Two-column grid ───────────────────────────────── */
+  .md-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 768px) { .md-grid-2 { grid-template-columns: 1fr; } }
+
+  /* ── Actions footer ────────────────────────────────── */
+  .md-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 16px 0;
+    border-top: 1px solid var(--pnl-border);
+  }
+</style>
+
+<div class="pnl-detail">
+
+  {# ── Back + page actions ───────────────────────────── #}
+  <div class="pnl-detail__header">
+    <div>
+      <a href="{% url 'panel:schedule' %}?view=table" class="pnl-btn md-back">
+        <i class="fas fa-arrow-left"></i> Matches
+      </a>
+    </div>
+    <div class="pnl-detail__actions">
+      <a href="{% url 'panel:match_edit' pk=match.pk %}" class="pnl-btn pnl-btn--primary">
+        <i class="fas fa-edit"></i> Edit
+      </a>
+      <form method="post" action="{% url 'panel:match_delete' pk=match.pk %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="pnl-btn pnl-btn--danger" onclick="return confirm('Delete match #{{ match.match_number }}?')">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {# ── Scoreboard hero ──────────────────────────────── #}
+  <div class="md-scoreboard">
+    {# Team A #}
+    <div class="md-team-side md-team-side--a">
+      {% if match.team_a and match.team_a.logo_path %}
+        <img src="/media/{{ match.team_a.logo_path }}" alt="" class="md-team-logo">
+      {% else %}
+        <div class="md-team-logo md-team-logo--placeholder"><i class="fas fa-shield-alt"></i></div>
+      {% endif %}
+      <div class="md-team-name">{{ match.display_name_a }}</div>
+      {% if match.team_a %}
+        <a href="{% url 'panel:team_detail' pk=match.team_a.pk %}" class="md-team-link">View team →</a>
+      {% endif %}
+    </div>
+
+    {# Score center #}
+    <div class="md-score-center">
+      <div class="md-match-num">Match #{{ match.match_number }}</div>
+      <div class="md-score-big">{{ match.score_a }}<span>:</span>{{ match.score_b }}</div>
+      <span class="pnl-badge pnl-badge--{% if match.status == 'FINISHED' %}green{% elif match.status == 'LIVE' %}red{% else %}gray{% endif %}">
+        {{ match.get_status_display }}
+      </span>
+    </div>
+
+    {# Team B #}
+    <div class="md-team-side md-team-side--b">
+      {% if match.team_b and match.team_b.logo_path %}
+        <img src="/media/{{ match.team_b.logo_path }}" alt="" class="md-team-logo">
+      {% else %}
+        <div class="md-team-logo md-team-logo--placeholder"><i class="fas fa-shield-alt"></i></div>
+      {% endif %}
+      <div class="md-team-name">{{ match.display_name_b }}</div>
+      {% if match.team_b %}
+        <a href="{% url 'panel:team_detail' pk=match.team_b.pk %}" class="md-team-link">← View team</a>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ── Info chips ────────────────────────────────────── #}
+  <div class="md-chips">
+    <div class="md-chip"><i class="fas fa-layer-group"></i> <strong>{{ match.get_stage_display }}</strong></div>
+    {% if match.group %}<div class="md-chip"><i class="fas fa-object-group"></i> Group <strong>{{ match.group }}</strong></div>{% endif %}
+    <div class="md-chip"><i class="fas fa-map-marker-alt"></i> <strong>{{ match.get_court_display }}</strong></div>
+    <div class="md-chip"><i class="fas fa-clock"></i> {{ match.start_time|date:"d M Y · H:i" }}</div>
+    {% if match.stats_imported %}<div class="md-chip"><i class="fas fa-check-circle" style="color:var(--pnl-green)"></i> Stats imported</div>{% endif %}
+  </div>
+
+  {# ── Status quick-change bar ───────────────────────── #}
+  <div class="md-status-bar">
+    <span class="md-status-bar__label"><i class="fas fa-signal"></i> Status</span>
+    <form method="post" action="{% url 'panel:match_status_change' pk=match.pk %}" style="display:inline;">
+      {% csrf_token %}
+      <input type="hidden" name="new_status" value="SCHEDULED">
+      <button type="submit" class="pnl-btn pnl-btn--sm{% if match.status == 'SCHEDULED' %} pnl-btn--outline{% endif %}"
+              {% if match.status == 'SCHEDULED' %}disabled{% endif %}>Scheduled</button>
+    </form>
+    <form method="post" action="{% url 'panel:match_status_change' pk=match.pk %}" style="display:inline;">
+      {% csrf_token %}
+      <input type="hidden" name="new_status" value="LIVE">
+      <button type="submit" class="pnl-btn pnl-btn--sm{% if match.status == 'LIVE' %} pnl-btn--danger{% else %} pnl-btn--outline{% endif %}"
+              {% if match.status == 'LIVE' %}disabled{% endif %}>🔴 Live</button>
+    </form>
+    <form method="post" action="{% url 'panel:match_status_change' pk=match.pk %}" style="display:inline;">
+      {% csrf_token %}
+      <input type="hidden" name="new_status" value="FINISHED">
+      <button type="submit" class="pnl-btn pnl-btn--sm{% if match.status == 'FINISHED' %} pnl-btn--primary{% else %} pnl-btn--outline{% endif %}"
+              {% if match.status == 'FINISHED' %}disabled{% endif %}>Finished</button>
+    </form>
+  </div>
+
+  {# ── Sets & Score (side by side) ───────────────────── #}
+  <div class="md-grid-2">
+
+    {# Sets card #}
+    <div class="pnl-card">
+      <div class="pnl-card__header">
+        <h3><i class="fas fa-list-ol" style="color:var(--pnl-accent);margin-right:6px;"></i>Sets</h3>
+        <button type="button" id="btnEditSets" class="pnl-btn pnl-btn--sm pnl-btn--primary">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+      </div>
+      <div class="pnl-card__body">
+        <div id="setsDisplay">
+          {% if game_sets %}
+          <table class="pnl-table pnl-table--compact">
+            <thead><tr><th>Set</th><th>{{ match.display_name_a }}</th><th>{{ match.display_name_b }}</th></tr></thead>
+            <tbody>
+              {% for s in game_sets %}
+              <tr>
+                <td style="color:var(--pnl-muted);font-weight:600;">{{ s.set_number }}</td>
+                <td{% if s.score_a > s.score_b %} style="font-weight:700;color:var(--pnl-green)"{% endif %}>{{ s.score_a }}</td>
+                <td{% if s.score_b > s.score_a %} style="font-weight:700;color:var(--pnl-green)"{% endif %}>{{ s.score_b }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <p style="color:var(--pnl-muted);text-align:center;padding:1.5rem 0;">
+            <i class="fas fa-inbox" style="display:block;font-size:1.3rem;margin-bottom:.5rem;opacity:.4;"></i>
+            No sets recorded yet
+          </p>
+          {% endif %}
+        </div>
+        <div id="setsEdit" style="display:none;">
+          <table class="pnl-table pnl-table--compact">
+            <thead><tr><th>Set</th><th>{{ match.display_name_a }}</th><th>{{ match.display_name_b }}</th><th></th></tr></thead>
+            <tbody id="setsEditBody">
+              {% for s in game_sets %}
+              <tr data-set-id="{{ s.pk }}">
+                <td style="color:var(--pnl-muted);font-weight:600;">{{ s.set_number }}</td>
+                <td><input type="number" min="0" class="pnl-input pnl-input--sm" value="{{ s.score_a }}" name="score_a_{{ s.pk }}" style="width:70px;"></td>
+                <td><input type="number" min="0" class="pnl-input pnl-input--sm" value="{{ s.score_b }}" name="score_b_{{ s.pk }}" style="width:70px;"></td>
+                <td><button type="button" class="pnl-btn pnl-btn--sm pnl-btn--danger btn-remove-set" data-set-id="{{ s.pk }}"><i class="fas fa-times"></i></button></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button type="button" id="btnAddSet" class="pnl-btn pnl-btn--sm"><i class="fas fa-plus"></i> Add Set</button>
+            <button type="button" id="btnSaveSets" class="pnl-btn pnl-btn--sm pnl-btn--primary"><i class="fas fa-save"></i> Save</button>
+            <button type="button" id="btnCancelSets" class="pnl-btn pnl-btn--sm"><i class="fas fa-times"></i> Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# Match Score card #}
+    <div class="pnl-card">
+      <div class="pnl-card__header">
+        <h3><i class="fas fa-futbol" style="color:var(--pnl-orange);margin-right:6px;"></i>Match Score</h3>
+        <button type="button" id="btnEditScore" class="pnl-btn pnl-btn--sm pnl-btn--primary">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+      </div>
+      <div class="pnl-card__body">
+        <div id="scoreDisplay" style="text-align:center;padding:1rem 0;">
+          <span style="font-family:var(--pnl-font-mono);font-size:2rem;font-weight:700;letter-spacing:.05em;">
+            {{ match.score_a }} <span style="color:var(--pnl-muted);margin:0 4px;">:</span> {{ match.score_b }}
+          </span>
+        </div>
+        <div id="scoreEdit" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:.5rem 0;">
+            <span style="font-size:.8rem;color:var(--pnl-muted);font-weight:600;">{{ match.display_name_a }}</span>
+            <input type="number" min="0" id="inpScoreA" class="pnl-input pnl-input--sm" value="{{ match.score_a }}" style="width:70px;text-align:center;">
+            <span style="font-size:1.2rem;font-weight:700;color:var(--pnl-muted);">:</span>
+            <input type="number" min="0" id="inpScoreB" class="pnl-input pnl-input--sm" value="{{ match.score_b }}" style="width:70px;text-align:center;">
+            <span style="font-size:.8rem;color:var(--pnl-muted);font-weight:600;">{{ match.display_name_b }}</span>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;">
+            <button type="button" id="btnSaveScore" class="pnl-btn pnl-btn--sm pnl-btn--primary"><i class="fas fa-save"></i> Save</button>
+            <button type="button" id="btnCancelScore" class="pnl-btn pnl-btn--sm"><i class="fas fa-times"></i> Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {# ── Player Stats ──────────────────────────────────── #}
+  {% if player_stats_a or player_stats_b %}
+  <div class="md-grid-2">
+    {% for team_label, pstats, tstats in stats_pairs %}
+    <div class="pnl-card">
+      <div class="pnl-card__header"><h3><i class="fas fa-chart-bar" style="color:var(--pnl-accent);margin-right:6px;"></i>{{ team_label }}</h3></div>
+      <div class="pnl-card__body" style="overflow-x:auto;">
+        {% if tstats %}
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+          <span class="md-chip"><i class="fas fa-bolt"></i> Aces <strong>{{ tstats.aces }}</strong></span>
+          <span class="md-chip"><i class="fas fa-crosshairs"></i> Kills <strong>{{ tstats.kills }}</strong></span>
+          <span class="md-chip"><i class="fas fa-shield-alt"></i> Blocks <strong>{{ tstats.blocks }}</strong></span>
+        </div>
+        {% endif %}
+        <table class="pnl-table pnl-table--compact">
+          <thead>
+            <tr><th>#</th><th>Player</th><th>Pos</th><th>Pts</th><th>Aces</th><th>Kills</th><th>Blk</th><th>Ast</th><th>SE</th><th>AE</th></tr>
+          </thead>
+          <tbody>
+            {% for ps in pstats %}
+            <tr>
+              <td style="color:var(--pnl-muted);">{{ ps.jersey_number }}</td>
+              <td><a href="{% url 'panel:player_detail' pk=ps.player.pk %}">{{ ps.player.first_name }} {{ ps.player.last_name }}</a></td>
+              <td>{{ ps.get_position_display }}</td>
+              <td><strong style="color:var(--pnl-accent);">{{ ps.points_won }}</strong></td>
+              <td>{{ ps.aces }}</td>
+              <td>{{ ps.kills }}</td>
+              <td>{{ ps.blocks }}</td>
+              <td>{{ ps.assists }}</td>
+              <td>{{ ps.serve_errors }}</td>
+              <td>{{ ps.attack_errors }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="10" style="text-align:center;color:var(--pnl-muted);">No stats imported</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {# ── Actions footer ────────────────────────────────── #}
+  <div class="md-actions">
+    {% if match.stats_imported %}
+    <a href="{% url 'panel:stats_detail' pk=match.pk %}" class="pnl-btn">
+      <i class="fas fa-chart-bar"></i> View Full Stats
+    </a>
+    <a href="{% url 'panel:stats_edit' pk=match.pk %}" class="pnl-btn pnl-btn--primary">
+      <i class="fas fa-edit"></i> Edit Stats
+    </a>
+    {% else %}
+    <a href="{% url 'panel:stats_import' pk=match.pk %}" class="pnl-btn pnl-btn--primary">
+      <i class="fas fa-file-import"></i> Import Stats
+    </a>
+    <a href="{% url 'panel:stats_manual_create' pk=match.pk %}" class="pnl-btn">
+      <i class="fas fa-plus"></i> Create Stats Manually
+    </a>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  const csrf = '{{ csrf_token }}';
+  const matchPk = {{ match.pk }};
+  const scoreUrl = '/panel/schedule/' + matchPk + '/score/';
+  const setsUrl = '/panel/schedule/' + matchPk + '/sets-inline/';
+
+  /* ── Score inline edit ── */
+  const btnEditScore = document.getElementById('btnEditScore');
+  const btnSaveScore = document.getElementById('btnSaveScore');
+  const btnCancelScore = document.getElementById('btnCancelScore');
+  const scoreDisplay = document.getElementById('scoreDisplay');
+  const scoreEdit = document.getElementById('scoreEdit');
+
+  btnEditScore.addEventListener('click', function() {
+    scoreDisplay.style.display = 'none';
+    scoreEdit.style.display = '';
+    btnEditScore.style.display = 'none';
+  });
+  btnCancelScore.addEventListener('click', function() {
+    scoreDisplay.style.display = '';
+    scoreEdit.style.display = 'none';
+    btnEditScore.style.display = '';
+  });
+  btnSaveScore.addEventListener('click', function() {
+    const fd = new FormData();
+    fd.append('score_a', document.getElementById('inpScoreA').value);
+    fd.append('score_b', document.getElementById('inpScoreB').value);
+    fetch(scoreUrl, { method: 'POST', headers: { 'X-CSRFToken': csrf }, body: fd })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok) location.reload();
+        else alert(data.error || 'Error');
+      });
+  });
+
+  /* ── Sets inline edit ── */
+  const btnEditSets = document.getElementById('btnEditSets');
+  const btnSaveSets = document.getElementById('btnSaveSets');
+  const btnCancelSets = document.getElementById('btnCancelSets');
+  const btnAddSet = document.getElementById('btnAddSet');
+  const setsDisplay = document.getElementById('setsDisplay');
+  const setsEdit = document.getElementById('setsEdit');
+  const setsEditBody = document.getElementById('setsEditBody');
+
+  let nextSetNum = setsEditBody.children.length + 1;
+
+  btnEditSets.addEventListener('click', function() {
+    setsDisplay.style.display = 'none';
+    setsEdit.style.display = '';
+    btnEditSets.style.display = 'none';
+  });
+  btnCancelSets.addEventListener('click', function() {
+    setsDisplay.style.display = '';
+    setsEdit.style.display = 'none';
+    btnEditSets.style.display = '';
+  });
+
+  btnAddSet.addEventListener('click', function() {
+    const tr = document.createElement('tr');
+    tr.dataset.setId = 'new';
+    tr.innerHTML = '<td>Set ' + nextSetNum + '</td>' +
+      '<td><input type="number" min="0" class="pnl-input pnl-input--sm" value="0" name="new_score_a_' + nextSetNum + '" style="width:70px;"></td>' +
+      '<td><input type="number" min="0" class="pnl-input pnl-input--sm" value="0" name="new_score_b_' + nextSetNum + '" style="width:70px;"></td>' +
+      '<td><button type="button" class="pnl-btn pnl-btn--sm pnl-btn--danger btn-remove-set" data-new="1"><i class="fas fa-times"></i></button></td>';
+    setsEditBody.appendChild(tr);
+    nextSetNum++;
+  });
+
+  setsEditBody.addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-remove-set');
+    if (btn) btn.closest('tr').remove();
+  });
+
+  btnSaveSets.addEventListener('click', function() {
+    const rows = setsEditBody.querySelectorAll('tr');
+    const sets = [];
+    let setNum = 1;
+    rows.forEach(function(tr) {
+      const inputs = tr.querySelectorAll('input');
+      sets.push({
+        id: tr.dataset.setId === 'new' ? null : parseInt(tr.dataset.setId),
+        set_number: setNum++,
+        score_a: parseInt(inputs[0].value) || 0,
+        score_b: parseInt(inputs[1].value) || 0,
+      });
+    });
+    fetch(setsUrl, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': csrf, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sets: sets }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok) location.reload();
+        else alert(data.error || 'Error');
+      });
+  });
+})();
+</script>
+{% endblock %}

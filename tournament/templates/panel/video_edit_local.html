@@ -1,0 +1,41 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-gallery-form">
+
+  <a href="{% url 'panel:gallery' %}?tab=videos" class="pnl-back-link">
+    <i class="fas fa-arrow-left"></i> Back to Gallery
+  </a>
+
+  <div class="pnl-card" style="margin-top:16px;">
+    <h2 class="pnl-card__header"><i class="fas fa-pen"></i> Edit Video</h2>
+
+    <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+      <div style="flex:0 0 260px;">
+        <video src="{{ video.drive_url }}" controls playsinline
+               style="width:100%;border-radius:6px;border:1px solid #ddd;background:#000;"></video>
+      </div>
+
+      <form method="post" class="pnl-form" style="flex:1;min-width:240px;">
+        {% csrf_token %}
+        <div class="pnl-field">
+          <label for="id_title">Title <small class="pnl-help">(leave empty for no caption)</small></label>
+          <input type="text" name="title" id="id_title" class="pnl-input"
+                 value="{{ video.title }}" placeholder="Video title">
+        </div>
+        <div class="pnl-field">
+          <label for="id_description">Description <small class="pnl-help">(optional)</small></label>
+          <textarea name="description" id="id_description" class="pnl-input" rows="3"
+                    placeholder="Description">{{ video.description }}</textarea>
+        </div>
+        <div class="pnl-form-actions">
+          <button type="submit" class="pnl-btn pnl-btn--primary">
+            <i class="fas fa-save"></i> Save
+          </button>
+          <a href="{% url 'panel:gallery' %}?tab=videos" class="pnl-btn pnl-btn--outline">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

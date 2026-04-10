@@ -42,6 +42,10 @@
            class="pnl-nav-item{% if nav_section == 'teams' %} active{% endif %}">
           <i class="fas fa-users"></i><span>Teams</span>
         </a>
+        <a href="{% url 'panel:players' %}"
+           class="pnl-nav-item{% if nav_section == 'players' %} active{% endif %}">
+          <i class="fas fa-user"></i><span>Players</span>
+        </a>
         <a href="{% url 'panel:checkin' %}"
            class="pnl-nav-item{% if nav_section == 'checkin' %} active{% endif %}">
           <i class="fas fa-clipboard-check"></i><span>Check-in</span>
@@ -51,9 +55,13 @@
       {# ── Match Operations ─────────────────────── #}
       <div class="pnl-nav-zone">
         <span class="pnl-nav-zone__label">Match Operations</span>
-        <a href="{% url 'panel:schedule' %}"
+        <a href="{% url 'panel:schedule' %}?view=grid"
            class="pnl-nav-item{% if nav_section == 'schedule' %} active{% endif %}">
-          <i class="fas fa-calendar-alt"></i><span>Schedule</span>
+          <i class="fas fa-clock"></i><span>Schedule / Events</span>
+        </a>
+        <a href="{% url 'panel:schedule' %}?view=table"
+           class="pnl-nav-item{% if nav_section == 'matches' %} active{% endif %}">
+          <i class="fas fa-table-list"></i><span>Matches</span>
         </a>
       </div>
 
@@ -76,14 +84,6 @@
         <a href="{% url 'panel:gallery' %}"
            class="pnl-nav-item{% if nav_section == 'gallery' %} active{% endif %}">
           <i class="fas fa-images"></i><span>Gallery</span>
-        </a>
-        <a href="{% url 'panel:highlights' %}"
-           class="pnl-nav-item{% if nav_section == 'highlights' %} active{% endif %}">
-          <i class="fas fa-film"></i><span>Highlights</span>
-        </a>
-        <a href="{% url 'panel:dreamteam' %}"
-           class="pnl-nav-item{% if nav_section == 'dreamteam' %} active{% endif %}">
-          <i class="fas fa-star"></i><span>Dream Team</span>
         </a>
       </div>
     </nav>

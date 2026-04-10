@@ -32,6 +32,37 @@
   z-index: 1;
 }
 
+/* Subtle ambient side glows for sp-pages */
+.sp-page::before {
+  content: "";
+  position: fixed;
+  top: 10%;
+  left: -8%;
+  width: 40vw;
+  height: 40vw;
+  max-width: 500px;
+  max-height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.04), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sp-page::after {
+  content: "";
+  position: fixed;
+  bottom: 5%;
+  right: -8%;
+  width: 35vw;
+  height: 35vw;
+  max-width: 450px;
+  max-height: 450px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.035), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* Fallback: ensure content is visible if GSAP fails to init */
 .sp-reveal {
   visibility: visible;
@@ -2458,7 +2489,7 @@ th[data-sort-key] {
 /* Photo grid */
 .sp-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 1rem;
 }
 
@@ -2470,6 +2501,7 @@ th[data-sort-key] {
   background: var(--sp-surface);
   border: 1px solid var(--sp-border);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  height: min-content;
 }
 
 .sp-gallery-item:hover,
@@ -2485,6 +2517,10 @@ th[data-sort-key] {
   display: block;
 }
 
+.sp-gallery-item__img:last-child {
+  border-radius: 0 0 6px 6px;
+}
+
 .sp-gallery-item__caption {
   padding: 0.5rem 0.65rem;
   font-size: 0.78rem;
@@ -2498,7 +2534,7 @@ th[data-sort-key] {
 /* Video cards */
 .sp-gallery-videos {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 1.25rem;
 }
 
@@ -2512,6 +2548,7 @@ th[data-sort-key] {
   text-decoration: none;
   color: var(--sp-text);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  height: min-content;
 }
 
 .sp-video-card:hover {
@@ -2606,6 +2643,14 @@ th[data-sort-key] {
   object-fit: contain;
   border-radius: 4px;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
+
+.sp-lightbox__video {
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: 4px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+  outline: none;
 }
 
 .sp-lightbox__close,

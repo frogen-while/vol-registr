@@ -95,14 +95,13 @@ def rankings_view(request):
 @staff_member_required(login_url="/panel/login/")
 @require_POST
 def rankings_recalculate_view(request):
-    """Recalculate all standings + Dream Team."""
-    from ..services import recalculate_dream_team, recalculate_standings
+    """Recalculate all standings."""
+    from ..services import recalculate_standings
 
     recalculate_standings()
-    recalculate_dream_team()
     standings_count = GroupStanding.objects.count()
     messages.success(
         request,
-        f"Recalculated standings for {standings_count} teams and refreshed Dream Team candidates.",
+        f"Recalculated standings for {standings_count} teams.",
     )
     return redirect("panel:rankings")

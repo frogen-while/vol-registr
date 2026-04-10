@@ -62,6 +62,36 @@
     </div>
   </div>
 
+  {# ── Live widgets strip ───────────────────────────── #}
+  <div class="pnl-kpi-grid" style="margin-bottom:16px;">
+    <div class="pnl-kpi" style="border-left:3px solid var(--pnl-blue,#3b82f6);">
+      <div class="pnl-kpi__icon"><i class="fas fa-calendar-day"></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value pnl-mono">{{ matches_today }}</span>
+        <span class="pnl-kpi__label">Matches Today</span>
+      </div>
+    </div>
+    <div class="pnl-kpi" style="border-left:3px solid {% if matches_live %}var(--pnl-red,#ef4444){% else %}var(--pnl-gray-600,#4b5563){% endif %};">
+      <div class="pnl-kpi__icon"><i class="fas fa-broadcast-tower" {% if matches_live %}style="color:var(--pnl-red,#ef4444);animation:pulse 1.5s infinite;"{% endif %}></i></div>
+      <div class="pnl-kpi__body">
+        <span class="pnl-kpi__value pnl-mono">{{ matches_live }}</span>
+        <span class="pnl-kpi__label">LIVE Now</span>
+      </div>
+    </div>
+    <div class="pnl-kpi" style="border-left:3px solid var(--pnl-green,#22c55e);">
+      <div class="pnl-kpi__icon"><i class="fas fa-forward"></i></div>
+      <div class="pnl-kpi__body">
+        {% if next_match %}
+        <span class="pnl-kpi__value pnl-mono" style="font-size:.85rem;">{{ next_match.start_time|date:"H:i" }}</span>
+        <span class="pnl-kpi__label">Next: M{{ next_match.match_number }} · {{ next_match.display_name_a }} vs {{ next_match.display_name_b }}</span>
+        {% else %}
+        <span class="pnl-kpi__value pnl-mono">—</span>
+        <span class="pnl-kpi__label">No upcoming match</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
   {# ── Three-column operational layout ──────────────── #}
   <div class="pnl-cr-grid">
 
@@ -151,6 +181,16 @@
           </span>
         </div>
         {% endfor %}
+      </div>
+
+      {# CSV export buttons #}
+      <div style="margin-top:20px;border-top:1px solid var(--pnl-gray-700,#374151);padding-top:16px;">
+        <h4 class="pnl-cr-recent__title"><i class="fas fa-file-csv"></i> Export Data</h4>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <a href="{% url 'panel:export_standings' %}" class="pnl-btn pnl-btn--sm"><i class="fas fa-download"></i> Standings CSV</a>
+          <a href="{% url 'panel:export_player_stats' %}" class="pnl-btn pnl-btn--sm"><i class="fas fa-download"></i> Player Stats CSV</a>
+          <a href="{% url 'panel:export_results' %}" class="pnl-btn pnl-btn--sm"><i class="fas fa-download"></i> Match Results CSV</a>
+        </div>
       </div>
     </section>
 

@@ -37,28 +37,26 @@ def audit_view(request):
 _PAGES = [
     {"label": "Control Room", "icon": "fa-tower-broadcast", "type": "page"},
     {"label": "Teams", "icon": "fa-users", "type": "page"},
+    {"label": "Players", "icon": "fa-user", "type": "page"},
     {"label": "Pipeline", "icon": "fa-columns", "type": "page"},
     {"label": "Check-in Desk", "icon": "fa-clipboard-check", "type": "page"},
     {"label": "Schedule", "icon": "fa-calendar-alt", "type": "page"},
     {"label": "Statistics", "icon": "fa-chart-bar", "type": "page"},
     {"label": "Rankings", "icon": "fa-trophy", "type": "page"},
     {"label": "Gallery", "icon": "fa-images", "type": "page"},
-    {"label": "Highlights", "icon": "fa-film", "type": "page"},
-    {"label": "Dream Team", "icon": "fa-star", "type": "page"},
     {"label": "Audit Log", "icon": "fa-clock-rotate-left", "type": "page"},
 ]
 
 _PAGE_URLS = {
     "Control Room": "panel:dashboard",
     "Teams": "panel:teams",
+    "Players": "panel:players",
     "Pipeline": "panel:teams_pipeline",
     "Check-in Desk": "panel:checkin",
     "Schedule": "panel:schedule",
     "Statistics": "panel:stats",
     "Rankings": "panel:rankings",
     "Gallery": "panel:gallery",
-    "Highlights": "panel:highlights",
-    "Dream Team": "panel:dreamteam",
     "Audit Log": "panel:audit",
 }
 

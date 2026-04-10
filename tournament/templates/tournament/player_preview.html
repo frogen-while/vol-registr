@@ -283,7 +283,7 @@
 .ps-ring-fill--attack { stroke: #38bdf8; }
 .ps-ring-fill--serve  { stroke: #a78bfa; }
 .ps-ring-fill--block  { stroke: #34d399; }
-.ps-ring-fill--reception { stroke: #fbbf24; }
+.ps-ring-fill--assist { stroke: #fbbf24; }
 .ps-ring-value {
   font-family: var(--font-display, sans-serif);
   font-size: 16px;
@@ -478,7 +478,7 @@
   var cx = 150, cy = 150, R = 110, N = rawData.length;
   if (N < 3) return;
 
-  var maxVals = { attack: 60, serve: 30, block: 30, reception: 80 };
+  var maxVals = { attack: 60, serve: 30, block: 30, assist: 80 };
   var angleStep = (2 * Math.PI) / N;
   var startAngle = -Math.PI / 2;
 

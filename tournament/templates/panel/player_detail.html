@@ -1,0 +1,92 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-detail">
+
+  <div class="pnl-detail__header">
+    <div>
+      <a href="{% url 'panel:players' %}" class="pnl-btn" style="margin-bottom:12px;">
+        <i class="fas fa-arrow-left"></i> Back to Players
+      </a>
+      <h2>{{ player.first_name }} {{ player.last_name }}</h2>
+    </div>
+    <div class="pnl-detail__actions">
+      <a href="{% url 'panel:player_edit' pk=player.pk %}" class="pnl-btn pnl-btn--primary">
+        <i class="fas fa-edit"></i> Edit
+      </a>
+    </div>
+  </div>
+
+  {# ── Player info card ──────────────────────────────── #}
+  <div class="pnl-card" style="margin-bottom:24px;">
+    <div class="pnl-card__body" style="display:flex;gap:24px;align-items:flex-start;">
+      {% if player.photo_path %}
+      <img src="/media/{{ player.photo_path }}" alt="{{ player }}"
+           style="width:120px;height:120px;object-fit:cover;border-radius:12px;">
+      {% else %}
+      <div style="width:120px;height:120px;border-radius:12px;background:var(--pnl-gray-700,#374151);display:flex;align-items:center;justify-content:center;">
+        <i class="fas fa-user" style="font-size:2rem;color:var(--pnl-gray-400,#9ca3af);"></i>
+      </div>
+      {% endif %}
+      <table class="pnl-kv-table">
+        <tr><th>Team</th><td>
+          {% if player.team %}
+          <a href="{% url 'panel:team_detail' pk=player.team.pk %}">{{ player.team.name }}</a>
+          {% else %}—{% endif %}
+        </td></tr>
+        <tr><th>Position</th><td>{{ player.get_position_display }}</td></tr>
+        <tr><th>Jersey</th><td>#{{ player.jersey_number }}</td></tr>
+        <tr><th>Matches</th><td>{{ matches_count }}</td></tr>
+      </table>
+    </div>
+  </div>
+
+  {# ── Aggregate stats ───────────────────────────────── #}
+  <div class="pnl-kpi-grid" style="margin-bottom:24px;">
+    <div class="pnl-kpi"><div class="pnl-kpi__icon"><i class="fas fa-star"></i></div>
+      <div class="pnl-kpi__body"><span class="pnl-kpi__value pnl-mono">{{ total_points }}</span><span class="pnl-kpi__label">Total Points</span></div></div>
+    <div class="pnl-kpi"><div class="pnl-kpi__icon"><i class="fas fa-crosshairs"></i></div>
+      <div class="pnl-kpi__body"><span class="pnl-kpi__value pnl-mono">{{ totals.total_kills|default:0 }}</span><span class="pnl-kpi__label">Kills</span></div></div>
+    <div class="pnl-kpi"><div class="pnl-kpi__icon"><i class="fas fa-bolt"></i></div>
+      <div class="pnl-kpi__body"><span class="pnl-kpi__value pnl-mono">{{ totals.total_aces|default:0 }}</span><span class="pnl-kpi__label">Aces</span></div></div>
+    <div class="pnl-kpi"><div class="pnl-kpi__icon"><i class="fas fa-shield-alt"></i></div>
+      <div class="pnl-kpi__body"><span class="pnl-kpi__value pnl-mono">{{ totals.total_blocks|default:0 }}</span><span class="pnl-kpi__label">Blocks</span></div></div>
+    <div class="pnl-kpi"><div class="pnl-kpi__icon"><i class="fas fa-hands-helping"></i></div>
+      <div class="pnl-kpi__body"><span class="pnl-kpi__value pnl-mono">{{ totals.total_assists|default:0 }}</span><span class="pnl-kpi__label">Assists</span></div></div>
+  </div>
+
+  {# ── Match-by-match stats ──────────────────────────── #}
+  <div class="pnl-card">
+    <div class="pnl-card__header"><h3>Match Stats</h3></div>
+    <div class="pnl-card__body" style="overflow-x:auto;">
+      <table class="pnl-table pnl-table--compact">
+        <thead>
+          <tr>
+            <th>Match</th><th>vs</th><th>Pts</th><th>Kills</th><th>Aces</th>
+            <th>Blk</th><th>Ast</th><th>SE</th><th>AE</th><th>Sets</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ps in match_stats %}
+          <tr>
+            <td><a href="{% url 'panel:match_detail' pk=ps.match.pk %}">M{{ ps.match.match_number }}</a></td>
+            <td>{{ ps.match.display_name_a }} vs {{ ps.match.display_name_b }}</td>
+            <td><strong>{{ ps.points_won }}</strong></td>
+            <td>{{ ps.kills }}</td>
+            <td>{{ ps.aces }}</td>
+            <td>{{ ps.blocks }}</td>
+            <td>{{ ps.assists }}</td>
+            <td>{{ ps.serve_errors }}</td>
+            <td>{{ ps.attack_errors }}</td>
+            <td>{{ ps.sets_played }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="10" style="text-align:center;color:var(--pnl-gray-400);">No match stats yet</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

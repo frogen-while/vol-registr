@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 
-from ..admin_forms import AdminMatchForm, AdminScheduleEventForm
+from ..admin_forms import AdminMatchForm, AdminScheduleEventForm, GameSetInlineFormSet
 from ..constants import (
     COURT_CHOICES,
     EVENT_TYPE_CHOICES,
@@ -19,8 +19,54 @@ from ..constants import (
     MATCH_STATUS_CHOICES,
     STAGE_CHOICES,
 )
-from ..models import AUDIT_CATEGORY_MATCH, Match, ScheduleEvent
+from ..models import AUDIT_CATEGORY_MATCH, Match, PlayerMatchStats, ScheduleEvent, TeamMatchStats
 from .audit import log_audit
+
+
+@staff_member_required(login_url="/panel/login/")
+def match_detail_view(request, pk):
+    """Read-only detail page for a single match."""
+    match = get_object_or_404(
+        Match.objects.select_related("team_a", "team_b").prefetch_related("sets"),
+        pk=pk,
+    )
+    game_sets = match.sets.all()
+    player_stats_a = []
+    player_stats_b = []
+    team_stats_a = None
+    team_stats_b = None
+    if match.stats_imported:
+        if match.team_a_id:
+            player_stats_a = (
+                PlayerMatchStats.objects.filter(match=match, team=match.team_a)
+                .select_related("player")
+                .order_by("jersey_number")
+            )
+            team_stats_a = TeamMatchStats.objects.filter(match=match, team=match.team_a).first()
+        if match.team_b_id:
+            player_stats_b = (
+                PlayerMatchStats.objects.filter(match=match, team=match.team_b)
+                .select_related("player")
+                .order_by("jersey_number")
+            )
+            team_stats_b = TeamMatchStats.objects.filter(match=match, team=match.team_b).first()
+
+    stats_pairs = []
+    if match.team_a_id or match.team_b_id:
+        stats_pairs.append((match.display_name_a, player_stats_a, team_stats_a))
+        stats_pairs.append((match.display_name_b, player_stats_b, team_stats_b))
+
+    return render(request, "panel/match_detail.html", {
+        "page_title": f"Match #{match.match_number}",
+        "nav_section": "matches",
+        "match": match,
+        "game_sets": game_sets,
+        "player_stats_a": player_stats_a,
+        "player_stats_b": player_stats_b,
+        "team_stats_a": team_stats_a,
+        "team_stats_b": team_stats_b,
+        "stats_pairs": stats_pairs,
+    })
 
 
 @staff_member_required(login_url="/panel/login/")
@@ -93,8 +139,8 @@ def schedule_list_view(request):
     )
 
     ctx = {
-        "page_title": "Schedule",
-        "nav_section": "schedule",
+        "page_title": "Matches" if view_mode == "table" else "Schedule",
+        "nav_section": "matches" if view_mode == "table" else "schedule",
         "matches": qs,
         "events": ScheduleEvent.objects.all(),
         "stage_filter": stage,
@@ -117,16 +163,20 @@ def schedule_list_view(request):
 def match_create_view(request):
     if request.method == "POST":
         form = AdminMatchForm(request.POST)
-        if form.is_valid():
+        set_formset = GameSetInlineFormSet(request.POST, prefix="sets")
+        if form.is_valid() and set_formset.is_valid():
             match = form.save()
+            set_formset.instance = match
+            set_formset.save()
             messages.success(request, f"Match #{match.match_number} created.")
             return redirect("panel:schedule")
     else:
         form = AdminMatchForm()
+        set_formset = GameSetInlineFormSet(prefix="sets")
     return render(
         request,
         "panel/match_form.html",
-        {"page_title": "Create Match", "nav_section": "schedule", "form": form},
+        {"page_title": "Create Match", "nav_section": "schedule", "form": form, "set_formset": set_formset},
     )
 
 
@@ -135,16 +185,19 @@ def match_edit_view(request, pk):
     match = get_object_or_404(Match, pk=pk)
     if request.method == "POST":
         form = AdminMatchForm(request.POST, instance=match)
-        if form.is_valid():
+        set_formset = GameSetInlineFormSet(request.POST, instance=match, prefix="sets")
+        if form.is_valid() and set_formset.is_valid():
             form.save()
+            set_formset.save()
             messages.success(request, f"Match #{match.match_number} updated.")
             return redirect("panel:schedule")
     else:
         form = AdminMatchForm(instance=match)
+        set_formset = GameSetInlineFormSet(instance=match, prefix="sets")
     return render(
         request,
         "panel/match_form.html",
-        {"page_title": f"Edit Match #{match.match_number}", "nav_section": "schedule", "form": form, "match": match},
+        {"page_title": f"Edit Match #{match.match_number}", "nav_section": "schedule", "form": form, "set_formset": set_formset, "match": match},
     )
 
 
@@ -283,6 +336,49 @@ def match_score_update(request, pk):
         entity_label=f"M{match.match_number}",
     )
     return JsonResponse({"ok": True, "score_a": match.score_a, "score_b": match.score_b})
+
+
+# ── Inline set editing endpoint ─────────────────────────
+
+@staff_member_required(login_url="/panel/login/")
+@require_POST
+def match_sets_inline_update(request, pk):
+    """AJAX — bulk update/create/delete sets from inline editor. Returns JSON."""
+    import json as _json
+    match = get_object_or_404(Match, pk=pk)
+    try:
+        body = _json.loads(request.body)
+        sets_data = body.get("sets", [])
+    except (ValueError, KeyError):
+        return JsonResponse({"ok": False, "error": "Invalid JSON"}, status=400)
+
+    from ..models import GameSet
+
+    # Delete sets that are no longer in the list
+    existing_ids = {s["id"] for s in sets_data if s.get("id")}
+    match.sets.exclude(pk__in=existing_ids).delete()
+
+    for s in sets_data:
+        score_a = max(0, int(s.get("score_a", 0)))
+        score_b = max(0, int(s.get("score_b", 0)))
+        set_number = int(s.get("set_number", 1))
+        if s.get("id"):
+            GameSet.objects.filter(pk=s["id"], match=match).update(
+                set_number=set_number, score_a=score_a, score_b=score_b,
+            )
+        else:
+            GameSet.objects.create(
+                match=match, set_number=set_number,
+                score_a=score_a, score_b=score_b,
+            )
+
+    log_audit(
+        user=request.user, category=AUDIT_CATEGORY_MATCH,
+        action=f"Sets updated inline ({len(sets_data)} sets)",
+        entity_type="Match", entity_id=match.pk,
+        entity_label=f"M{match.match_number}",
+    )
+    return JsonResponse({"ok": True})
 
 
 # ── Conflict check endpoint ─────────────────────────────

@@ -1,0 +1,87 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-page">
+
+  <div class="pnl-page__header">
+    <h2><i class="fas fa-database"></i> Database Backup / Restore</h2>
+  </div>
+
+  {# ── Quick actions ─────────────────────────────────── #}
+  <div class="pnl-card" style="margin-bottom:24px;">
+    <div class="pnl-card__header"><h3>Actions</h3></div>
+    <div class="pnl-card__body" style="display:flex;flex-wrap:wrap;gap:12px;">
+      <form method="post" action="{% url 'panel:db_backup_create' %}">
+        {% csrf_token %}
+        <button type="submit" class="pnl-btn pnl-btn--primary">
+          <i class="fas fa-save"></i> Create Backup
+        </button>
+      </form>
+      <a href="{% url 'panel:db_download_current' %}" class="pnl-btn">
+        <i class="fas fa-download"></i> Download Current DB
+      </a>
+    </div>
+  </div>
+
+  {# ── Restore from file ────────────────────────────── #}
+  <div class="pnl-card" style="margin-bottom:24px;">
+    <div class="pnl-card__header"><h3>Restore from File</h3></div>
+    <div class="pnl-card__body">
+      <form method="post" action="{% url 'panel:db_restore' %}" enctype="multipart/form-data"
+            onsubmit="return confirm('This will REPLACE the current database. A pre-restore backup will be created automatically. Continue?')">
+        {% csrf_token %}
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <input type="file" name="db_file" accept=".sqlite3" class="pnl-input" required>
+          <button type="submit" class="pnl-btn pnl-btn--danger">
+            <i class="fas fa-upload"></i> Restore
+          </button>
+        </div>
+        <p style="margin-top:8px;font-size:13px;color:var(--pnl-gray-400);">
+          Only .sqlite3 files, max 50 MB. Current DB will be auto-backed up before restore.
+        </p>
+      </form>
+    </div>
+  </div>
+
+  {# ── Existing backups ─────────────────────────────── #}
+  <div class="pnl-card">
+    <div class="pnl-card__header"><h3>Existing Backups</h3></div>
+    <div class="pnl-card__body">
+      {% if backups %}
+      <table class="pnl-table">
+        <thead>
+          <tr><th>Filename</th><th>Size</th><th>Created</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for b in backups %}
+          <tr>
+            <td><code>{{ b.name }}</code></td>
+            <td>{{ b.size }}</td>
+            <td>{{ b.mtime|date:"d M Y H:i" }}</td>
+            <td style="display:flex;gap:4px;">
+              <a href="{% url 'panel:db_backup_download' b.name %}" class="pnl-btn pnl-btn--sm pnl-btn--outline">
+                <i class="fas fa-download"></i>
+              </a>
+              <form method="post" action="{% url 'panel:db_backup_delete' b.name %}"
+                    onsubmit="return confirm('Delete backup {{ b.name }}?')" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="pnl-btn pnl-btn--sm pnl-btn--danger">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="color:var(--pnl-gray-400);text-align:center;padding:2rem 0;">
+        <i class="fas fa-inbox" style="font-size:1.5rem;display:block;margin-bottom:.5rem;opacity:.4;"></i>
+        No backups yet. Create one to get started.
+      </p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

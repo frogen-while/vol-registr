@@ -5,6 +5,7 @@ import io
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from ..constants import MATCH_FINISHED, POSITION_CHOICES, STAGE_CHOICES, STAGE_GROUP
 from ..models import AUDIT_CATEGORY_STATS, Match, Player, PlayerMatchStats, Team, TeamMatchStats
@@ -359,3 +360,46 @@ def stats_edit_view(request, pk):
         "STAT_FIELDS": _STAT_FIELDS,
         "POSITION_CHOICES": POSITION_CHOICES,
     })
+
+
+@staff_member_required(login_url="/panel/login/")
+@require_POST
+def stats_manual_create_view(request, pk):
+    """Create blank PlayerMatchStats rows for every rostered player, then redirect to edit."""
+    from django.views.decorators.http import require_POST  # noqa: already at top
+
+    match = get_object_or_404(
+        Match.objects.select_related("team_a", "team_b"), pk=pk
+    )
+
+    created = 0
+    for team in [match.team_a, match.team_b]:
+        if not team:
+            continue
+        players = Player.objects.filter(team=team)
+        for player in players:
+            _, was_created = PlayerMatchStats.objects.get_or_create(
+                match=match,
+                team=team,
+                player=player,
+                defaults={
+                    "jersey_number": player.jersey_number or 0,
+                    "position": player.position or "",
+                    "sets_played": 0,
+                    "serve_attempts": 0, "aces": 0, "serve_errors": 0,
+                    "kills": 0, "attack_errors": 0,
+                    "pass_errors": 0,
+                    "blocks": 0, "assists": 0, "setting_errors": 0,
+                },
+            )
+            if was_created:
+                created += 1
+
+    log_audit(
+        user=request.user, category=AUDIT_CATEGORY_STATS,
+        action=f"Manual stats created: {created} rows",
+        entity_type="Match", entity_id=match.pk,
+        entity_label=f"M{match.match_number}",
+    )
+    messages.success(request, f"Created {created} blank stat rows for M{match.match_number}. Edit below.")
+    return redirect("panel:stats_edit", pk=pk)

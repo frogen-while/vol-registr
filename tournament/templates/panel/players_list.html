@@ -1,0 +1,93 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="pnl-players">
+
+  {# ── Header Actions ─────────────────────────────── #}
+  <div class="pnl-gallery__actions" style="margin-bottom:1rem;">
+    <a href="{% url 'panel:player_create' %}" class="pnl-btn pnl-btn--primary">
+      <i class="fas fa-plus"></i> Add Player
+    </a>
+  </div>
+
+  {# ── Filters ────────────────────────────────────── #}
+  <form method="get" class="pnl-filter-bar" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search name, number…"
+           class="pnl-input pnl-input--sm" style="max-width:220px;">
+    <select name="team" class="pnl-input pnl-input--sm" style="max-width:200px;">
+      <option value="">All Teams</option>
+      {% for t in teams %}
+      <option value="{{ t.pk }}" {% if team_filter == t.pk|stringformat:"d" %}selected{% endif %}>{{ t.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="pnl-btn pnl-btn--outline pnl-btn--sm">
+      <i class="fas fa-search"></i> Filter
+    </button>
+    {% if q or team_filter %}
+    <a href="{% url 'panel:players' %}" class="pnl-btn pnl-btn--outline pnl-btn--sm">
+      <i class="fas fa-times"></i> Clear
+    </a>
+    {% endif %}
+  </form>
+
+  {# ── Table ──────────────────────────────────────── #}
+  {% if players %}
+  <div class="pnl-table-wrap">
+    <table class="pnl-table">
+      <thead>
+        <tr>
+          <th style="width:50px;">Photo</th>
+          <th>#</th>
+          <th>Name</th>
+          <th>Position</th>
+          <th>Team</th>
+          <th style="width:120px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in players %}
+        <tr>
+          <td>
+            {% if p.photo_path %}
+            <img src="/media/{{ p.photo_path }}" alt="{{ p }}"
+                 style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+            {% else %}
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--pnl-surface-alt,#2a2a3a);color:var(--pnl-muted,#888);font-size:.75rem;font-weight:700;">
+              {{ p.first_name|first }}{{ p.last_name|first }}
+            </span>
+            {% endif %}
+          </td>
+          <td>{{ p.jersey_number|default:"-" }}</td>
+          <td><strong><a href="{% url 'panel:player_detail' p.pk %}" style="color:inherit;text-decoration:none;">{{ p.first_name }} {{ p.last_name }}</a></strong></td>
+          <td>{{ p.get_position_display|default:"-" }}</td>
+          <td>{{ p.team.name }}</td>
+          <td>
+            <div style="display:flex;gap:4px;">
+              <a href="{% url 'panel:player_edit' p.pk %}" class="pnl-btn pnl-btn--outline pnl-btn--sm" title="Edit">
+                <i class="fas fa-pen"></i>
+              </a>
+              <form method="post" action="{% url 'panel:player_delete' p.pk %}"
+                    onsubmit="return confirm('Delete {{ p.first_name }} {{ p.last_name }}?')">
+                {% csrf_token %}
+                <button type="submit" class="pnl-btn pnl-btn--danger pnl-btn--sm" title="Delete">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="pnl-muted-text" style="margin-top:8px;">
+    {{ players|length }} player{{ players|length|pluralize }}.
+  </p>
+  {% else %}
+  <div class="pnl-empty">
+    <i class="fas fa-user" style="font-size:2rem;opacity:.3;margin-bottom:8px;"></i>
+    <p>No players found.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

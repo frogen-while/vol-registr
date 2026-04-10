@@ -90,7 +90,7 @@
         {% for m in matches %}
         <tr class="{% if m.pk in conflict_pks %}pnl-row--conflict{% endif %}">
           <td>
-            <a href="#" class="pnl-match-panel-link" data-panel-url="{% url 'panel:match_panel' pk=m.pk %}">{{ m.match_number }}</a>
+            <a href="{% url 'panel:match_detail' pk=m.pk %}">{{ m.match_number }}</a>
           </td>
           <td>{{ m.get_stage_display }}</td>
           <td>{{ m.group|default:"—" }}</td>
@@ -116,6 +116,8 @@
           <td class="pnl-schedule__indicators">
             {% if m.pk in conflict_pks %}<i class="fas fa-exclamation-triangle pnl-conflict-icon" title="Conflict detected"></i>{% endif %}
             {% if m.stats_imported %}<i class="fas fa-chart-bar pnl-stats-icon" title="Stats imported"></i>{% endif %}
+            <a href="{% url 'panel:match_detail' pk=m.pk %}" class="pnl-btn pnl-btn--sm pnl-btn--outline" title="View match"><i class="fas fa-eye"></i></a>
+            <a href="{% url 'panel:match_edit' pk=m.pk %}" class="pnl-btn pnl-btn--sm pnl-btn--outline" title="Edit match"><i class="fas fa-edit"></i></a>
           </td>
         </tr>
         {% endfor %}
@@ -213,7 +215,11 @@
             <td>{% if ev.end_time %}{{ ev.end_time|date:"d M H:i" }}{% else %}—{% endif %}</td>
             <td>{% if ev.duration_minutes %}{{ ev.duration_minutes }} min{% else %}—{% endif %}</td>
             <td>
-              <a href="{% url 'panel:event_edit' pk=ev.pk %}" class="pnl-btn pnl-btn--small"><i class="fas fa-edit"></i></a>
+              <a href="{% url 'panel:event_edit' pk=ev.pk %}" class="pnl-btn pnl-btn--small" title="Edit"><i class="fas fa-edit"></i></a>
+              <form method="post" action="{% url 'panel:event_delete' pk=ev.pk %}" style="display:inline;" onsubmit="return confirm('Delete this event?')">
+                {% csrf_token %}
+                <button type="submit" class="pnl-btn pnl-btn--small pnl-btn--danger" title="Delete"><i class="fas fa-trash"></i></button>
+              </form>
             </td>
           </tr>
           {% endfor %}

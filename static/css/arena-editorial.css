@@ -99,6 +99,37 @@
   z-index: 1;
 }
 
+/* Subtle ambient corner glows for ae-pages */
+.ae-page::before {
+  content: "";
+  position: fixed;
+  top: -10%;
+  left: -5%;
+  width: 45vw;
+  height: 45vw;
+  max-width: 600px;
+  max-height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.04), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ae-page::after {
+  content: "";
+  position: fixed;
+  bottom: -10%;
+  right: -5%;
+  width: 40vw;
+  height: 40vw;
+  max-width: 500px;
+  max-height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 159, 74, 0.03), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
 
 /* ── 3. Container ─────────────────────────────────────────────── */
 

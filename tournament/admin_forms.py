@@ -7,14 +7,26 @@ from django.db.models import Max
 from django.forms import inlineformset_factory
 
 from .constants import STAGE_GROUP
-from .models import GalleryPhoto, GalleryVideo, Match, Player, ScheduleEvent, Team
+from .models import GameSet, GalleryPhoto, GalleryVideo, Match, Player, ScheduleEvent, Team
 
 
 class AdminTeamForm(forms.ModelForm):
+    logo_upload = forms.FileField(
+        required=False,
+        label="Upload logo",
+        help_text="JPG / PNG from your computer",
+    )
+    logo_url = forms.URLField(
+        required=False,
+        label="Logo URL",
+        help_text="Or paste any direct image link",
+    )
+
     class Meta:
         model = Team
         fields = [
             "name",
+            "logo_path",
             "league_level",
             "group_name",
             "cap_name",
@@ -27,7 +39,17 @@ class AdminTeamForm(forms.ModelForm):
             "checked_in",
             "roster_code",
         ]
-        widgets = {}
+        widgets = {
+            "logo_path": forms.TextInput(attrs={"readonly": "readonly", "style": "opacity:.6"}),
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+        upload = cleaned.get("logo_upload")
+        url = cleaned.get("logo_url")
+        if upload and url:
+            raise forms.ValidationError("Provide either a file or a URL, not both.")
+        return cleaned
 
 
 class AdminPlayerForm(forms.ModelForm):
@@ -114,6 +136,26 @@ class AdminMatchForm(forms.ModelForm):
             cleaned["match_number"] = max_num + 1
 
         return cleaned
+
+
+class AdminGameSetForm(forms.ModelForm):
+    class Meta:
+        model = GameSet
+        fields = ["set_number", "score_a", "score_b"]
+        widgets = {
+            "set_number": forms.NumberInput(attrs={"style": "width:60px"}),
+            "score_a": forms.NumberInput(attrs={"style": "width:60px"}),
+            "score_b": forms.NumberInput(attrs={"style": "width:60px"}),
+        }
+
+
+GameSetInlineFormSet = inlineformset_factory(
+    Match,
+    GameSet,
+    form=AdminGameSetForm,
+    extra=3,
+    can_delete=True,
+)
 
 
 class AdminScheduleEventForm(forms.ModelForm):

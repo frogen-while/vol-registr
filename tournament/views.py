@@ -6,6 +6,7 @@ def privacy_policy_en(request):
 import json
 import logging
 from django.conf import settings
+from django.db import models as db_models
 
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -25,7 +26,6 @@ from .models import GalleryPhoto, GalleryVideo, Match, Team
 from .services import get_available_slots, register_team
 from .sports_data import (
     get_category_leaders,
-    get_highlights,
     get_match_detail,
     get_mvp,
     get_player_detail,
@@ -59,22 +59,10 @@ def tournament_hub(request):
         "standings": get_standings("groups"),
         "overall_standings": get_standings("overall"),
         "schedule_slots": get_schedule_slots(),
-        "highlights": get_highlights(),
         "page_title": "Tournament Hub — Pocket Aces Volleyball",
         "page_description": "Live standings, schedule, and highlights from the Pocket Aces Spring Volleyball Tournament.",
     }
     return render(request, "tournament/tournament_preview.html", context)
-
-
-def tournament_demo(request):
-    """Temporary tournament placeholder page."""
-    import datetime
-
-    unlock_at = datetime.datetime(2026, 4, 11, 9, 0, 0, tzinfo=datetime.timezone.utc)
-    return render(request, "tournament/match_coming_soon.html", {
-        "unlock_iso": unlock_at.isoformat(),
-        "page_title": "Tournament Hub — Coming Soon",
-    })
 
 
 def tournament_teams(request):
@@ -141,16 +129,65 @@ def tournament_player(request, player_id):
 
 
 def tournament_gallery(request):
-    """Public gallery page — photos grid + video cards."""
+    """Public gallery page — photos grid + video cards, with optional filters."""
+    team_filter = request.GET.get("team", "")
+    match_filter = request.GET.get("match", "")
+
     photos = GalleryPhoto.objects.order_by("order", "-uploaded_at")
     videos = GalleryVideo.objects.order_by("order", "-uploaded_at")
+
+    if team_filter:
+        photos = photos.filter(team_id=team_filter)
+        videos = videos.filter(team_id=team_filter)
+    if match_filter:
+        photos = photos.filter(match_id=match_filter)
+        videos = videos.filter(match_id=match_filter)
+
+    # Build filter options
+    teams_with_media = (
+        Team.objects.filter(
+            db_models.Q(gallery_photos__isnull=False) | db_models.Q(gallery_videos__isnull=False)
+        ).distinct().order_by("name")
+    )
+    matches_with_media = (
+        Match.objects.filter(
+            db_models.Q(gallery_photos__isnull=False) | db_models.Q(gallery_videos__isnull=False)
+        ).distinct().select_related("team_a", "team_b").order_by("match_number")
+    )
+
     return render(request, "tournament/gallery.html", {
         "active": "gallery",
         "photos": photos,
         "videos": videos,
+        "teams_with_media": teams_with_media,
+        "matches_with_media": matches_with_media,
+        "team_filter": team_filter,
+        "match_filter": match_filter,
         "page_title": "Gallery — Pocket Aces Volleyball",
         "page_description": "Photos and video highlights from the Pocket Aces Spring Volleyball Tournament.",
     })
+
+
+def api_live_scores(request):
+    """JSON endpoint — returns all matches with current scores for auto-refresh."""
+    matches = (
+        Match.objects
+        .select_related("team_a", "team_b")
+        .order_by("start_time", "court")
+    )
+    data = []
+    for m in matches:
+        data.append({
+            "id": m.pk,
+            "match_number": m.match_number,
+            "team_a": m.display_name_a,
+            "team_b": m.display_name_b,
+            "score_a": m.score_a,
+            "score_b": m.score_b,
+            "status": m.status,
+            "status_display": m.get_status_display(),
+        })
+    return JsonResponse({"matches": data})
 
 @ensure_csrf_cookie
 def register(request):
