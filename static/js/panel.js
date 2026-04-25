@@ -351,15 +351,14 @@
       { ok: team.is_payment_ok, label: 'Payment' },
       { ok: team.is_roster_complete, label: 'Roster' },
       { ok: team.is_contacts_complete, label: 'Contacts' },
-      { ok: team.is_logo_uploaded, label: 'Logo' },
-      { ok: !team.has_duplicate_jerseys, label: 'Jerseys' }
+      { ok: team.is_logo_uploaded, label: 'Logo' }
     ];
     checks.forEach(function (c) {
       var color = c.ok ? 'var(--pnl-green)' : 'var(--pnl-red,#ef4444)';
       var icon = c.ok ? 'check' : 'times';
       readHTML += '<i class="fas fa-' + icon + '-circle" style="color:' + color + '" title="' + c.label + '"></i> ';
     });
-    readHTML += '<span style="margin-left:auto;color:var(--pnl-muted)">' + team.readiness_score + '/5</span>';
+    readHTML += '<span style="margin-left:auto;color:var(--pnl-muted)">' + team.readiness_score + '/' + team.readiness_target + '</span>';
     document.getElementById('arrivalReadiness').innerHTML = readHTML;
 
     /* Issues */
@@ -368,7 +367,6 @@
     if (!team.is_roster_complete) issues.push('Roster incomplete (' + team.player_count + ' players)');
     if (!team.is_contacts_complete) issues.push('Captain contacts incomplete');
     if (!team.is_logo_uploaded) issues.push('No team logo');
-    if (team.has_duplicate_jerseys) issues.push('Duplicate jersey numbers');
 
     var issuesEl = document.getElementById('arrivalIssues');
     var issuesList = document.getElementById('arrivalIssuesList');

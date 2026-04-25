@@ -42,7 +42,6 @@
             <span class="pnl-readiness__dot {% if t.is_roster_complete %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Roster"><i class="fas fa-users"></i></span>
             <span class="pnl-readiness__dot {% if t.is_contacts_complete %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Contacts"><i class="fas fa-address-book"></i></span>
             <span class="pnl-readiness__dot {% if t.is_logo_uploaded %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Logo"><i class="fas fa-image"></i></span>
-            <span class="pnl-readiness__dot {% if not t.has_duplicate_jerseys %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Jerseys"><i class="fas fa-tshirt"></i></span>
           </div>
           {% if col.status != 'CHECKED_IN' %}
           <div class="pnl-pipe-card__actions">

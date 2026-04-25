@@ -16,7 +16,7 @@ from .services import preview_csv_import, confirm_csv_import
 class PlayerInline(admin.TabularInline):
     model = Player
     extra = 0
-    fields = ('first_name', 'last_name', 'jersey_number', 'position', 'photo_path')
+    fields = ('first_name', 'last_name', 'photo_path')
 
 
 class GameSetInline(admin.TabularInline):
@@ -26,15 +26,15 @@ class GameSetInline(admin.TabularInline):
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'league_level', 'status', 'checked_in', 'cap_name', 'cap_surname', 'payment_status', 'blik_number', 'group_name', 'created_at')
-    list_filter = ('league_level', 'payment_status', 'status', 'checked_in', 'created_at', 'group_name')
+    list_display = ('name', 'status', 'checked_in', 'cap_name', 'cap_surname', 'payment_status', 'blik_number', 'group_name', 'created_at')
+    list_filter = ('payment_status', 'status', 'checked_in', 'created_at', 'group_name')
     search_fields = ('name', 'cap_name', 'cap_surname', 'cap_email', 'cap_phone')
     inlines = [PlayerInline]
     actions = ['mark_as_accepted', 'mark_as_waiting']
     
     fieldsets = (
         ('Team Details', {
-            'fields': ('name', 'league_level', 'logo_path', 'group_name')
+            'fields': ('name', 'logo_path', 'group_name')
         }),
         ('Captain Contact', {
             'fields': ('cap_name', 'cap_surname', 'cap_email', 'cap_phone')
@@ -55,9 +55,9 @@ class TeamAdmin(admin.ModelAdmin):
 
 @admin.register(Player)
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'team', 'jersey_number', 'position', 'photo_preview')
+    list_display = ('first_name', 'last_name', 'team', 'photo_preview')
     search_fields = ('first_name', 'last_name', 'team__name')
-    list_filter = ('team__league_level', 'team')
+    list_filter = ('team',)
 
     @admin.display(description="Photo")
     def photo_preview(self, obj):

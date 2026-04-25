@@ -681,7 +681,6 @@ def get_team_detail(team_id: int) -> dict | None:
         "group": team.group_name or "-",
         "record": f"{wins}-{losses}",
         "seed": f"{team.group_name or '?'}{standing.rank_in_group if standing else '?'}",
-        "league_level": team.get_league_level_display(),
         "captain": captain_full,
         "logo": team.logo_path or "",
         "image": team.logo_path or _DEFAULT_TEAM_IMAGE,

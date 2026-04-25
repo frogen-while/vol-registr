@@ -3,8 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Pocket Aces Invitational{% endblock %}</title>
+    <title>{% block title %}Pocket Aces Court Cup 2{% endblock %}</title>
     {% load static static_v %}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600;1,700;1,800;1,900&display=swap"
+    />
     <link rel="stylesheet" href="{% static_v 'css/styles.css' %}" />
     <link rel="stylesheet" href="{% static_v 'css/registered-teams.css' %}" />
     <link rel="stylesheet" href="{% static_v 'css/sports-bg.css' %}" />
@@ -18,6 +24,370 @@
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+      :root {
+        --brand-bg: #06111c;
+        --brand-surface: #0d2233;
+        --brand-surface-2: #12293c;
+        --brand-border: rgba(100, 177, 225, 0.14);
+        --brand-text: #eef6fb;
+        --brand-text-sec: #c4d8e7;
+        --brand-muted: #89a5b9;
+        --brand-blue: #49c0ff;
+        --brand-blue-dark: #1d9fe3;
+        --brand-orange: #ffb05c;
+        --brand-success: #42d8a2;
+        --brand-danger: #ff8585;
+        --brand-pink: #e41561;
+        --font-display: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+        --font-body: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+      }
+
+      body {
+        font-family: var(--font-body);
+        font-weight: 500;
+        background:
+          radial-gradient(circle at top left, rgba(73, 192, 255, 0.08), transparent 34%),
+          radial-gradient(circle at 85% 15%, rgba(228, 21, 97, 0.18), transparent 32%),
+          radial-gradient(circle at 80% 78%, rgba(228, 21, 97, 0.13), transparent 28%),
+          radial-gradient(circle at 12% 82%, rgba(228, 21, 97, 0.1), transparent 24%),
+          linear-gradient(180deg, #05101a 0%, #071522 45%, #07131f 100%);
+      }
+
+      body::before {
+        background:
+          radial-gradient(ellipse 58% 46% at 10% 16%, rgba(73, 192, 255, 0.08), transparent),
+          radial-gradient(ellipse 44% 36% at 84% 72%, rgba(228, 21, 97, 0.16), transparent),
+          radial-gradient(ellipse 26% 22% at 90% 18%, rgba(228, 21, 97, 0.14), transparent),
+          radial-gradient(ellipse 32% 26% at 50% 8%, rgba(255, 176, 92, 0.04), transparent);
+      }
+
+      body::after {
+        background-image:
+          linear-gradient(rgba(73, 192, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(73, 192, 255, 0.02) 1px, transparent 1px);
+      }
+
+      .gradient-text {
+        background: linear-gradient(135deg, var(--brand-pink), var(--brand-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .site-nav {
+        height: 4.5rem;
+      }
+
+      .site-nav.scrolled {
+        background: rgba(4, 12, 22, 0.58);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 18px 48px rgba(2, 6, 23, 0.22), 0 0 36px rgba(228, 21, 97, 0.1);
+        border-bottom: 1px solid rgba(228, 21, 97, 0.14);
+      }
+
+      .site-nav__logo img {
+        filter: drop-shadow(0 0 14px rgba(73, 192, 255, 0.2)) drop-shadow(0 0 10px rgba(228, 21, 97, 0.16));
+      }
+
+      .site-nav__logo-text {
+        font-family: var(--font-display);
+        font-size: 1.28rem;
+        font-style: italic;
+        font-weight: 900;
+        letter-spacing: 0.03em;
+        text-shadow: 2px 2px 0 rgba(73, 192, 255, 0.26);
+      }
+
+      .site-nav__link {
+        border-radius: 999px;
+        color: rgba(238, 246, 251, 0.72);
+        font-size: 0.82rem;
+        font-weight: 800;
+        font-style: italic;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .site-nav__link:hover,
+      .site-nav__link.active {
+        color: #fff;
+        background: rgba(228, 21, 97, 0.12);
+      }
+
+      .site-nav__cta {
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--brand-pink), var(--brand-blue));
+        color: #f8fbff;
+        box-shadow: 0 18px 34px rgba(228, 21, 97, 0.16);
+        font-style: italic;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .site-nav__cta:hover {
+        background: linear-gradient(135deg, #f34082, #61ccff);
+        box-shadow: 0 22px 44px rgba(73, 192, 255, 0.16);
+      }
+
+      .site-nav__lang {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .site-nav__lang-opt.active {
+        color: #fff;
+        background: rgba(228, 21, 97, 0.16);
+      }
+
+      .site-footer {
+        background: linear-gradient(180deg, rgba(6, 17, 28, 0.78), rgba(7, 19, 31, 0.92));
+        border-top: 1px solid rgba(228, 21, 97, 0.14);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .site-footer::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 14% 18%, rgba(73, 192, 255, 0.08), transparent 28%),
+          radial-gradient(circle at 82% 18%, rgba(228, 21, 97, 0.14), transparent 26%),
+          radial-gradient(circle at 70% 74%, rgba(228, 21, 97, 0.08), transparent 24%);
+      }
+
+      .site-footer__heading {
+        color: var(--brand-muted);
+      }
+
+      .site-footer__links a:hover,
+      .site-footer__contact,
+      .page-hero__eyebrow {
+        color: var(--brand-blue);
+      }
+
+      .site-footer__socials a:hover {
+        background: linear-gradient(135deg, var(--brand-pink), var(--brand-blue));
+        border-color: transparent;
+      }
+
+      .site-footer__socials a,
+      .site-footer__links a,
+      .site-footer__contact {
+        text-shadow: 0 0 18px rgba(228, 21, 97, 0.08);
+      }
+
+      .page-hero__title,
+      .section-heading,
+      .hero-title__main,
+      .hero-title__sub,
+      .faq-title,
+      .roster-heading,
+      .roster-access-card__title,
+      .roster-panel__title,
+      .rt-modal__title,
+      .rt-modal__subtitle,
+      .card-front__title,
+      .hero-story__label,
+      .road-item__title,
+      .road-item__date,
+      .location__title,
+      .location-flow__title,
+      .reg-brand__title,
+      .reg-brand__fact-title,
+      .reg-brand__panel-kicker,
+      .reg-panel__title {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        text-shadow: 2px 2px 0 rgba(73, 192, 255, 0.18);
+      }
+
+      .section-heading {
+        font-size: clamp(2.15rem, 4.2vw, 3.2rem);
+      }
+
+      .page-hero__title {
+        font-size: clamp(3.5rem, 8vw, 7rem);
+        line-height: 0.92;
+      }
+
+      .hero-text,
+      .page-hero__sub,
+      .location__text,
+      .road-item__desc,
+      .faq-answer,
+      .roster-subtitle,
+      .roster-panel__copy,
+      .roster-access-card__copy {
+        font-size: clamp(0.98rem, 1.4vw, 1.08rem);
+      }
+
+      .hero-label {
+        background: rgba(228, 21, 97, 0.16);
+        border: 1px solid rgba(228, 21, 97, 0.3);
+        color: #fff;
+        box-shadow: 0 16px 32px rgba(2, 6, 23, 0.16), 0 0 22px rgba(228, 21, 97, 0.1);
+        font-style: italic;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+      }
+
+      .hero-title__sub,
+      .section-heading,
+      .faq-title {
+        color: var(--brand-blue);
+      }
+
+      .hero-text,
+      .page-hero__sub {
+        color: var(--brand-text-sec);
+      }
+
+      .btn-primary {
+        background: #e41561;
+        color: #fff;
+        border: none;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        background: #ff2d7a;
+        transform: translateY(-2px);
+        box-shadow: 0 0 20px rgba(228, 21, 97, 0.4);
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        transition: all 0.3s ease;
+      }
+
+      .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: #fff;
+      }
+
+      .vote-btn-main {
+        width: 3.2rem;
+        height: 3.2rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(228, 21, 97, 0.1);
+        border: 1px solid rgba(228, 21, 97, 0.3);
+        color: #e41561;
+        font-size: 1.2rem;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        padding: 0;
+        cursor: pointer;
+        flex-shrink: 0;
+        text-decoration: none;
+      }
+
+      .vote-btn-main:hover {
+        background: #e41561;
+        color: #fff;
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(228, 21, 97, 0.4);
+      }
+
+      .btn-cta {
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--brand-pink), var(--brand-blue));
+        box-shadow: 0 24px 40px rgba(228, 21, 97, 0.2), 0 0 26px rgba(228, 21, 97, 0.1);
+      }
+
+      .btn-cta__text,
+      .reg-btn,
+      .reg-step__label,
+      .reg-label,
+      .location__link,
+      .site-footer__heading,
+      .site-footer__links a,
+      .site-footer__contact,
+      .rt-link__text,
+      .hero-price__label,
+      .hero-counter__label {
+        font-style: italic;
+      }
+
+      .btn-cta__text,
+      .reg-btn,
+      .reg-step__label,
+      .reg-label,
+      .location__link,
+      .hero-price__label,
+      .hero-counter__label {
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .btn-cta--closed {
+        border-radius: 999px;
+      }
+
+      .sp-card,
+      .faq-form__card,
+      .faq-item,
+      .sp-filter-bar {
+        background: linear-gradient(150deg, rgba(7, 17, 30, 0.74), rgba(14, 30, 47, 0.56));
+        border-color: rgba(228, 21, 97, 0.16);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.04),
+          0 18px 42px rgba(2, 6, 23, 0.16),
+          0 0 28px rgba(228, 21, 97, 0.06);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .location-map,
+      .location__info-icon,
+      .roster-chip,
+      .site-nav__lang {
+        box-shadow: 0 0 24px rgba(228, 21, 97, 0.06);
+      }
+
+      .divider {
+        background: linear-gradient(135deg, var(--brand-pink), var(--brand-blue));
+      }
+
+      .faq-section {
+        background: linear-gradient(180deg, rgba(7, 18, 30, 0.64), rgba(7, 18, 30, 0.9));
+      }
+
+      .faq-question {
+        color: var(--brand-text);
+      }
+
+      .faq-answer,
+      .faq-form__textarea,
+      .faq-form__input {
+        color: var(--brand-text-sec);
+      }
+
+      .faq-form__btn {
+        background: linear-gradient(135deg, var(--brand-pink), var(--brand-blue));
+      }
+
+      .sp-gallery-item,
+      .sp-video-card {
+        border-radius: 1.4rem;
+        overflow: hidden;
+      }
+
+      .sp-gallery-item__caption {
+        background: linear-gradient(180deg, transparent, rgba(5, 14, 24, 0.88));
+      }
+    </style>
     {% block extra_head %}{% endblock %}
   </head>
   <body>
@@ -56,12 +426,16 @@
             >Gallery</a
           >
 
+          <a href="{% url 'roster_update' %}" class="site-nav__link" data-i18n="nav_roster"
+            >Team Profile</a
+          >
+
           {% if not registration_closed %}
           <a
             href="{% url 'register' %}"
             class="site-nav__cta"
             data-i18n="nav_register"
-            >Register Team</a
+            >Join Tournament</a
           >
           {% endif %}
         </div>
@@ -102,10 +476,11 @@
             <li><a href="{% url 'index' %}">Home</a></li>
             <li><a href="{% url 'tournament_hub' %}">Match Centre</a></li>
             {% if not registration_closed %}
-            <li><a href="{% url 'register' %}">Register Team</a></li>
+            <li><a href="{% url 'register' %}">Join Tournament</a></li>
             {% endif %}
             <li><a href="{% url 'faq' %}">FAQ</a></li>
             <li><a href="{% url 'tournament_gallery' %}">Gallery</a></li>
+            <li><a href="{% url 'roster_update' %}" data-i18n="nav_roster">Team Profile</a></li>
           </ul>
         </div>
 
@@ -235,5 +610,92 @@
         });
       });
     </script>
+<div id="voteModal" class="rt-modal__overlay">
+      <div class="rt-modal__content" style="max-width: 400px; text-align: center; background: #0c1c2c; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 2rem;">
+          <button id="voteModalClose" class="rt-modal__close" style="position: absolute; right: 1rem; top: 1rem; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+          <h2 class="rt-modal__title" style="margin-bottom: 0.5rem; font-family: var(--font-display); color: #e41561;">
+              <i class="fas fa-heart"></i> <span id="voteTeamName"></span>
+          </h2>
+          <p class="rt-modal__subtitle" style="margin-bottom: 1.5rem; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+              Support your favorite team! Enter your email to confirm your vote. One vote per person.
+          </p>
+          
+          <form id="voteForm" style="display: flex; flex-direction: column; gap: 1rem; align-items: stretch;">
+              <input type="hidden" id="voteTeamId" name="team_id">
+              <input type="email" id="voteEmail" name="email" class="form-control" placeholder="your@email.com" required style="width: 100%; text-align: center; border-radius: 8px; padding: 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: white;">
+              <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 8px; padding: 0.8rem; font-family: var(--font-display); text-transform: uppercase;">Send Confirmation</button>
+          </form>
+          <div id="voteStatus" style="margin-top: 1rem; font-size: 0.9rem; display: none;"></div>
+      </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const voteModal = document.getElementById('voteModal');
+        const voteForm = document.getElementById('voteForm');
+        const voteStatus = document.getElementById('voteStatus');
+        const voteModalClose = document.getElementById('voteModalClose');
+        
+        if (voteModalClose) {
+            voteModalClose.addEventListener('click', () => {
+                voteModal.classList.remove('active');
+            });
+        }
+        
+        document.querySelectorAll('.vote-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const teamId = btn.getAttribute('data-team-id');
+                const teamName = btn.getAttribute('data-team-name') || "this team";
+                document.getElementById('voteTeamId').value = teamId;
+                document.getElementById('voteTeamName').textContent = teamName;
+                voteStatus.style.display = 'none';
+                voteForm.style.display = 'flex';
+                voteModal.classList.add('active');
+            });
+        });
+
+        if (voteForm) {
+            voteForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = voteForm.querySelector('button');
+                btn.disabled = true;
+                btn.textContent = 'Sending...';
+                
+                try {
+                    const res = await fetch('/api/vote/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || ''
+                        },
+                        body: JSON.stringify({
+                            team_id: document.getElementById('voteTeamId').value,
+                            email: document.getElementById('voteEmail').value
+                        })
+                    });
+                    const data = await res.json();
+                    
+                    voteForm.style.display = 'none';
+                    voteStatus.style.display = 'block';
+                    
+                    if (data.success) {
+                        voteStatus.innerHTML = '<i class="fas fa-check-circle" style="color: #4CAF50; font-size: 2rem; margin-bottom: 0.5rem;"></i><br>Confirmation email sent! Please check your inbox.';
+                    } else {
+                        voteStatus.innerHTML = `<i class="fas fa-exclamation-circle" style="color: #f44336; font-size: 2rem; margin-bottom: 0.5rem;"></i><br>${data.error || 'Failed to send confirmation.'}`;
+                    }
+                } catch (err) {
+                    voteForm.style.display = 'none';
+                    voteStatus.style.display = 'block';
+                    voteStatus.innerHTML = '<i class="fas fa-exclamation-circle" style="color: #f44336; font-size: 2rem; margin-bottom: 0.5rem;"></i><br>Network error. Please try again.';
+                }
+                
+                btn.disabled = false;
+                btn.textContent = 'Send Confirmation';
+            });
+        }
+    });
+  </script>
+
   </body>
 </html>

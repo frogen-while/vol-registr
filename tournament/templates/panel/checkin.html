@@ -92,7 +92,7 @@
       <div class="pnl-checkin__warn-card">
         <strong>{{ t.name }}</strong>
         <span class="pnl-checkin__warn-group">{{ t.group_name|default:"—" }}</span>
-        <span class="pnl-checkin__warn-score">{{ t.readiness_score }}/5</span>
+        <span class="pnl-checkin__warn-score">{{ t.readiness_score }}/{{ t.readiness_target }}</span>
         <span class="pnl-readiness pnl-readiness--compact">
           <i class="fas fa-{% if t.is_payment_ok %}check{% else %}times{% endif %}-circle"
              style="color:var(--pnl-{% if t.is_payment_ok %}green{% else %}red{% endif %})"
@@ -106,9 +106,6 @@
           <i class="fas fa-{% if t.is_logo_uploaded %}check{% else %}times{% endif %}-circle"
              style="color:var(--pnl-{% if t.is_logo_uploaded %}green{% else %}red{% endif %})"
              title="Logo"></i>
-          <i class="fas fa-{% if not t.has_duplicate_jerseys %}check{% else %}times{% endif %}-circle"
-             style="color:var(--pnl-{% if not t.has_duplicate_jerseys %}green{% else %}red{% endif %})"
-             title="Jerseys"></i>
         </span>
       </div>
       {% endfor %}

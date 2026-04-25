@@ -6,23 +6,11 @@ so they can be changed in one place.
 """
 
 # ── Slot / Capacity ─────────────────────────────────────
-MAX_TOURNAMENT_SLOTS = 12
+MAX_TOURNAMENT_SLOTS = 10
 
 # ── Registration Gate ───────────────────────────────────
-REGISTRATION_CLOSED = True
-
-# ── League Level Choices ────────────────────────────────────
-LEAGUE_LEVEL_1ST = "1st"
-LEAGUE_LEVEL_2ND = "2nd"
-LEAGUE_LEVEL_3RD = "3rd"
-LEAGUE_LEVEL_INDEPENDENT = "independent"
-
-LEAGUE_LEVEL_CHOICES = [
-    (LEAGUE_LEVEL_1ST, "1st Liga"),
-    (LEAGUE_LEVEL_2ND, "2nd Liga"),
-    (LEAGUE_LEVEL_3RD, "3rd Liga"),
-    (LEAGUE_LEVEL_INDEPENDENT, "Independent Team"),
-]
+REGISTRATION_CLOSED = False
+REGISTRATION_DEADLINE_ISO = "2026-05-21T00:00:00+02:00"
 
 # ── Payment Status ───────────────────────────────────────
 PAYMENT_WAITING = 0
@@ -60,6 +48,9 @@ TEAM_NAME_MAX_LENGTH = 100
 PERSON_NAME_MAX_LENGTH = 50
 EMAIL_MAX_LENGTH = 100
 PHONE_MAX_LENGTH = 20
+
+# ── Feature Toggles ─────────────────────────────────────
+FAN_VOTING_ENABLED = True
 LOGO_PATH_MAX_LENGTH = 255
 GROUP_NAME_MAX_LENGTH = 10
 

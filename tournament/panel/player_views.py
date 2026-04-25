@@ -12,7 +12,6 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from ..constants import POSITION_CHOICES
 from ..models import Player, PlayerMatchStats, Team
 
 _PHOTO_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
@@ -64,7 +63,7 @@ def players_list_view(request):
     if q:
         players = players.filter(
             Q(first_name__icontains=q) | Q(last_name__icontains=q) |
-            Q(jersey_number__icontains=q) | Q(team__name__icontains=q)
+            Q(team__name__icontains=q)
         )
     if team_id:
         players = players.filter(team_id=team_id)
@@ -76,7 +75,6 @@ def players_list_view(request):
         "teams": teams,
         "q": q,
         "team_filter": team_id,
-        "positions": dict(POSITION_CHOICES),
     })
 
 
@@ -123,8 +121,6 @@ def player_create_view(request):
             team=team,
             first_name=request.POST.get("first_name", "").strip(),
             last_name=request.POST.get("last_name", "").strip(),
-            jersey_number=request.POST.get("jersey_number", "").strip(),
-            position=request.POST.get("position", ""),
         )
         player.save()
         # Handle photo
@@ -143,7 +139,6 @@ def player_create_view(request):
         "page_title": "Add Player",
         "nav_section": "players",
         "teams": teams,
-        "positions": POSITION_CHOICES,
     })
 
 
@@ -157,8 +152,6 @@ def player_edit_view(request, pk):
         player.team = get_object_or_404(Team, pk=team_id)
         player.first_name = request.POST.get("first_name", "").strip()
         player.last_name = request.POST.get("last_name", "").strip()
-        player.jersey_number = request.POST.get("jersey_number", "").strip()
-        player.position = request.POST.get("position", "")
         player.save()
         # Handle photo
         photo_file = request.FILES.get("photo_file")
@@ -180,7 +173,6 @@ def player_edit_view(request, pk):
         "page_title": "Edit Player",
         "nav_section": "players",
         "teams": teams,
-        "positions": POSITION_CHOICES,
         "player": player,
     })
 

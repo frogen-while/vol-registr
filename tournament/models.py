@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 from .constants import (
@@ -5,8 +6,6 @@ from .constants import (
     EMAIL_MAX_LENGTH,
     EVENT_TYPE_CHOICES,
     GROUP_NAME_MAX_LENGTH,
-    LEAGUE_LEVEL_CHOICES,
-    LEAGUE_LEVEL_INDEPENDENT,
     LOGO_PATH_MAX_LENGTH,
     MATCH_SCHEDULED,
     MATCH_STATUS_CHOICES,
@@ -47,9 +46,6 @@ class Team(models.Model):
     logo_path = models.CharField(
         max_length=LOGO_PATH_MAX_LENGTH, blank=True, null=True
     )
-    league_level = models.CharField(
-        max_length=50, choices=LEAGUE_LEVEL_CHOICES, default=LEAGUE_LEVEL_INDEPENDENT
-    )
     group_name = models.CharField(
         max_length=GROUP_NAME_MAX_LENGTH, blank=True, null=True
     )
@@ -80,6 +76,16 @@ class Team(models.Model):
     roster_code = models.CharField(
         max_length=10, blank=True, default="", verbose_name="Roster Access Code",
     )
+    
+    # Entrance Song (MVP)
+    entrance_source = models.CharField(max_length=20, default="soundcloud", blank=True, null=True)
+    entrance_url = models.URLField(max_length=500, blank=True, null=True)
+    entrance_title = models.CharField(max_length=200, blank=True, null=True)
+    entrance_artist = models.CharField(max_length=200, blank=True, null=True)
+    entrance_artwork_url = models.URLField(max_length=500, blank=True, null=True)
+    entrance_start_seconds = models.PositiveIntegerField(default=0)
+    entrance_duration_seconds = models.PositiveIntegerField(default=15)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -113,23 +119,23 @@ class Team(models.Model):
         return bool(self.logo_path)
 
     @property
+    def readiness_target(self) -> int:
+        """Number of active readiness checks used by the admin and panel UI."""
+        return 4
+
+    @property
     def has_duplicate_jerseys(self) -> bool:
-        """True if any two players share a non-empty jersey number."""
-        numbers = list(
-            self.players.exclude(jersey_number="")
-            .values_list("jersey_number", flat=True)
-        )
-        return len(numbers) != len(set(numbers))
+        """Legacy jersey duplication check kept for compatibility with old stats data."""
+        return False
 
     @property
     def readiness_score(self) -> int:
-        """0-5 score: payment + roster + contacts + logo + no-duplicate-jerseys."""
+        """0-4 score: payment + roster + contacts + logo."""
         return sum([
             self.is_payment_ok,
             self.is_roster_complete,
             self.is_contacts_complete,
             self.is_logo_uploaded,
-            not self.has_duplicate_jerseys,
         ])
 
 
@@ -151,8 +157,7 @@ class Player(models.Model):
         db_table = TABLE_PLAYERS
 
     def __str__(self) -> str:
-        number = f" #{self.jersey_number}" if self.jersey_number != "" else ""
-        return f"{self.first_name} {self.last_name}{number}"
+        return f"{self.first_name} {self.last_name}"
 
 
 # ── Match & Sets ─────────────────────────────────────────
@@ -281,6 +286,25 @@ class ScheduleEvent(models.Model):
             return int((self.end_time - self.start_time).total_seconds() / 60)
         return None
 
+# ── Fan Voting ───────────────────────────────────────────
+
+class TeamFanVote(models.Model):
+    """Stores fan votes with email confirmation."""
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="fan_votes")
+    email = models.EmailField(unique=True, help_text="One confirmed vote per email address.")
+    token = models.UUIDField(default=uuid.uuid4, editable=False)
+    confirmed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "team_fan_votes"
+
+    def __str__(self):
+        return f"Vote for {self.team.name} by {self.email}"
+
+    @property
+    def is_confirmed(self):
+        return self.confirmed_at is not None
 
 # ── Stats ────────────────────────────────────────────────
 
@@ -478,6 +502,7 @@ class GalleryPhoto(models.Model):
         Team, on_delete=models.SET_NULL, null=True, blank=True,
         related_name="gallery_photos",
     )
+    tournament_tag = models.CharField(max_length=50, blank=True, default="", help_text="e.g. 'prev-tour' or '2026-cup'")
 
     class Meta:
         db_table = TABLE_GALLERY_PHOTOS
@@ -510,6 +535,7 @@ class GalleryVideo(models.Model):
         Team, on_delete=models.SET_NULL, null=True, blank=True,
         related_name="gallery_videos",
     )
+    tournament_tag = models.CharField(max_length=50, blank=True, default="", help_text="e.g. 'prev-tour' or '2026-cup'")
 
     class Meta:
         db_table = TABLE_GALLERY_VIDEOS

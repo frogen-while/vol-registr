@@ -22,8 +22,7 @@
   <span class="pnl-readiness__dot {% if team.is_roster_complete %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Roster"><i class="fas fa-users"></i></span>
   <span class="pnl-readiness__dot {% if team.is_contacts_complete %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Contacts"><i class="fas fa-address-book"></i></span>
   <span class="pnl-readiness__dot {% if team.is_logo_uploaded %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Logo"><i class="fas fa-image"></i></span>
-  <span class="pnl-readiness__dot {% if not team.has_duplicate_jerseys %}pnl-readiness__dot--ok{% else %}pnl-readiness__dot--fail{% endif %}" title="Jerseys"><i class="fas fa-tshirt"></i></span>
-  <span class="pnl-td-readiness__score pnl-mono">{{ team.readiness_score }}/5</span>
+  <span class="pnl-td-readiness__score pnl-mono">{{ team.readiness_score }}/{{ team.readiness_target }}</span>
 </div>
 
 {# ── Quick actions ── #}

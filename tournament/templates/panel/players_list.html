@@ -12,7 +12,7 @@
 
   {# ── Filters ────────────────────────────────────── #}
   <form method="get" class="pnl-filter-bar" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
-    <input type="text" name="q" value="{{ q }}" placeholder="Search name, number…"
+    <input type="text" name="q" value="{{ q }}" placeholder="Search name or team…"
            class="pnl-input pnl-input--sm" style="max-width:220px;">
     <select name="team" class="pnl-input pnl-input--sm" style="max-width:200px;">
       <option value="">All Teams</option>
@@ -37,9 +37,7 @@
       <thead>
         <tr>
           <th style="width:50px;">Photo</th>
-          <th>#</th>
           <th>Name</th>
-          <th>Position</th>
           <th>Team</th>
           <th style="width:120px;">Actions</th>
         </tr>
@@ -57,9 +55,7 @@
             </span>
             {% endif %}
           </td>
-          <td>{{ p.jersey_number|default:"-" }}</td>
           <td><strong><a href="{% url 'panel:player_detail' p.pk %}" style="color:inherit;text-decoration:none;">{{ p.first_name }} {{ p.last_name }}</a></strong></td>
-          <td>{{ p.get_position_display|default:"-" }}</td>
           <td>{{ p.team.name }}</td>
           <td>
             <div style="display:flex;gap:4px;">

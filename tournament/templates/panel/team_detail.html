@@ -47,7 +47,7 @@
 
   {# ── Readiness rail ────────────────────────────────── #}
   <div class="pnl-readiness-rail">
-    <span class="pnl-readiness-rail__label">Readiness ({{ team.readiness_score }}/5):</span>
+    <span class="pnl-readiness-rail__label">Readiness ({{ team.readiness_score }}/{{ team.readiness_target }}):</span>
     <div class="pnl-readiness-rail__items">
       <span class="pnl-readiness-rail__item {% if team.is_payment_ok %}pnl-readiness-rail__item--ok{% else %}pnl-readiness-rail__item--fail{% endif %}">
         <i class="fas fa-credit-card"></i> Payment
@@ -61,9 +61,6 @@
       <span class="pnl-readiness-rail__item {% if team.is_logo_uploaded %}pnl-readiness-rail__item--ok{% else %}pnl-readiness-rail__item--fail{% endif %}">
         <i class="fas fa-image"></i> Logo
       </span>
-      <span class="pnl-readiness-rail__item {% if not team.has_duplicate_jerseys %}pnl-readiness-rail__item--ok{% else %}pnl-readiness-rail__item--fail{% endif %}">
-        <i class="fas fa-tshirt"></i> Jerseys
-      </span>
     </div>
   </div>
 
@@ -73,7 +70,6 @@
       <h3 class="pnl-dash-card__title">Team Info</h3>
       <dl class="pnl-dl">
         <dt>Name</dt><dd>{{ team.name }}</dd>
-        <dt>League Level</dt><dd>{{ team.get_league_level_display }}</dd>
         <dt>Group</dt><dd>{{ team.group_name|default:"—" }}</dd>
         <dt>Status</dt>
         <dd>

@@ -34,8 +34,6 @@
           <a href="{% url 'panel:team_detail' pk=player.team.pk %}">{{ player.team.name }}</a>
           {% else %}—{% endif %}
         </td></tr>
-        <tr><th>Position</th><td>{{ player.get_position_display }}</td></tr>
-        <tr><th>Jersey</th><td>#{{ player.jersey_number }}</td></tr>
         <tr><th>Matches</th><td>{{ matches_count }}</td></tr>
       </table>
     </div>

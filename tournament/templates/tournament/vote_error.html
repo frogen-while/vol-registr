@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Vote Error | Pocket Aces{% endblock %}
+{% block content %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
+    <div>
+        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #f44336; margin-bottom: 1.5rem;"></i>
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem; font-family: var(--font-display); color: #fff;">Verification Failed</h1>
+        <p style="font-size: 1.1rem; color: rgba(255,255,255,0.7); margin-bottom: 2rem;">{{ error }}</p>
+        <a href="{% url 'index' %}" class="btn btn-outline" style="font-family: var(--font-display); text-transform: uppercase;">Back to Homepage</a>
+    </div>
+</div>
+{% endblock %}

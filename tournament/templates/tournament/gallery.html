@@ -1,28 +1,83 @@
 {% extends 'base.html' %}
 {% load static static_v %}
 
-{% block title %}{{ page_title|default:"Gallery — Pocket Aces Volleyball" }}{% endblock %}
+{% block title %}{{ page_title|default:"Gallery | Pocket Aces Court Cup 2" }}{% endblock %}
 
 {% block extra_head %}
-<meta name="description" content="{{ page_description|default:'Photos and video highlights from the Pocket Aces Spring Volleyball Tournament.' }}">
+<meta name="description" content="{{ page_description|default:'Photos and video highlights from Pocket Aces Court Cup 2.' }}">
 <link rel="canonical" href="{{ request.build_absolute_uri }}">
 <meta property="og:title" content="{{ page_title }}">
 <meta property="og:description" content="{{ page_description }}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 <link rel="stylesheet" href="{% static_v 'css/sports-preview.css' %}" />
+<style>
+    .sp-gallery-section {
+        margin-bottom: 4rem;
+    }
+    .sp-section-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-family: var(--font-display);
+        font-size: 1.8rem;
+        text-transform: uppercase;
+        font-style: italic;
+        margin-bottom: 2rem;
+        color: #fff;
+    }
+    .sp-section-title i {
+        color: var(--brand-blue);
+        font-size: 1.4rem;
+    }
+    .sp-gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+    .sp-gallery-item {
+        position: relative;
+        aspect-ratio: 16/10;
+        background: var(--brand-surface);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .sp-gallery-item:hover {
+        transform: translateY(-5px);
+        border-color: var(--brand-blue);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .sp-gallery-item__img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    .sp-gallery-item:hover .sp-gallery-item__img {
+        transform: scale(1.05);
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<section class="sp-page">
-  <div class="sp-page__noise" aria-hidden="true"></div>
+<div class="sports-bg-wrapper">
+  <div class="sports-bg-image"></div>
+  <div class="sports-bg-grid"></div>
+  <div class="sports-bg-stripes"></div>
+  <div class="sports-bg-glow"></div>
+  <div class="sports-bg-overlay"></div>
+</div>
+
+<section class="sp-page" style="background: transparent; padding-top: clamp(8rem, 15vw, 10rem);">
   <div class="container sp-page__container">
 
     <div class="page-hero">
       <p class="page-hero__eyebrow" data-i18n="gallery_page.eyebrow">Pocket Aces</p>
       <h1 class="page-hero__title" data-i18n="gallery_page.title">Gallery</h1>
-      <p class="page-hero__sub" data-i18n="gallery_page.subtitle">Photos and video highlights from the tournament</p>
-      {% include 'tournament/partials/preview_nav.html' with active='gallery' %}
+      <p class="page-hero__sub" data-i18n="gallery_page.subtitle">Photos and video highlights from Pocket Aces Court Cup 2.</p>
     </div>
 
     {# ── FILTER BAR ──────────────────────────────────── #}
@@ -45,7 +100,7 @@
           {% endfor %}
         </select>
         {% endif %}
-        <button type="submit" class="sp-filter-btn" style="background:linear-gradient(135deg,#38bdf8,#a78bfa);color:#fff;border:none;border-radius:8px;padding:.45rem 1.2rem;font-size:.85rem;font-weight:700;cursor:pointer;">Filter</button>
+        <button type="submit" class="sp-filter-btn" style="background:linear-gradient(135deg,#e41561,#38bdf8);color:#fff;border:none;border-radius:999px;padding:.45rem 1.2rem;font-size:.85rem;font-weight:700;cursor:pointer;">Filter</button>
         {% if team_filter or match_filter %}
         <a href="{% url 'tournament_gallery' %}" style="color:#94a3b8;font-size:.85rem;text-decoration:underline;">Clear</a>
         {% endif %}
@@ -56,20 +111,22 @@
     {# ── PHOTOS SECTION ──────────────────────────────── #}
     {% if photos %}
     <section class="sp-gallery-section sp-reveal" id="photos">
-      <h2 class="sp-section-title" data-i18n="gallery_page.photos_title">
-        <i class="fas fa-camera"></i> Photos
-      </h2>
+      <div class="section-header" style="text-align: left; border-left: 4px solid var(--brand-blue); padding-left: 1.5rem; margin-bottom: 2rem;">
+          <h2 class="section-title" style="font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; text-transform: uppercase; font-style: italic; margin-bottom: 0;">
+              Pocket Aces Court Cup 2
+          </h2>
+          <p class="section-subtitle" style="color: var(--brand-blue); font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.8rem; margin-top: 0.25rem;">
+              Bieżący Turniej
+          </p>
+      </div>
       <div class="sp-gallery-grid">
         {% for photo in photos %}
         <div class="sp-gallery-item sp-reveal" tabindex="0"
              data-full="{% if photo.drive_file_id|slice:':6' == 'local_' %}{{ photo.drive_url }}{% else %}https://drive.google.com/thumbnail?id={{ photo.drive_file_id }}&sz=w1200{% endif %}"
-             data-title="{{ photo.title }}">
+             data-title="">
           <img src="{{ photo.thumbnail_url }}"
-               alt="{{ photo.title|default:'Tournament photo' }}"
+               alt="Tournament photo"
                loading="lazy" class="sp-gallery-item__img">
-          {% if photo.title %}
-          <div class="sp-gallery-item__caption">{{ photo.title }}</div>
-          {% endif %}
         </div>
         {% endfor %}
       </div>
@@ -79,45 +136,78 @@
     {# ── VIDEOS SECTION ──────────────────────────────── #}
     {% if videos %}
     <section class="sp-gallery-section sp-reveal" id="videos">
-      <h2 class="sp-section-title" data-i18n="gallery_page.videos_title">
+      <h3 class="sp-section-title" style="font-size: 1.2rem; opacity: 0.7; margin-bottom: 1.5rem;">
         <i class="fas fa-video"></i> Video Highlights
-      </h2>
+      </h3>
       <div class="sp-gallery-videos">
         {% for video in videos %}
         <div class="sp-video-card sp-reveal" tabindex="0"
              data-video-src="{{ video.drive_url }}"
-             data-title="{{ video.title }}">
+             data-title="">
           <div class="sp-video-card__thumb">
-            {% if video.thumbnail_url %}
-            <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}" loading="lazy">
-            {% endif %}
+            <video src="{{ video.drive_url }}#t=0.1" preload="metadata" style="width:100%; height:100%; object-fit:cover;"></video>
             <div class="sp-video-card__play">
               <i class="fas fa-play"></i>
             </div>
           </div>
-          {% if video.title or video.description %}
-          <div class="sp-video-card__body">
-            {% if video.title %}
-            <h3 class="sp-video-card__title">{{ video.title }}</h3>
-            {% endif %}
-            {% if video.description %}
-            <p class="sp-video-card__desc">{{ video.description|truncatewords:20 }}</p>
-            {% endif %}
-          </div>
-          {% endif %}
         </div>
         {% endfor %}
       </div>
     </section>
     {% endif %}
 
-    {# ── EMPTY STATE ─────────────────────────────────── #}
-    {% if not photos and not videos %}
-    <div class="sp-card sp-reveal" style="text-align:center;padding:3rem;">
-      <i class="fas fa-images" style="font-size:2.5rem;opacity:.3;margin-bottom:1rem;display:block;"></i>
-      <p class="sp-subtitle" data-i18n="gallery_page.empty">Gallery coming soon — check back after the tournament!</p>
-    </div>
+    {# ── PREVIOUS TOURNAMENT SECTION ─────────────────── #}
+    {% if prev_photos or prev_videos %}
+    <section class="sp-gallery-section sp-reveal" id="prev-tournament" style="margin-top: 6rem; padding-top: 4rem; border-top: 1px solid rgba(255,255,255,0.05);">
+      <div class="section-header" style="text-align: left; border-left: 4px solid #e41561; padding-left: 1.5rem; margin-bottom: 3rem;">
+          <h2 class="section-title" style="font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; text-transform: uppercase; font-style: italic; margin-bottom: 0;">
+              Pocket Aces Court Cup 1
+          </h2>
+          <p class="section-subtitle" style="color: #e41561; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.8rem; margin-top: 0.25rem;">
+              Archiwum Mediów
+          </p>
+      </div>
+
+      {% if prev_photos %}
+      <h3 class="sp-section-title" style="font-size: 1.2rem; opacity: 0.7; margin-bottom: 1.5rem;">
+        <i class="fas fa-camera"></i> Photos
+      </h3>
+      <div class="sp-gallery-grid" style="margin-bottom: 4rem;">
+        {% for photo in prev_photos %}
+        <div class="sp-gallery-item sp-reveal" tabindex="0"
+             data-full="{% if photo.drive_file_id|slice:':6' == 'local_' %}{{ photo.drive_url }}{% else %}https://drive.google.com/thumbnail?id={{ photo.drive_file_id }}&sz=w1200{% endif %}"
+             data-title="">
+          <img src="{{ photo.thumbnail_url }}"
+               alt="Tournament photo"
+               loading="lazy" class="sp-gallery-item__img">
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if prev_videos %}
+      <h3 class="sp-section-title" style="font-size: 1.2rem; opacity: 0.7; margin-bottom: 1.5rem;">
+        <i class="fas fa-video"></i> Videos
+      </h3>
+      <div class="sp-gallery-videos">
+        {% for video in prev_videos %}
+        <div class="sp-video-card sp-reveal" tabindex="0"
+             data-video-src="{{ video.drive_url }}"
+             data-title="">
+          <div class="sp-video-card__thumb">
+            <video src="{{ video.drive_url }}#t=0.1" preload="metadata" style="width:100%; height:100%; object-fit:cover;"></video>
+            <div class="sp-video-card__play">
+              <i class="fas fa-play"></i>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </section>
     {% endif %}
+
+    {# ── EMPTY STATE REMOVED ─────────────────────────── #}
 
   </div>
 </section>

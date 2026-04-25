@@ -22,7 +22,10 @@ def checkin_view(request):
     total = teams.count()
     checked = sum(1 for t in teams if t.checked_in)
     # Split into warning (incomplete readiness) and ready groups
-    warning_teams = [t for t in teams if t.readiness_score < 5 and not t.checked_in]
+    warning_teams = [
+        t for t in teams
+        if t.readiness_score < t.readiness_target and not t.checked_in
+    ]
     ctx = {
         "page_title": "Check-in Desk",
         "nav_section": "checkin",
@@ -65,7 +68,7 @@ def checkin_search(request):
             "is_roster_complete": t.is_roster_complete,
             "is_contacts_complete": t.is_contacts_complete,
             "is_logo_uploaded": t.is_logo_uploaded,
-            "has_duplicate_jerseys": t.has_duplicate_jerseys,
+            "readiness_target": t.readiness_target,
             "checked_in": t.checked_in,
             "toggle_url": f"/panel/checkin/{t.pk}/toggle/",
         })

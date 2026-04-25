@@ -1,4 +1,5 @@
 import io
+import json
 
 from django.contrib.auth.models import User
 from django.test import TestCase, Client, override_settings
@@ -505,7 +506,7 @@ _STATIC_OVERRIDE = {
 
 @override_settings(STORAGES=_STATIC_OVERRIDE)
 class TestDemoViewsSmoke(TestCase):
-    """All demo/preview URLs should return 200 even with an empty DB."""
+    """Public demo URLs should stay reachable with an empty DB."""
 
     def setUp(self):
         self.client = Client()
@@ -515,16 +516,9 @@ class TestDemoViewsSmoke(TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, "ae-page")
 
-    def test_tournament_demo(self):
-        r = self.client.get(reverse("tournament_demo"))
-        self.assertEqual(r.status_code, 200)
-        self.assertContains(r, "Coming Soon")
-        self.assertContains(r, "cs-countdown")
-
     def test_tournament_teams(self):
         r = self.client.get(reverse("tournament_teams"))
-        self.assertEqual(r.status_code, 200)
-        self.assertContains(r, "sp-page")
+        self.assertRedirects(r, reverse("index"))
 
 
 @override_settings(STORAGES=_STATIC_OVERRIDE)
@@ -578,11 +572,6 @@ class TestDBViewsSmoke(TestCase):
         r = self.client.get(reverse("tournament_match", args=[9999]))
         self.assertEqual(r.status_code, 404)
 
-    def test_tournament_demo_coming_soon(self):
-        r = self.client.get(reverse("tournament_demo"))
-        self.assertEqual(r.status_code, 200)
-        self.assertContains(r, "Coming Soon")
-        self.assertContains(r, "cs-countdown")
 
     def test_hub_accessible(self):
         r = self.client.get(reverse("tournament_hub"))
@@ -785,7 +774,6 @@ class TestPanelTeamCRUD(TestCase):
             "cap_name": "Cap",
             "cap_surname": "Sur",
             "cap_email": "new@team.com",
-            "league_level": "independent",
             "payment_status": 0,
             "status": TEAM_STATUS_REGISTERED,
             # PlayerInlineFormSet management data
@@ -805,7 +793,6 @@ class TestPanelTeamCRUD(TestCase):
             "cap_name": team.cap_name,
             "cap_surname": team.cap_surname,
             "cap_email": team.cap_email,
-            "league_level": "independent",
             "payment_status": 0,
             "status": TEAM_STATUS_REGISTERED,
             "players-TOTAL_FORMS": "0",
@@ -1212,7 +1199,7 @@ class RosterUpdateTests(TestCase):
     def setUp(self):
         self.url = reverse("roster_update")
         self.team = _make_team("Roster Team")
-        self.players = _make_players(self.team, count=3)
+        self.players = _make_players(self.team, count=6)
 
     def _send_code(self, team=None):
         """Step 1: select team → code generated & emailed."""
@@ -1229,12 +1216,25 @@ class RosterUpdateTests(TestCase):
             "code": code,
         })
 
+    def _profile_payload(self):
+        return {
+            "action": "save",
+            "team_name": self.team.name,
+            "captain_name": f"{self.team.cap_name} {self.team.cap_surname}".strip(),
+            "captain_email": self.team.cap_email,
+            "captain_phone": "+48123456000",
+            "player_id": [str(player.pk) for player in self.players],
+            "player_first": [player.first_name for player in self.players],
+            "player_last": [player.last_name for player in self.players],
+            "player_delete": ["0"] * len(self.players),
+        }
+
     # ── Step 1: Select team ──
 
     def test_get_shows_team_selection(self):
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, "Select Your Team")
+        self.assertContains(resp, "Choose Your Team")
 
     def test_select_team_sends_code_email(self):
         from django.core import mail
@@ -1243,6 +1243,7 @@ class RosterUpdateTests(TestCase):
         self.assertTrue(len(self.team.roster_code) == 6)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(self.team.roster_code, mail.outbox[0].body)
+        self.assertIn("access=", mail.outbox[0].body)
         # Shows code-entry step
         self.assertEqual(resp.context["code_sent_team"], self.team)
 
@@ -1259,47 +1260,137 @@ class RosterUpdateTests(TestCase):
         self.team.refresh_from_db()
         resp = self._auth(self.team.roster_code)
         self.assertEqual(resp.context["authenticated_team"], self.team)
-        self.assertEqual(len(resp.context["players"]), 3)
+        self.assertEqual(len(resp.context["players"]), 6)
+        self.assertContains(resp, "Team Details")
+
+    def test_access_link_authenticates_session(self):
+        from django.core import mail
+
+        self._send_code()
+        access_url = next(
+            line.strip()
+            for line in mail.outbox[0].body.splitlines()
+            if line.strip().startswith("http")
+        )
+
+        resp = self.client.get(access_url)
+
+        self.assertEqual(resp.context["authenticated_team"], self.team)
+        self.assertContains(resp, self.team.name)
 
     # ── Step 3: Save ──
 
-    def test_save_updates_players(self):
+    def test_save_updates_team_profile_and_roster(self):
         self._send_code()
         self.team.refresh_from_db()
         self._auth(self.team.roster_code)
-        p = self.players[0]
-        resp = self.client.post(self.url, {
-            "action": "save",
-            "team_id": self.team.pk,
-            "player_id": [str(p.pk)],
-            f"jersey_{p.pk}": "42",
-            f"position_{p.pk}": "S",
-        })
-        p.refresh_from_db()
-        self.assertEqual(p.jersey_number, "42")
-        self.assertEqual(p.position, "S")
-        self.assertContains(resp, "Roster updated successfully")
+        payload = self._profile_payload()
+        payload["team_name"] = "Sunset Setters"
+        payload["captain_name"] = "Marta Glow"
+        payload["captain_email"] = "sunset.setters@test.com"
+        payload["captain_phone"] = "+48123456789"
+        payload["player_first"][0] = "Marta"
+        payload["player_last"][0] = "Glow"
+        payload["player_id"].append("")
+        payload["player_first"].append("Lena")
+        payload["player_last"].append("Wave")
+        payload["player_delete"].append("0")
+
+        resp = self.client.post(self.url, payload)
+
+        self.team.refresh_from_db()
+        self.assertEqual(self.team.name, "Sunset Setters")
+        self.assertEqual(self.team.cap_name, "Marta")
+        self.assertEqual(self.team.cap_surname, "Glow")
+        self.assertEqual(self.team.cap_email, "sunset.setters@test.com")
+        self.assertEqual(self.team.cap_phone, "+48123456789")
+        self.assertEqual(self.team.players.count(), 7)
+        self.assertTrue(self.team.players.filter(first_name="Lena", last_name="Wave").exists())
+        self.assertContains(resp, "Team profile updated successfully")
+
+    def test_save_rejects_short_roster(self):
+        self._send_code()
+        self.team.refresh_from_db()
+        self._auth(self.team.roster_code)
+
+        payload = self._profile_payload()
+        payload["player_delete"][0] = "1"
+
+        resp = self.client.post(self.url, payload)
+
+        self.team.refresh_from_db()
+        self.assertEqual(self.team.players.count(), 6)
+        self.assertContains(resp, "Keep at least 6 players")
 
     # ── Logo upload ──
 
     def test_upload_logo(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
+
         self._send_code()
         self.team.refresh_from_db()
         self._auth(self.team.roster_code)
         logo = SimpleUploadedFile("logo.png", b"\x89PNG\r\n\x1a\n" + b"\x00" * 100,
                                   content_type="image/png")
-        resp = self.client.post(self.url, {"action": "upload_logo", "logo": logo})
+
+        payload = self._profile_payload()
+        payload["logo"] = logo
+        resp = self.client.post(self.url, payload)
+
         self.team.refresh_from_db()
         self.assertTrue(self.team.logo_path.endswith(".png"))
-        self.assertContains(resp, "Logo uploaded successfully")
+        self.assertContains(resp, "Team profile updated successfully")
 
     def test_upload_logo_rejects_large_file(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
+
         self._send_code()
         self.team.refresh_from_db()
         self._auth(self.team.roster_code)
         big = SimpleUploadedFile("big.png", b"\x00" * (6 * 1024 * 1024),
                                  content_type="image/png")
-        resp = self.client.post(self.url, {"action": "upload_logo", "logo": big})
+
+        payload = self._profile_payload()
+        payload["logo"] = big
+        resp = self.client.post(self.url, payload)
+
         self.assertContains(resp, "File too large")
+
+
+@override_settings(STORAGES=_STATIC_OVERRIDE,
+                   EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+class RegistrationApiTests(TestCase):
+    def test_register_accepts_multipart_logo_upload(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        url = reverse("api_register")
+        logo = SimpleUploadedFile(
+            "badge.png",
+            b"\x89PNG\r\n\x1a\n" + b"\x00" * 128,
+            content_type="image/png",
+        )
+
+        response = self.client.post(url, {
+            "teamName": "Beach Blockers",
+            "capName": "Mila Stone",
+            "phone": "+48111000222",
+            "email": "beach.blockers@test.com",
+            "players": json.dumps([
+                {"firstName": "Mila", "lastName": "Stone"},
+                {"firstName": "Nina", "lastName": "Hart"},
+                {"firstName": "Luca", "lastName": "West"},
+                {"firstName": "Adam", "lastName": "Shore"},
+                {"firstName": "Kara", "lastName": "Vale"},
+                {"firstName": "Noah", "lastName": "Drift"},
+            ]),
+            "lang": "en",
+            "logo": logo,
+        })
+
+        body = response.json()
+        team = Team.objects.get(name="Beach Blockers")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(body["success"])
+        self.assertTrue(team.logo_path.endswith(".png"))
+        self.assertEqual(team.players.count(), 6)

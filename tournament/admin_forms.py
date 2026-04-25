@@ -27,7 +27,6 @@ class AdminTeamForm(forms.ModelForm):
         fields = [
             "name",
             "logo_path",
-            "league_level",
             "group_name",
             "cap_name",
             "cap_surname",
@@ -55,7 +54,7 @@ class AdminTeamForm(forms.ModelForm):
 class AdminPlayerForm(forms.ModelForm):
     class Meta:
         model = Player
-        fields = ["first_name", "last_name", "jersey_number", "position"]
+        fields = ["first_name", "last_name"]
         widgets = {}
 
 

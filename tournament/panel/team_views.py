@@ -131,7 +131,7 @@ def teams_list_view(request):
     # ── Post-query readiness filter (property-based) ──
     teams = list(qs)
     if readiness == "incomplete":
-        teams = [t for t in teams if t.readiness_score < 5]
+        teams = [t for t in teams if t.readiness_score < t.readiness_target]
 
     groups = (
         Team.objects.exclude(group_name__isnull=True)

@@ -75,25 +75,6 @@
             </div>
           </div>
 
-          <div style="display:flex;gap:12px;">
-            <div class="pnl-field" style="flex:0 0 100px;">
-              <label for="id_jersey_number">Jersey #</label>
-              <input type="text" name="jersey_number" id="id_jersey_number" class="pnl-input"
-                     value="{{ player.jersey_number|default:'' }}" maxlength="3">
-            </div>
-            <div class="pnl-field" style="flex:1;">
-              <label for="id_position">Position</label>
-              <select name="position" id="id_position" class="pnl-input">
-                <option value="">— None —</option>
-                {% for code, label in positions %}
-                <option value="{{ code }}" {% if player and player.position == code %}selected{% endif %}>
-                  {{ label }}
-                </option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-
           <div class="pnl-form-actions">
             <button type="submit" class="pnl-btn pnl-btn--primary">
               <i class="fas fa-save"></i> Save

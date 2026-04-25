@@ -1,462 +1,1310 @@
 {% extends 'base.html' %}
 {% load static static_v %}
 
-{% block title %}Roster Update — Pocket Aces Invitational{% endblock %}
+{% block title %}Team Profile Access - Pocket Aces Court Cup 2{% endblock %}
+
+{% block extra_head %}
+<style>
+  .roster-shell {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    padding: clamp(6rem, 12vw, 8rem) 1.25rem 4rem;
+    overflow: hidden;
+  }
+
+  .roster-shell__inner {
+    width: min(900px, 100%);
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .roster-heading {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: var(--brand-text);
+  }
+
+  .roster-subtitle {
+    color: var(--brand-text-sec);
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .roster-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .roster-alert--error {
+    color: #ffb5c8;
+    background: rgba(228, 21, 97, 0.12);
+    border: 1px solid rgba(228, 21, 97, 0.24);
+  }
+
+  .roster-alert--success {
+    color: #b6ffd8;
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.2);
+  }
+
+  .roster-panel {
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .roster-panel__title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--brand-text);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .roster-field-grid {
+    display: grid;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .roster-field-grid--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .roster-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .roster-field label {
+    color: var(--brand-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .roster-heading span {
+    color: var(--brand-blue);
+  }
+
+  .roster-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 1rem;
+    background: rgba(14, 165, 233, 0.1);
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    border-radius: 99px;
+    color: var(--brand-blue);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+  }
+
+  .roster-eyebrow i {
+    font-size: 0.9rem;
+  }
+
+  .roster-input,
+  .roster-select {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .roster-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2rem;
+    padding-right: 3rem;
+    cursor: pointer;
+  }
+
+  .roster-select option {
+    background: #0d2233;
+    color: #fff;
+  }
+
+  .roster-input:focus,
+  .roster-select:focus {
+    outline: none;
+    border-color: var(--brand-blue);
+    background: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 15px rgba(73, 192, 255, 0.1);
+  }
+
+  .roster-access-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .roster-access-card {
+    background: rgba(13, 34, 51, 0.7);
+    border: 1px solid rgba(73, 192, 255, 0.1);
+    border-radius: 16px;
+    padding: 2.5rem;
+    backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .roster-access-card__title {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: #fff;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    font-style: italic;
+  }
+
+  .roster-access-card__copy {
+    color: var(--brand-text-sec);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .roster-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 99px;
+    font-size: 0.85rem;
+    color: var(--brand-text-sec);
+    font-weight: 600;
+  }
+
+  .roster-chip i {
+    color: var(--brand-blue);
+    font-size: 0.9rem;
+  }
+
+  .roster-access-card .roster-actions {
+    margin-top: auto;
+    flex-wrap: wrap;
+  }
+
+  .roster-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 8px;
+    padding: 0.85rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+    text-decoration: none;
+  }
+
+  .roster-btn--primary {
+    background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .roster-btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+    background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
+  }
+
+  .roster-btn--ghost {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+  }
+
+  .roster-mini-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+
+  .roster-badge {
+    width: 150px;
+    height: 150px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .roster-badge img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .roster-badge i {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.2);
+  }
+
+  .roster-player {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .roster-player__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .roster-player__index {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--brand-blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+
+  .roster-player__fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .roster-hidden {
+    display: none !important;
+  }
+
+  /* Song preview styles */
+  .song-preview-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(0,0,0,0.3);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .song-preview-art {
+    width: 60px;
+    height: 60px;
+    border-radius: 6px;
+    background: #222;
+    object-fit: cover;
+  }
+
+  .song-preview-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .song-preview-title {
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .song-preview-artist {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Modal SC */
+  .reg-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .reg-modal__content {
+    background: #1e1e24;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  .reg-modal__close {
+    position: absolute;
+    top: 1rem; right: 1.5rem;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #fff;
+    line-height: 1;
+    opacity: 0.7;
+  }
+  .song-result {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .song-result img { width: 50px; height: 50px; border-radius: 4px; object-fit: cover; }
+  .song-btn-use {
+    background: transparent; border: 1px solid #ff5500; color: #ff5500;
+    padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.85rem;
+  }
+  .song-btn-use:hover { background: rgba(255,85,0,0.1); }
+
+  @media (max-width: 850px) {
+    .roster-access-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .roster-field-grid--two,
+    .roster-player__fields {
+      grid-template-columns: 1fr;
+    }
+    .roster-actions { flex-direction: column; }
+    .roster-btn { width: 100%; }
+    .roster-access-card { padding: 1.5rem; }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="sports-bg-wrapper">
   <div class="sports-bg-image"></div>
   <div class="sports-bg-grid"></div>
+  <div class="sports-bg-stripes"></div>
+  <div class="sports-bg-glow"></div>
   <div class="sports-bg-overlay"></div>
 </div>
 
-<div class="roster-page" style="position:relative;z-index:10;">
-  <div class="roster-container">
-    <h1 class="roster-title" data-i18n="rp.title">Roster Update</h1>
-    <p class="roster-subtitle" data-i18n="rp.subtitle">Captains: set jersey numbers and positions for your team.</p>
+<section class="roster-shell">
+  <div class="roster-shell__inner">
+    <div class="roster-eyebrow">
+      <i class="fas fa-shield-alt"></i>
+      <span data-i18n="rp.title">Team Profile Access</span>
+    </div>
+    <h1 class="roster-heading" data-i18n="rp.heading">Manage Your <span>Team</span></h1>
+    <p class="roster-subtitle" data-i18n="rp.subtitle">
+      Captains can update the roster, refresh the badge, and keep contact details current in one place.
+    </p>
 
-    {# ── Error / Success ─────────────────────────────── #}
     {% if error %}
     <div class="roster-alert roster-alert--error"{% if error_key %} data-i18n="{{ error_key }}"{% endif %}>
-      <i class="fas fa-exclamation-triangle"></i> {{ error }}
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ error }}</span>
     </div>
     {% endif %}
+
     {% if success %}
     <div class="roster-alert roster-alert--success"{% if success_key %} data-i18n="{{ success_key }}"{% endif %}{% if masked_email %} data-i18n-email="{{ masked_email }}"{% endif %}>
-      <i class="fas fa-check-circle"></i> {{ success }}
+      <i class="fas fa-check-circle"></i>
+      <span>{{ success }}</span>
     </div>
     {% endif %}
 
     {% if authenticated_team %}
-    {# ── Team Logo Upload ────────────────────────────── #}
-    <div class="roster-card" style="margin-bottom:20px;">
-      <h2 class="roster-card__title">
-        <i class="fas fa-image"></i> <span data-i18n="rp.logo_title">Team Logo</span>
-      </h2>
-      <div class="roster-logo-section">
-        {% if authenticated_team.logo_path %}
-        <div class="roster-logo-preview">
-          <img src="{{ MEDIA_URL }}{{ authenticated_team.logo_path }}" alt="{{ authenticated_team.name }} logo">
+    <form method="post" enctype="multipart/form-data" class="roster-profile">
+      {% csrf_token %}
+      <input type="hidden" name="lang" class="js-lang-field" value="en">
+      <input type="hidden" name="action" value="save">
+
+      <div class="roster-panel">
+        <h2 class="roster-panel__title" data-i18n="rp.profile_title">Team Details</h2>
+
+        <div class="roster-field-grid">
+          <div class="roster-field">
+            <label for="team_name" data-i18n="rp.team_name">Team Name</label>
+            <input class="roster-input" type="text" id="team_name" name="team_name" value="{{ authenticated_team.name }}" maxlength="100" required>
+          </div>
         </div>
-        {% endif %}
-        <form method="post" enctype="multipart/form-data">
+
+        <div class="roster-field-grid roster-field-grid--two">
+          <div class="roster-field">
+            <label for="captain_name" data-i18n="rp.captain_name">Captain Name</label>
+            <input class="roster-input" type="text" id="captain_name" name="captain_name" value="{{ authenticated_team.cap_name }}{% if authenticated_team.cap_surname %} {{ authenticated_team.cap_surname }}{% endif %}" maxlength="100" required>
+          </div>
+          <div class="roster-field">
+            <label for="captain_phone" data-i18n="rp.captain_phone">Captain Phone</label>
+            <input class="roster-input" type="tel" id="captain_phone" name="captain_phone" value="{{ authenticated_team.cap_phone|default_if_none:'' }}" maxlength="20" required>
+          </div>
+        </div>
+
+        <div class="roster-field-grid">
+          <div class="roster-field">
+            <label for="captain_email" data-i18n="rp.captain_email">Captain Email</label>
+            <input class="roster-input" type="email" id="captain_email" name="captain_email" value="{{ authenticated_team.cap_email }}" maxlength="100" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="roster-panel">
+        <h2 class="roster-panel__title" data-i18n="rp.logo_title">Team Badge</h2>
+        <div style="display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;">
+          <div class="roster-badge" id="teamBadgePreview">
+            {% if authenticated_team.logo_path %}
+            <img src="{{ MEDIA_URL }}{{ authenticated_team.logo_path }}" alt="{{ authenticated_team.name }} logo" id="logoPreviewImage">
+            <i class="fas fa-shield-alt roster-hidden" id="logoPreviewIcon"></i>
+            {% else %}
+            <i class="fas fa-shield-alt" id="logoPreviewIcon"></i>
+            <img src="" alt="Team badge preview" id="logoPreviewImage" class="roster-hidden">
+            {% endif %}
+          </div>
+          <div style="flex: 1;">
+            <p style="color: var(--brand-text-sec); margin-bottom: 1rem;" data-i18n="rp.logo_copy">
+              Upload or replace the square badge. PNG, JPG, or WebP up to 5 MB works best.
+            </p>
+            <label class="roster-btn roster-btn--ghost" for="logoInput">
+              <i class="fas fa-image"></i>
+              <span data-i18n="rp.choose_file">Choose File</span>
+            </label>
+            <input type="file" id="logoInput" name="logo" class="roster-hidden" accept="image/png,image/jpeg,image/webp">
+            <p class="roster-subtitle" id="logoFileName" style="margin-top: 0.5rem; font-size: 0.85rem;">{% if authenticated_team.logo_path %}{{ authenticated_team.logo_path|cut:'team_logos/' }}{% else %}<span data-i18n="rp.no_file">No file chosen</span>{% endif %}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="roster-panel">
+        <h2 class="roster-panel__title">Entrance Song</h2>
+        
+        <div class="song-preview-box" id="scPreviewBox" {% if not authenticated_team.entrance_url %}style="display: none;"{% endif %}>
+          <img src="{{ authenticated_team.entrance_artwork_url }}" alt="Artwork" class="song-preview-art" id="scPreviewArtwork">
+          <div class="song-preview-info">
+            <div class="song-preview-title" id="scPreviewTitle">{{ authenticated_team.entrance_title }}</div>
+            <div class="song-preview-artist" id="scPreviewArtist">{{ authenticated_team.entrance_artist }}</div>
+          </div>
+          <button type="button" class="roster-mini-btn" id="scClearBtn" title="Remove Song"><i class="fas fa-times"></i></button>
+        </div>
+
+        <button type="button" class="roster-btn roster-btn--ghost" id="openScModalBtn">
+          <i class="fab fa-soundcloud" style="color: #ff5500;"></i>
+          <span>Choose Song from SoundCloud</span>
+        </button>
+
+        <!-- Hidden SC Data Fields -->
+        <input type="hidden" id="entranceUrl" name="entranceUrl" value="{{ authenticated_team.entrance_url|default_if_none:'' }}">
+        <input type="hidden" id="entranceTitle" name="entranceTitle" value="{{ authenticated_team.entrance_title|default_if_none:'' }}">
+        <input type="hidden" id="entranceArtist" name="entranceArtist" value="{{ authenticated_team.entrance_artist|default_if_none:'' }}">
+        <input type="hidden" id="entranceArtworkUrl" name="entranceArtworkUrl" value="{{ authenticated_team.entrance_artwork_url|default_if_none:'' }}">
+        <input type="hidden" id="entranceSource" name="entranceSource" value="soundcloud">
+        <input type="hidden" id="entranceStartSeconds" name="entranceStartSeconds" value="{{ authenticated_team.entrance_start_seconds|default_if_none:0 }}">
+        <input type="hidden" id="entranceDurationSeconds" name="entranceDurationSeconds" value="15">
+      </div>
+
+      <div class="roster-panel">
+        <div class="roster-panel__header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+          <h2 class="roster-panel__title" style="border: none; margin: 0; padding: 0;" data-i18n="rp.roster_title">Roster</h2>
+          <button type="button" class="roster-btn roster-btn--ghost" id="addPlayerBtn" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+            <i class="fas fa-plus"></i>
+            <span data-i18n="rp.add_player">Add Player</span>
+          </button>
+        </div>
+
+        <div class="roster-editor" id="rosterEditor">
+          {% for p in players %}
+          <article class="roster-player" data-player-card>
+            <input type="hidden" name="player_id" value="{{ p.pk }}">
+            <input type="hidden" name="player_delete" value="0" data-player-delete>
+            <div class="roster-player__meta">
+              <span class="roster-player__index" data-player-index>{{ forloop.counter }}</span>
+              <button type="button" class="roster-mini-btn" data-remove-player>
+                <i class="fas fa-minus"></i>
+                <span data-i18n="rp.player_remove">Remove</span>
+              </button>
+            </div>
+            <div class="roster-player__fields">
+              <div class="roster-field">
+                <label data-i18n="rp.player_first">First Name</label>
+                <input class="roster-input" type="text" name="player_first" value="{{ p.first_name }}" maxlength="50" data-i18n-ph="rp.player_first_ph" placeholder="First Name">
+              </div>
+              <div class="roster-field">
+                <label data-i18n="rp.player_last">Last Name</label>
+                <input class="roster-input" type="text" name="player_last" value="{{ p.last_name }}" maxlength="50" data-i18n-ph="rp.player_last_ph" placeholder="Last Name">
+              </div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+
+        <p class="roster-note" data-i18n="rp.roster_rule">Keep at least 6 players on the roster.</p>
+      </div>
+
+      <div class="roster-actions">
+        <button type="submit" class="roster-btn roster-btn--primary">
+          <i class="fas fa-save"></i>
+          <span data-i18n="rp.save_profile">Save Changes</span>
+        </button>
+        <a href="{% url 'roster_update' %}?reset=1" class="roster-btn roster-btn--ghost">
+          <i class="fas fa-rotate-left"></i>
+          <span data-i18n="rp.start_over">Use Another Team</span>
+        </a>
+      </div>
+    </form>
+
+    <template id="rosterPlayerTemplate">
+      <article class="roster-player" data-player-card>
+        <input type="hidden" name="player_id" value="">
+        <input type="hidden" name="player_delete" value="0" data-player-delete>
+        <div class="roster-player__meta">
+          <span class="roster-player__index" data-player-index></span>
+          <button type="button" class="roster-mini-btn" data-remove-player>
+            <i class="fas fa-minus"></i>
+            <span data-i18n="rp.player_remove">Remove</span>
+          </button>
+        </div>
+        <div class="roster-player__fields">
+          <div class="roster-field">
+            <label data-i18n="rp.player_first">First Name</label>
+            <input class="roster-input" type="text" name="player_first" maxlength="50" data-i18n-ph="rp.player_first_ph" placeholder="First Name">
+          </div>
+          <div class="roster-field">
+            <label data-i18n="rp.player_last">Last Name</label>
+            <input class="roster-input" type="text" name="player_last" maxlength="50" data-i18n-ph="rp.player_last_ph" placeholder="Last Name">
+          </div>
+        </div>
+      </article>
+    </template>
+    {% elif code_sent_team %}
+    <div class="roster-access-grid">
+      <div class="roster-access-card">
+        <h2 class="roster-access-card__title" data-i18n="rp.enter_code">Use Backup Code</h2>
+        <p class="roster-access-card__copy" data-i18n="rp.code_hint">
+          We also sent a backup code by email. If the magic link is unavailable, enter the code here.
+        </p>
+        <form method="post">
           {% csrf_token %}
           <input type="hidden" name="lang" class="js-lang-field" value="en">
-          <input type="hidden" name="action" value="upload_logo">
-          <div class="roster-field">
-            <label for="logo" class="roster-btn roster-btn--browse" tabindex="0">
-              <i class="fas fa-folder-open"></i> <span data-i18n="rp.choose_file">Choose File</span>
-            </label>
-            <input type="file" name="logo" id="logo" accept="image/png,image/jpeg,image/webp"
-                   class="roster-input roster-file-hidden" required>
-            <span class="roster-file-name" data-i18n="rp.no_file">No file chosen</span>
+          <input type="hidden" name="action" value="auth">
+          <div class="roster-field-grid">
+            <div class="roster-field">
+              <label for="code" data-i18n="rp.access_code_label">Access Code</label>
+              <input class="roster-input" type="text" id="code" name="code" maxlength="10" required autocomplete="off" inputmode="numeric" data-i18n-ph="rp.code_ph" placeholder="Enter backup code">
+            </div>
           </div>
           <div class="roster-actions">
             <button type="submit" class="roster-btn roster-btn--primary">
-              <i class="fas fa-upload"></i> <span data-i18n="rp.upload_logo">Upload Logo</span>
+              <i class="fas fa-right-to-bracket"></i>
+              <span data-i18n="rp.verify">Verify Code</span>
+            </button>
+            <a href="{% url 'roster_update' %}?reset=1" class="roster-btn roster-btn--ghost">
+              <i class="fas fa-arrow-left"></i>
+              <span data-i18n="rp.back">Back</span>
+            </a>
+          </div>
+        </form>
+      </div>
+
+      <div class="roster-access-card">
+        <h2 class="roster-access-card__title" data-i18n="rp.access_sent_title">Check the Captain Inbox</h2>
+        <p class="roster-access-card__copy" data-i18n="rp.access_sent_copy" data-i18n-team="{{ code_sent_team.name }}">
+          We sent a secure link and a backup code for <strong>{{ code_sent_team.name }}</strong>. The link opens the team profile directly, and the code is the fallback option.
+        </p>
+        <div class="roster-actions">
+          <a href="{% url 'roster_update' %}?reset=1" class="roster-btn roster-btn--ghost">
+            <i class="fas fa-shuffle"></i>
+            <span data-i18n="rp.start_over">Use Another Team</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="roster-access-grid">
+      <div class="roster-access-card">
+        <h2 class="roster-access-card__title" data-i18n="rp.select_team">Choose Your Team</h2>
+        <p class="roster-access-card__copy" data-i18n="rp.select_hint">
+          Pick your team and we will send a secure link plus a backup code to the captain email on file.
+        </p>
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="lang" class="js-lang-field" value="en">
+          <input type="hidden" name="action" value="select_team">
+
+          <div class="roster-field-grid">
+            <div class="roster-field">
+              <label for="team_id" data-i18n="rp.team_label">Team</label>
+              <select name="team_id" id="team_id" class="roster-select" required>
+                <option value="" data-i18n="rp.choose_team">- Choose team -</option>
+                {% for t in teams %}
+                <option value="{{ t.pk }}">{{ t.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="roster-actions">
+            <button type="submit" class="roster-btn roster-btn--primary">
+              <i class="fas fa-paper-plane"></i>
+              <span data-i18n="rp.send_code">Send Access Link</span>
             </button>
           </div>
         </form>
       </div>
-    </div>
 
-    {# ── Roster editing table ────────────────────────── #}
-    <div class="roster-card">
-      <h2 class="roster-card__title">
-        <i class="fas fa-users"></i> {{ authenticated_team.name }}
-      </h2>
-      <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="lang" class="js-lang-field" value="en">
-        <input type="hidden" name="action" value="save">
-        <input type="hidden" name="team_id" value="{{ authenticated_team.pk }}">
-
-        <div class="roster-table-wrap">
-          <table class="roster-table">
-            <thead>
-              <tr>
-                <th data-i18n="rp.col_player">Player</th>
-                <th data-i18n="rp.col_jersey">Jersey #</th>
-                <th data-i18n="rp.col_position">Position</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for p in players %}
-              <tr>
-                <td class="roster-table__name">
-                  {{ p.first_name }} {{ p.last_name }}
-                  <input type="hidden" name="player_id" value="{{ p.pk }}">
-                </td>
-                <td>
-                  <input type="text" name="jersey_{{ p.pk }}"
-                         value="{{ p.jersey_number|default_if_none:'' }}"
-                         maxlength="3" pattern="[0-9]{1,3}" class="roster-input roster-input--jersey"
-                         placeholder="—">
-                </td>
-                <td>
-                  <select name="position_{{ p.pk }}" class="roster-input roster-input--position">
-                    <option value="">—</option>
-                    {% for code, label in position_choices %}
-                    <option value="{{ code }}" {% if p.position == code %}selected{% endif %}>
-                      {{ code }} — {{ label }}
-                    </option>
-                    {% endfor %}
-                  </select>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-
+      <div class="roster-access-card">
+        <h2 class="roster-access-card__title" data-i18n="rp.access_info_title">What You Can Edit</h2>
+        <p class="roster-access-card__copy" data-i18n="rp.access_info_copy">
+          Once inside, captains can update the team name, refresh captain contact details, add or remove players, and upload a square team badge that fits the public site.
+        </p>
         <div class="roster-actions">
-          <button type="submit" class="roster-btn roster-btn--primary">
-            <i class="fas fa-save"></i> <span data-i18n="rp.save">Save Roster</span>
-          </button>
-          <a href="{% url 'roster_update' %}" class="roster-btn" data-i18n="rp.cancel">Cancel</a>
+          <span class="roster-chip"><i class="fas fa-pen"></i> <span data-i18n="rp.access_chip_profile">Team profile</span></span>
+          <span class="roster-chip"><i class="fas fa-users"></i> <span data-i18n="rp.access_chip_roster">Roster updates</span></span>
+          <span class="roster-chip"><i class="fas fa-image"></i> <span data-i18n="rp.access_chip_logo">Badge upload</span></span>
         </div>
-      </form>
-    </div>
-
-    {% elif code_sent_team %}
-    {# ── Step 2: Enter code from email ───────────────── #}
-    <div class="roster-card">
-      <h2 class="roster-card__title">
-        <i class="fas fa-envelope-open-text"></i> <span data-i18n="rp.enter_code">Enter Access Code</span>
-      </h2>
-      <p class="roster-hint" data-i18n="rp.code_hint">
-        A 6-digit code was sent to the captain's email for
-        <strong>{{ code_sent_team.name }}</strong>. Check your inbox and enter it below.
-      </p>
-      <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="lang" class="js-lang-field" value="en">
-        <input type="hidden" name="action" value="auth">
-
-        <div class="roster-field">
-          <label for="code" data-i18n="rp.access_code_label">Access code</label>
-          <input type="text" name="code" id="code" class="roster-input"
-                 maxlength="10" required autocomplete="off"
-                 placeholder="Enter 6-digit code" data-i18n-ph="rp.code_ph" inputmode="numeric">
-        </div>
-
-        <div class="roster-actions">
-          <button type="submit" class="roster-btn roster-btn--primary">
-            <i class="fas fa-sign-in-alt"></i> <span data-i18n="rp.verify">Verify Code</span>
-          </button>
-          <a href="{% url 'roster_update' %}" class="roster-btn" data-i18n="rp.back">Back</a>
-        </div>
-      </form>
-    </div>
-
-    {% else %}
-    {# ── Step 1: Select team ─────────────────────────── #}
-    <div class="roster-card">
-      <h2 class="roster-card__title">
-        <i class="fas fa-volleyball-ball"></i> <span data-i18n="rp.select_team">Select Your Team</span>
-      </h2>
-      <p class="roster-hint" data-i18n="rp.select_hint">
-        Choose your team below. A verification code will be sent to the captain's email.
-      </p>
-      <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="lang" class="js-lang-field" value="en">
-        <input type="hidden" name="action" value="select_team">
-
-        <div class="roster-field">
-          <label for="team_id" data-i18n="rp.team_label">Team</label>
-          <select name="team_id" id="team_id" class="roster-input" required>
-            <option value="" data-i18n="rp.choose_team">— Choose team —</option>
-            {% for t in teams %}
-            <option value="{{ t.pk }}">{{ t.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="roster-actions">
-          <button type="submit" class="roster-btn roster-btn--primary">
-            <i class="fas fa-paper-plane"></i> <span data-i18n="rp.send_code">Send Code</span>
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
     {% endif %}
   </div>
+</section>
+
+<!-- SoundCloud Cropper Modal -->
+<div id="scCropModal" class="reg-modal" style="display: none;">
+  <div class="reg-modal__content" style="max-width: 650px; width: 95%;">
+    <span class="reg-modal__close" id="closeScModalBtn">&times;</span>
+    <h2 style="margin-bottom: 1rem; font-family: var(--font-display);">Select 15-second Clip</h2>
+
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+      <input type="text" id="scSearchInput" class="roster-input" placeholder="Search track or artist on SoundCloud..." style="flex:1;">
+      <button type="button" id="scSearchBtn" class="roster-btn roster-btn--primary" style="width: auto; padding: 0 1.5rem;">Search</button>
+    </div>
+    <div id="scSearchStatus" style="display:none; margin-bottom: 0.75rem; font-size: 0.85rem; color: #c8d0da;"></div>
+    <div id="scSearchResults" style="display:none; max-height: 220px; overflow-y: auto; margin-bottom: 1rem;"></div>
+    <div id="scErrorMsg" style="color: #ff5555; display: none; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+
+    <div id="scLoading" style="display:none; text-align:center; padding: 2rem;">Loading track data...</div>
+
+    <!-- Editor Area -->
+    <div id="scEditorArea" style="display: none;">
+      <!-- Top info -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 1rem; align-items: center; overflow: hidden;">
+          <i class="fab fa-soundcloud" style="color: #ff5500; font-size: 2.5rem; flex-shrink: 0;"></i>
+          <div style="min-width: 0;">
+            <a href="#" id="scTrackLink" target="_blank" style="color: #fff; font-weight: bold; text-decoration: none; font-size: 1.1rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Track Title</a>
+            <a href="#" id="scArtistLink" target="_blank" style="color: #ccc; text-decoration: none; font-size: 0.9rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Artist Name</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Waveform Area -->
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+        <div id="scWaveformContainer" style="position: relative; flex: 1; height: 80px; background: rgba(0,0,0,0.3); border-radius: 4px; overflow: hidden; user-select: none; display: flex; align-items: center; padding: 0 2px;">
+           <div id="scPseudoWaveform" style="position: absolute; top:0; left:0; width:100%; height:100%; display: flex; align-items: center; justify-content: space-between; padding: 0 2px; box-sizing: border-box;"></div>
+
+           <div id="scCropper" style="position: absolute; top: 0; left: 0; height: 100%; border: 2px solid #ff5500; background: rgba(255, 85, 0, 0.25); cursor: grab; box-sizing: border-box; transition: background 0.2s;">
+            <div id="scProgressFill" style="position:absolute; top:0; left:0; bottom:0; width:0%; background: linear-gradient(90deg, rgba(255,85,0,0.28), rgba(255,145,77,0.52)); pointer-events:none;"></div>
+            <div id="scProgressHead" style="position:absolute; top:0; bottom:0; left:0; width:2px; background:#fff; box-shadow: 0 0 12px rgba(255,255,255,0.8); pointer-events:none;"></div>
+              <div style="position: absolute; top: -25px; left: 0; color: #ff5500; font-size: 0.8rem; font-weight: bold; white-space: nowrap;" id="scCropperTime">0:00</div>
+              <div style="position: absolute; top: -25px; right: 0; color: #ff5500; font-size: 0.8rem; font-weight: bold; white-space: nowrap;">15s</div>
+           </div>
+        </div>
+        
+        <button type="button" id="scPlayPreviewBtn" style="width: 50px; height: 50px; border-radius: 50%; padding: 0; background: transparent; border: 2px solid #ff5500; color: #ff5500; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+          <i class="fas fa-play" style="margin-left: 3px;"></i>
+        </button>
+      </div>
+
+      <div id="scPreviewProgressLabel" style="font-size: 0.8rem; color: #c8d0da; margin-top: 0.65rem;">Preview progress: 0:00 / 0:15</div>
+      <p style="font-size: 0.8rem; color: #aaa; margin-top: 1rem; margin-bottom: 2rem;">Drag the highlighted box to select the 15-second clip.</p>
+
+      <button type="button" id="scConfirmBtn" class="roster-btn roster-btn--primary" style="width: 100%; background: #ff5500;">
+        Confirm Selection
+      </button>
+    </div>
+
+    <!-- Hidden SC Widget iframe -->
+    <div style="position: absolute; top: -9999px; left: -9999px;">
+      <iframe id="scHiddenWidget" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&auto_play=false" scrolling="no" frameborder="no" allow="autoplay"></iframe>
+    </div>
+  </div>
 </div>
 
-<style>
-  .roster-page {
-    min-height: 100vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 60px 20px 40px;
-  }
-  .roster-container {
-    max-width: 680px;
-    width: 100%;
-  }
-  .roster-title {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 4px;
-  }
-  .roster-subtitle {
-    color: var(--brand-muted);
-    margin-bottom: 24px;
-    font-size: .95rem;
-  }
-  .roster-alert {
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: .9rem;
-  }
-  .roster-alert--error {
-    background: rgba(248, 113, 113, .12);
-    border: 1px solid rgba(248, 113, 113, .35);
-    color: var(--brand-danger);
-  }
-  .roster-alert--success {
-    background: rgba(52, 211, 153, .12);
-    border: 1px solid rgba(52, 211, 153, .35);
-    color: var(--brand-success);
-  }
-  .roster-card {
-    background: var(--brand-surface);
-    border: 1px solid var(--brand-border);
-    border-radius: 12px;
-    padding: 28px;
-  }
-  .roster-card__title {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    color: #fff;
-    margin: 0 0 20px;
-  }
-  .roster-card__title i {
-    margin-right: 8px;
-    color: var(--brand-blue);
-  }
-  .roster-field {
-    margin-bottom: 16px;
-  }
-  .roster-field label {
-    display: block;
-    color: var(--brand-text-sec);
-    font-size: .85rem;
-    margin-bottom: 6px;
-    font-weight: 500;
-  }
-  .roster-hint {
-    color: var(--brand-muted);
-    font-size: .9rem;
-    margin-bottom: 20px;
-    line-height: 1.5;
-  }
-  .roster-hint strong {
-    color: #fff;
-  }
-  .roster-input {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1px solid var(--brand-border);
-    background: var(--brand-surface-2);
-    color: #fff;
-    font-size: .95rem;
-    box-sizing: border-box;
-    transition: border-color .2s;
-  }
-  .roster-input:focus {
-    outline: none;
-    border-color: var(--brand-blue);
-  }
-  .roster-input option {
-    background: var(--brand-surface);
-    color: #fff;
-  }
-  .roster-table-wrap {
-    overflow-x: auto;
-    margin-bottom: 20px;
-  }
-  .roster-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .roster-table th {
-    text-align: left;
-    color: var(--brand-muted);
-    font-size: .8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--brand-border);
-  }
-  .roster-table td {
-    padding: 10px;
-    border-bottom: 1px solid rgba(56, 189, 248, 0.04);
-    vertical-align: middle;
-  }
-  .roster-table__name {
-    color: #fff;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-  .roster-input--jersey {
-    width: 80px;
-    text-align: center;
-    padding: 8px;
-  }
-  .roster-input--position {
-    width: 180px;
-    padding: 8px;
-  }
-  .roster-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 20px;
-  }
-  .roster-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 22px;
-    border-radius: 8px;
-    border: 1px solid var(--brand-border);
-    background: var(--brand-surface-2);
-    color: #fff;
-    font-size: .9rem;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all .2s;
-  }
-  .roster-btn:hover {
-    background: rgba(56, 189, 248, 0.08);
-  }
-  .roster-btn--primary {
-    background: var(--brand-blue);
-    border-color: var(--brand-blue);
-  }
-  .roster-btn--primary:hover {
-    background: var(--brand-blue-dark);
-    border-color: var(--brand-blue-dark);
-  }
-
-  @media (max-width: 600px) {
-    .roster-card { padding: 18px; }
-    .roster-title { font-size: 1.5rem; }
-    .roster-input--position { width: 140px; }
-  }
-  .roster-logo-section {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  .roster-logo-preview {
-    width: 100px;
-    height: 100px;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--brand-border);
-    background: var(--brand-surface-2);
-    flex-shrink: 0;
-  }
-  .roster-logo-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-  .roster-logo-section form {
-    flex: 1;
-    min-width: 200px;
-  }
-  .roster-file-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-  }
-  .roster-btn--browse {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: var(--brand-surface-2);
-    color: var(--brand-text-sec);
-    border: 1px solid var(--brand-border);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: .9rem;
-    font-weight: 500;
-    transition: all .2s ease;
-    user-select: none;
-  }
-  .roster-btn--browse:hover,
-  .roster-btn--browse:focus-visible {
-    background: rgba(56, 189, 248, 0.08);
-    border-color: var(--brand-blue);
-    color: #fff;
-  }
-  .roster-file-name {
-    display: inline-block;
-    margin-left: 12px;
-    color: var(--brand-muted);
-    font-size: .85rem;
-    vertical-align: middle;
-  }
-</style>
+<script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  var inp = document.getElementById('logo');
-  if (inp) {
-    inp.addEventListener('change', function() {
-      var span = inp.parentElement.querySelector('.roster-file-name');
-      if (span) span.textContent = inp.files.length ? inp.files[0].name : 'No file chosen';
+document.addEventListener('DOMContentLoaded', function () {
+  function getTranslations() {
+    return window.__PA_T || window.PA_TRANSLATIONS || window.T || null;
+  }
+
+  function resolveTranslation(translations, language, key) {
+    if (!translations) return undefined;
+    var source = translations[language] || translations.en || {};
+    return key.split('.').reduce(function (current, part) {
+      return current && current[part] !== undefined ? current[part] : undefined;
+    }, source);
+  }
+
+  function applyLang(language) {
+    var translations = getTranslations();
+    if (!translations) return;
+
+    document.querySelectorAll('[data-i18n]').forEach(function (element) {
+      var key = element.dataset.i18n;
+      var value = resolveTranslation(translations, language, key);
+      if (value === undefined) return;
+      var email = element.dataset.i18nEmail;
+      var team = element.dataset.i18nTeam;
+      if (email) value = value.replace('{email}', email);
+      if (team) value = value.replace('{team}', team);
+      element.innerHTML = value;
+    });
+
+    document.querySelectorAll('[data-i18n-ph]').forEach(function (element) {
+      var key = element.dataset.i18nPh;
+      var value = resolveTranslation(translations, language, key);
+      if (value !== undefined) element.placeholder = value;
+    });
+
+    document.querySelectorAll('.js-lang-field').forEach(function (field) {
+      field.value = language;
     });
   }
 
-  // ── Sync localStorage language into hidden form fields ──
-  var paLang = localStorage.getItem('pa_lang') || 'en';
-  document.querySelectorAll('.js-lang-field').forEach(function(f) { f.value = paLang; });
-  window.addEventListener('pa_lang_change', function(e) {
-    document.querySelectorAll('.js-lang-field').forEach(function(f) { f.value = e.detail; });
+  var currentLang = localStorage.getItem('pa_lang') || 'en';
+  applyLang(currentLang);
+  window.addEventListener('pa_lang_change', function (event) {
+    currentLang = event.detail;
+    applyLang(currentLang);
   });
+  setTimeout(function () { applyLang(currentLang); }, 120);
 
-  // ── Translate alert messages using i18n keys ──
-  function translateAlerts() {
-    var lang = localStorage.getItem('pa_lang') || 'en';
-    document.querySelectorAll('.roster-alert[data-i18n]').forEach(function(el) {
-      var key = el.dataset.i18n;
-      var T = window.__PA_T;
-      if (!T) return;
-      var t = T[lang] || T.en;
-      var val = key.split('.').reduce(function(a, k) { return a && a[k] !== undefined ? a[k] : undefined; }, t);
-      if (val !== undefined) {
-        // Handle {email} placeholder for code_sent message
-        var emailData = el.dataset.i18nEmail;
-        if (emailData) val = val.replace('{email}', emailData);
-        var icon = el.querySelector('i');
-        el.textContent = '';
-        if (icon) { el.appendChild(icon); el.appendChild(document.createTextNode(' ')); }
-        el.appendChild(document.createTextNode(val));
-      }
+  var rosterEditor = document.getElementById('rosterEditor');
+  var addPlayerBtn = document.getElementById('addPlayerBtn');
+  var playerTemplate = document.getElementById('rosterPlayerTemplate');
+
+  function syncPlayerIndices() {
+    if (!rosterEditor) return;
+    var visibleIndex = 0;
+    Array.prototype.slice.call(rosterEditor.querySelectorAll('[data-player-card]')).forEach(function (card) {
+      if (card.classList.contains('is-hidden')) return;
+      visibleIndex += 1;
+      var badge = card.querySelector('[data-player-index]');
+      if (badge) badge.textContent = visibleIndex;
     });
   }
 
-  // Run once translations are loaded, and on lang switch
-  if (window.__PA_T) { translateAlerts(); }
-  window.addEventListener('pa_lang_change', translateAlerts);
-  // Also try after a short delay in case T loads after this script
-  setTimeout(function() { if (window.__PA_T) translateAlerts(); }, 100);
+  function attachPlayerCard(card) {
+    var removeBtn = card.querySelector('[data-remove-player]');
+    var deleteInput = card.querySelector('[data-player-delete]');
+    var playerIdInput = card.querySelector('input[name="player_id"]');
+    if (!removeBtn) return;
+
+    removeBtn.addEventListener('click', function () {
+      var hasSavedPlayer = playerIdInput && playerIdInput.value;
+      if (hasSavedPlayer && deleteInput) {
+        deleteInput.value = '1';
+        card.classList.add('is-hidden');
+      } else {
+        card.remove();
+      }
+      syncPlayerIndices();
+    });
+  }
+
+  if (rosterEditor) {
+    Array.prototype.slice.call(rosterEditor.querySelectorAll('[data-player-card]')).forEach(attachPlayerCard);
+    syncPlayerIndices();
+  }
+
+  if (addPlayerBtn && rosterEditor && playerTemplate) {
+    addPlayerBtn.addEventListener('click', function () {
+      var fragment = playerTemplate.content.cloneNode(true);
+      rosterEditor.appendChild(fragment);
+      var newCard = rosterEditor.lastElementChild;
+      attachPlayerCard(newCard);
+      syncPlayerIndices();
+      applyLang(currentLang);
+      var firstInput = newCard.querySelector('input[name="player_first"]');
+      if (firstInput) firstInput.focus();
+    });
+  }
+
+  var logoInput = document.getElementById('logoInput');
+  var logoDropzone = document.getElementById('logoDropzone');
+  var logoFileName = document.getElementById('logoFileName');
+  var logoPreviewImage = document.getElementById('logoPreviewImage');
+  var logoPreviewIcon = document.getElementById('logoPreviewIcon');
+  var teamBadgeImage = document.getElementById('teamBadgeImage');
+  var teamBadgeEmpty = document.getElementById('teamBadgeEmpty');
+
+  function updateLogoPreview(file) {
+    if (!file || !logoPreviewImage) return;
+    var reader = new FileReader();
+    reader.onload = function (event) {
+      logoPreviewImage.src = event.target.result;
+      logoPreviewImage.classList.remove('roster-hidden');
+      if (logoPreviewIcon) logoPreviewIcon.classList.add('roster-hidden');
+      if (teamBadgeImage) {
+        teamBadgeImage.src = event.target.result;
+        teamBadgeImage.classList.remove('roster-hidden');
+      }
+      if (teamBadgeEmpty) teamBadgeEmpty.classList.add('roster-hidden');
+    };
+    reader.readAsDataURL(file);
+    if (logoFileName) logoFileName.textContent = file.name;
+  }
+
+  if (logoInput) {
+    logoInput.addEventListener('change', function () {
+      if (this.files && this.files[0]) updateLogoPreview(this.files[0]);
+    });
+  }
+
+  if (logoDropzone && logoInput) {
+    ['dragenter', 'dragover'].forEach(function (eventName) {
+      logoDropzone.addEventListener(eventName, function (event) {
+        event.preventDefault();
+        logoDropzone.classList.add('is-dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(function (eventName) {
+      logoDropzone.addEventListener(eventName, function (event) {
+        event.preventDefault();
+        logoDropzone.classList.remove('is-dragover');
+      });
+    });
+
+    logoDropzone.addEventListener('drop', function (event) {
+      var files = event.dataTransfer && event.dataTransfer.files;
+      if (!files || !files.length) return;
+      try {
+        var dataTransfer = new DataTransfer();
+        dataTransfer.items.add(files[0]);
+        logoInput.files = dataTransfer.files;
+      } catch (error) {
+        return;
+      }
+      updateLogoPreview(files[0]);
+    });
+  }
+  // ── SOUNDCLOUD LOGIC ──
+  let scWidget = null;
+  let trackDurationMs = 0;
+  let currentStartSeconds = 0;
+  let isDraggingCrop = false;
+  let dragOffsetX = 0;
+  let isScPlaying = false;
+  let currentSoundResult = null;
+  const waveformCache = new Map();
+  const clipLengthSeconds = 15;
+
+  const openScModalBtn = document.getElementById('openScModalBtn');
+  const scCropModal = document.getElementById('scCropModal');
+  const closeScModalBtn = document.getElementById('closeScModalBtn');
+  const scErrorMsg = document.getElementById('scErrorMsg');
+  const scLoading = document.getElementById('scLoading');
+  const scEditorArea = document.getElementById('scEditorArea');
+  const scTrackLink = document.getElementById('scTrackLink');
+  const scArtistLink = document.getElementById('scArtistLink');
+  const scPseudoWaveform = document.getElementById('scPseudoWaveform');
+  const scCropper = document.getElementById('scCropper');
+  const scCropperTime = document.getElementById('scCropperTime');
+  const scWaveformContainer = document.getElementById('scWaveformContainer');
+  const scPlayPreviewBtn = document.getElementById('scPlayPreviewBtn');
+  const scConfirmBtn = document.getElementById('scConfirmBtn');
+  const scHiddenWidget = document.getElementById('scHiddenWidget');
+  const scProgressFill = document.getElementById('scProgressFill');
+  const scProgressHead = document.getElementById('scProgressHead');
+  const scPreviewProgressLabel = document.getElementById('scPreviewProgressLabel');
+
+  const scPreviewBox = document.getElementById('scPreviewBox');
+  const scPreviewArtwork = document.getElementById('scPreviewArtwork');
+  const scPreviewTitle = document.getElementById('scPreviewTitle');
+  const scPreviewArtist = document.getElementById('scPreviewArtist');
+  const scClearBtn = document.getElementById('scClearBtn');
+
+  const scSearchInput = document.getElementById('scSearchInput');
+  const scSearchBtn = document.getElementById('scSearchBtn');
+  const scSearchStatus = document.getElementById('scSearchStatus');
+  const scSearchResults = document.getElementById('scSearchResults');
+
+  const entranceUrlInput = document.getElementById('entranceUrl');
+  const entranceTitleInput = document.getElementById('entranceTitle');
+  const entranceArtistInput = document.getElementById('entranceArtist');
+  const entranceArtworkUrlInput = document.getElementById('entranceArtworkUrl');
+  const entranceSourceInput = document.getElementById('entranceSource');
+  const entranceStartSecondsInput = document.getElementById('entranceStartSeconds');
+
+  if (scHiddenWidget && window.SC && window.SC.Widget) {
+    scWidget = window.SC.Widget(scHiddenWidget);
+  }
+
+  function formatTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = String(Math.floor(totalSeconds % 60)).padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  }
+
+  function setScError(message) {
+    if (!scErrorMsg) return;
+    scErrorMsg.textContent = message || '';
+    scErrorMsg.style.display = message ? 'block' : 'none';
+  }
+
+  function setSearchStatus(message) {
+    if (!scSearchStatus) return;
+    scSearchStatus.textContent = message || '';
+    scSearchStatus.style.display = message ? 'block' : 'none';
+  }
+
+  function resetPreviewButton() {
+    if (scPlayPreviewBtn) scPlayPreviewBtn.innerHTML = '<i class="fas fa-play" style="margin-left: 3px;"></i>';
+  }
+
+  function updatePreviewProgress(progressMs = 0) {
+    const clipMs = clipLengthSeconds * 1000;
+    const clamped = Math.max(0, Math.min(progressMs, clipMs));
+    const ratio = clipMs ? (clamped / clipMs) : 0;
+    if (scProgressFill) scProgressFill.style.width = `${ratio * 100}%`;
+    if (scProgressHead) scProgressHead.style.left = `${ratio * 100}%`;
+    if (scPreviewProgressLabel) scPreviewProgressLabel.textContent = `Preview progress: ${formatTime(clamped / 1000)} / ${formatTime(clipLengthSeconds)}`;
+  }
+
+  function stopScPreview() {
+    if (scWidget) scWidget.pause();
+    resetPreviewButton();
+    updatePreviewProgress(0);
+  }
+
+  function stopCropDrag() {
+    if (!isDraggingCrop) return;
+    isDraggingCrop = false;
+    if (scCropper) scCropper.style.cursor = 'grab';
+  }
+
+  function openScModal() {
+    if (!scCropModal) return;
+    scCropModal.style.display = 'flex';
+    setScError('');
+    if (scSearchInput) scSearchInput.focus();
+  }
+
+  function closeScModal() {
+    if (!scCropModal) return;
+    scCropModal.style.display = 'none';
+    stopScPreview();
+    stopCropDrag();
+  }
+
+  function renderWaveform(samples) {
+    if (!scPseudoWaveform) return;
+    scPseudoWaveform.innerHTML = '';
+    const targetCount = 96;
+    if (!samples.length) return;
+    const bucketSize = samples.length / targetCount;
+    const bars = [];
+    for (let index = 0; index < targetCount; index += 1) {
+      const start = Math.floor(index * bucketSize);
+      const end = Math.max(start + 1, Math.floor((index + 1) * bucketSize));
+      let bucketMax = 0;
+      for (let cursor = start; cursor < end && cursor < samples.length; cursor += 1) {
+        bucketMax = Math.max(bucketMax, samples[cursor]);
+      }
+      bars.push(bucketMax);
+    }
+    const maxSample = Math.max(...bars, 1);
+    bars.forEach(sample => {
+      const bar = document.createElement('div');
+      bar.style.width = '3px';
+      bar.style.height = `${Math.max(12, Math.round((sample / maxSample) * 100))}%`;
+      bar.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.18))';
+      bar.style.borderRadius = '999px';
+      bar.style.flex = '0 0 auto';
+      scPseudoWaveform.appendChild(bar);
+    });
+  }
+
+  async function fetchWaveformSamples(waveformUrl) {
+    if (!waveformUrl) return [];
+    if (waveformCache.has(waveformUrl)) return waveformCache.get(waveformUrl);
+    const response = await fetch(waveformUrl, { mode: 'cors' });
+    if (!response.ok) throw new Error('Waveform request failed');
+    const payload = await response.json();
+    const samples = Array.isArray(payload.samples) ? payload.samples : [];
+    waveformCache.set(waveformUrl, samples);
+    return samples;
+  }
+
+  function updateCropperPosition() {
+    if (!scCropper || !scWaveformContainer || !scCropperTime || !trackDurationMs) return;
+    const durationSeconds = trackDurationMs / 1000;
+    const clipRatio = Math.min(clipLengthSeconds / durationSeconds, 1);
+    const containerWidth = scWaveformContainer.clientWidth;
+    const cropperWidth = Math.max(containerWidth * clipRatio, Math.min(containerWidth, 56));
+    const maxStart = Math.max(durationSeconds - clipLengthSeconds, 0);
+    currentStartSeconds = Math.min(currentStartSeconds, maxStart);
+    const leftPx = maxStart > 0 ? (currentStartSeconds / maxStart) * (containerWidth - cropperWidth) : 0;
+    scCropper.style.width = `${cropperWidth}px`;
+    scCropper.style.left = `${leftPx}px`;
+    scCropperTime.textContent = formatTime(currentStartSeconds);
+  }
+
+  function resolveStartFromPointer(clientX) {
+    if (!scWaveformContainer || !scCropper || !trackDurationMs) return;
+    const rect = scWaveformContainer.getBoundingClientRect();
+    const cropperWidth = scCropper.offsetWidth;
+    const durationSeconds = trackDurationMs / 1000;
+    const maxStart = Math.max(durationSeconds - clipLengthSeconds, 0);
+    
+    let leftPx = clientX - rect.left - dragOffsetX;
+    leftPx = Math.max(0, Math.min(leftPx, rect.width - cropperWidth));
+    
+    currentStartSeconds = maxStart > 0 ? (leftPx / Math.max(rect.width - cropperWidth, 1)) * maxStart : 0;
+    updateCropperPosition();
+    updatePreviewProgress(0);
+
+    if (isScPlaying && scWidget) {
+      scWidget.seekTo(currentStartSeconds * 1000);
+    }
+  }
+
+  async function loadSearchResult(result) {
+    currentSoundResult = result;
+    trackDurationMs = result.duration_ms || 0;
+    currentStartSeconds = 0;
+    setScError('');
+    stopScPreview();
+    stopCropDrag();
+
+    if (scTrackLink) {
+      scTrackLink.textContent = result.title || 'SoundCloud track';
+      scTrackLink.href = result.url || '#';
+    }
+    if (scArtistLink) {
+      scArtistLink.textContent = result.artist || 'SoundCloud artist';
+      scArtistLink.href = result.artist_url || result.url || '#';
+    }
+
+    if (scLoading) scLoading.style.display = 'block';
+    if (scEditorArea) scEditorArea.style.display = 'none';
+    setSearchStatus(`Loading ${result.title || 'track'}...`);
+
+    try {
+      const samples = await fetchWaveformSamples(result.waveform_url);
+      renderWaveform(samples);
+      updateCropperPosition();
+    } catch (error) {
+      setScError('Could not load the waveform for this track.');
+      if (scLoading) scLoading.style.display = 'none';
+      return;
+    }
+
+    if (!scWidget) {
+      setScError('SoundCloud widget is unavailable right now.');
+      if (scLoading) scLoading.style.display = 'none';
+      return;
+    }
+
+    if (window.SC?.Widget?.Events?.READY) {
+      scWidget.unbind(window.SC.Widget.Events.READY);
+      scWidget.unbind(window.SC.Widget.Events.PLAY_PROGRESS);
+      scWidget.unbind(window.SC.Widget.Events.PLAY);
+      scWidget.unbind(window.SC.Widget.Events.PAUSE);
+    }
+
+    scWidget.bind(window.SC.Widget.Events.READY, () => {
+      if (scLoading) scLoading.style.display = 'none';
+      if (scEditorArea) scEditorArea.style.display = 'block';
+      setSearchStatus(`Loaded ${result.title || 'track'}. Drag the window and preview.`);
+      updateCropperPosition();
+      updatePreviewProgress(0);
+    });
+
+    scWidget.bind(window.SC.Widget.Events.PLAY, () => {
+      isScPlaying = true;
+    });
+
+    scWidget.bind(window.SC.Widget.Events.PAUSE, () => {
+      isScPlaying = false;
+      resetPreviewButton();
+    });
+
+    scWidget.bind(window.SC.Widget.Events.PLAY_PROGRESS, (event) => {
+      const elapsedMs = Math.max(0, (event?.currentPosition || 0) - (currentStartSeconds * 1000));
+      updatePreviewProgress(elapsedMs);
+      if (elapsedMs >= clipLengthSeconds * 1000) stopScPreview();
+    });
+
+    scWidget.load(result.url, { auto_play: false, show_comments: false, show_user: false, show_reposts: false, visual: false });
+  }
+
+  function renderSearchResults(results) {
+    if (!scSearchResults) return;
+    scSearchResults.innerHTML = '';
+    if (!results.length) {
+      scSearchResults.style.display = 'none';
+      setSearchStatus('No SoundCloud tracks found.');
+      return;
+    }
+    setSearchStatus(`Found ${results.length} track(s). Select and trim 15s.`);
+    scSearchResults.style.display = 'block';
+
+    results.forEach((result) => {
+      const row = document.createElement('div');
+      row.className = 'song-result';
+      const artwork = result.artwork_url || '';
+      row.innerHTML = `
+        <img src="${artwork}" alt="Artwork" style="display:${artwork ? 'block' : 'none'};">
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${result.title || 'Untitled track'}</div>
+          <div style="font-size:0.85rem; opacity:0.7;">${result.artist || 'SoundCloud'}</div>
+        </div>
+        <button type="button" class="song-btn-use">Select</button>
+      `;
+      const useButton = row.querySelector('.song-btn-use');
+      if (useButton) useButton.addEventListener('click', () => loadSearchResult(result));
+      scSearchResults.appendChild(row);
+    });
+  }
+
+  async function searchSoundCloud() {
+    const query = scSearchInput?.value.trim() || '';
+    setScError('');
+    if (!query) {
+      setSearchStatus('Enter a track name or artist to search SoundCloud.');
+      if (scSearchResults) { scSearchResults.innerHTML = ''; scSearchResults.style.display = 'none'; }
+      return;
+    }
+    setSearchStatus('Searching SoundCloud...');
+    if (scSearchResults) { scSearchResults.innerHTML = ''; scSearchResults.style.display = 'none'; }
+    try {
+      const response = await fetch(`/api/soundcloud-search/?q=${encodeURIComponent(query)}`);
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        setSearchStatus(payload.error || 'SoundCloud search is unavailable right now.');
+        return;
+      }
+      renderSearchResults(payload.results || []);
+    } catch (error) {
+      setSearchStatus('Could not search SoundCloud right now.');
+    }
+  }
+
+  if (openScModalBtn) openScModalBtn.addEventListener('click', openScModal);
+  if (closeScModalBtn) closeScModalBtn.addEventListener('click', closeScModal);
+  if (scCropModal) scCropModal.addEventListener('click', (e) => { if (e.target === scCropModal) closeScModal(); });
+  if (scSearchBtn) scSearchBtn.addEventListener('click', searchSoundCloud);
+  if (scSearchInput) scSearchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); searchSoundCloud(); } });
+
+  if (scCropper) {
+    scCropper.addEventListener('pointerdown', (e) => {
+      e.preventDefault(); 
+      isDraggingCrop = true; 
+      scCropper.style.cursor = 'grabbing';
+      
+      const cropperRect = scCropper.getBoundingClientRect();
+      dragOffsetX = e.clientX - cropperRect.left;
+
+      if (scCropper.setPointerCapture) scCropper.setPointerCapture(e.pointerId);
+    });
+    scCropper.addEventListener('pointermove', (e) => { if (isDraggingCrop) resolveStartFromPointer(e.clientX); });
+    const finishCropDrag = (e) => {
+      if (scCropper.hasPointerCapture && scCropper.hasPointerCapture(e.pointerId)) scCropper.releasePointerCapture(e.pointerId);
+      stopCropDrag();
+    };
+    scCropper.addEventListener('pointerup', finishCropDrag);
+    scCropper.addEventListener('pointercancel', finishCropDrag);
+  }
+
+  window.addEventListener('resize', updateCropperPosition);
+
+  if (scPlayPreviewBtn) {
+    scPlayPreviewBtn.addEventListener('click', () => {
+      if (!scWidget || !currentSoundResult) return;
+      scWidget.isPaused((paused) => {
+        if (!paused) { stopScPreview(); return; }
+        scWidget.seekTo(currentStartSeconds * 1000);
+        scWidget.play();
+        scPlayPreviewBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        updatePreviewProgress(0);
+      });
+    });
+  }
+
+  if (scConfirmBtn) {
+    scConfirmBtn.addEventListener('click', () => {
+      if (!currentSoundResult) return;
+      if (entranceUrlInput) entranceUrlInput.value = currentSoundResult.url || '';
+      if (entranceTitleInput) entranceTitleInput.value = currentSoundResult.title || '';
+      if (entranceArtistInput) entranceArtistInput.value = currentSoundResult.artist || '';
+      if (entranceArtworkUrlInput) entranceArtworkUrlInput.value = currentSoundResult.artwork_url || '';
+      if (entranceSourceInput) entranceSourceInput.value = 'soundcloud';
+      if (entranceStartSecondsInput) entranceStartSecondsInput.value = String(Math.floor(currentStartSeconds));
+
+      if (scPreviewArtwork) scPreviewArtwork.src = currentSoundResult.artwork_url || '';
+      if (scPreviewTitle) scPreviewTitle.textContent = currentSoundResult.title || '';
+      if (scPreviewArtist) scPreviewArtist.textContent = currentSoundResult.artist || '';
+      if (scPreviewBox) scPreviewBox.style.display = 'flex';
+      
+      closeScModal();
+    });
+  }
+
+  if (scClearBtn) {
+    scClearBtn.addEventListener('click', () => {
+      if (entranceUrlInput) entranceUrlInput.value = '';
+      if (entranceTitleInput) entranceTitleInput.value = '';
+      if (entranceArtistInput) entranceArtistInput.value = '';
+      if (entranceArtworkUrlInput) entranceArtworkUrlInput.value = '';
+      if (entranceSourceInput) entranceSourceInput.value = 'soundcloud';
+      if (entranceStartSecondsInput) entranceStartSecondsInput.value = '0';
+      if (scPreviewBox) scPreviewBox.style.display = 'none';
+      currentSoundResult = null;
+    });
+  }
+
 });
 </script>
 {% endblock %}

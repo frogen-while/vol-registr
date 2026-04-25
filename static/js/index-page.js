@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ─── Hero Intro Timeline ────────────────────────
     initHeroIntro(CFG.hero);
+    initCountdown();
 
     // ─── Card Modal (desktop only) ────────────────────
     if (!isMobileView) {
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isMobileView) {
             initCardsFlyIn(CFG.cards);
             initLocationScrollAnim(CFG.scroll);
+            initEditorialSectionAnim(CFG.scroll);
             initTimelineScrollAnim(CFG.scroll);
         }
     }
@@ -41,6 +43,50 @@ document.addEventListener('DOMContentLoaded', () => {
 // ═══════════════════════════════════════════════════════
 //  Hero Section
 // ═══════════════════════════════════════════════════════
+
+/**
+ * Initialize the registration countdown timer.
+ */
+function initCountdown() {
+    const countdownEl = document.getElementById('heroCountdown');
+    if (!countdownEl) return;
+    
+    const deadlineStr = countdownEl.dataset.deadline;
+    if (!deadlineStr) return;
+    
+    const deadline = new Date(deadlineStr).getTime();
+    
+    const daysEl = document.getElementById('cdDays');
+    const hoursEl = document.getElementById('cdHours');
+    const minutesEl = document.getElementById('cdMinutes');
+    const secondsEl = document.getElementById('cdSeconds');
+    
+    function updateTimer() {
+        const now = new Date().getTime();
+        const distance = deadline - now;
+        
+        if (distance < 0) {
+            daysEl.textContent = "00";
+            hoursEl.textContent = "00";
+            minutesEl.textContent = "00";
+            secondsEl.textContent = "00";
+            return;
+        }
+        
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        daysEl.textContent = days.toString().padStart(2, '0');
+        hoursEl.textContent = hours.toString().padStart(2, '0');
+        minutesEl.textContent = minutes.toString().padStart(2, '0');
+        secondsEl.textContent = seconds.toString().padStart(2, '0');
+    }
+    
+    updateTimer();
+    setInterval(updateTimer, 1000);
+}
 
 /**
  * Build the intro GSAP timeline for the hero section.
@@ -71,8 +117,8 @@ function initHeroIntro(cfg) {
         ease: cfg.label.ease,
     }, '-=1');
 
-    // Subtitle, price, counter, CTA
-    tl.to(['.hero-text', '.hero-price', '.hero-counter', '.hero-btn-container'], {
+    // Subtitle, countdown, price, counter, CTA
+    tl.to(['.hero-text', '.hero-countdown', '.hero-price', '.hero-counter', '.hero-btn-container'], {
         y: 0, opacity: 1,
         duration: cfg.text.duration,
         stagger: cfg.text.stagger,
@@ -214,14 +260,52 @@ function scatterCardsOffScreen(wrappers, cfg) {
 function initLocationScrollAnim(cfg) {
     const loc = cfg.locationSlide;
 
-    gsap.from('.location-content', {
+    gsap.from(['.location__title', '.divider--wide'], {
         scrollTrigger: { trigger: '.location-content', start: loc.start },
-        x: -loc.x, opacity: 0, duration: loc.duration,
+        y: loc.x * 0.35,
+        opacity: 0,
+        duration: loc.duration,
+        stagger: 0.08,
     });
 
-    gsap.from('.location-map', {
-        scrollTrigger: { trigger: '.location-content', start: loc.start },
-        x: loc.x, opacity: 0, duration: loc.duration,
+    gsap.from(['.location-map', '.location__info', '.location__link'], {
+        scrollTrigger: { trigger: '.location-side', start: loc.start },
+        x: loc.x,
+        opacity: 0,
+        duration: loc.duration,
+        stagger: 0.08,
+    });
+}
+
+/**
+ * Reveal editorial support blocks on the landing page.
+ * @param {object} cfg - scroll config from APP_CONFIG.
+ */
+function initEditorialSectionAnim(cfg) {
+    const item = cfg.timelineItem;
+
+    gsap.from('.deal-lead', {
+        scrollTrigger: { trigger: '.perspective-section', start: item.start },
+        y: item.y,
+        opacity: 0,
+        duration: item.duration,
+    });
+
+    gsap.from('.location-feature', {
+        scrollTrigger: { trigger: '.location-features', start: item.start },
+        y: item.y,
+        opacity: 0,
+        duration: item.duration,
+        stagger: 0.08,
+    });
+
+    gsap.from(['.venue-hero', '.venue-card'], {
+        scrollTrigger: { trigger: '.section--arena', start: item.start },
+        y: item.y,
+        opacity: 0,
+        scale: 0.97,
+        duration: item.duration,
+        stagger: 0.1,
     });
 }
 
@@ -232,7 +316,7 @@ function initLocationScrollAnim(cfg) {
 function initTimelineScrollAnim(cfg) {
     const item = cfg.timelineItem;
 
-    gsap.utils.toArray('.timeline-item').forEach(el => {
+    gsap.utils.toArray('.road-item').forEach(el => {
         gsap.from(el, {
             scrollTrigger: { trigger: el, start: item.start },
             y: item.y, opacity: 0, duration: item.duration,

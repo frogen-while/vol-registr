@@ -87,12 +87,17 @@ def register_team(cleaned: dict, players_data: list[dict] | None = None) -> Team
 
     team = Team.objects.create(
         name=team_name,
-        league_level=cleaned["leagueLevel"],
         cap_name=cap["first"],
         cap_surname=cap["last"],
         cap_phone=phone,
         cap_email=email,
         payment_status=PAYMENT_WAITING,
+        entrance_url=cleaned.get("entranceUrl") or None,
+        entrance_title=cleaned.get("entranceTitle") or None,
+        entrance_artist=cleaned.get("entranceArtist") or None,
+        entrance_artwork_url=cleaned.get("entranceArtworkUrl") or None,
+        entrance_source=cleaned.get("entranceSource") or "soundcloud",
+        entrance_start_seconds=cleaned.get("entranceStartSeconds") or 0,
     )
 
     if players_data:
@@ -107,8 +112,7 @@ def _create_players(team: Team, players_data: list[dict]) -> None:
     """
     Bulk-create Player rows from a list of validated player dicts.
 
-    Each dict is expected to have keys: firstName, lastName,
-    jerseyNumber (optional), dob (optional date string / date).
+    Each dict is expected to have keys: firstName and lastName.
     """
     from .forms import PlayerForm
 
@@ -128,7 +132,6 @@ def _create_players(team: Team, players_data: list[dict]) -> None:
                 team=team,
                 first_name=first,
                 last_name=cd.get("lastName", "").strip(),
-                jersey_number=cd.get("jerseyNumber"),
 
             )
         )

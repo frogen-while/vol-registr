@@ -94,6 +94,12 @@
     }
   }
 
+  .team-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
   .team-card {
     position: relative;
     background: var(--brand-surface);
@@ -316,36 +322,54 @@
     </a>
 
     <div class="team-header">
-      <h1 class="team-name">{{ team.name }}</h1>
-      <div class="team-level">{{ team.get_league_level_display }}</div>
-      {% if team.instagram %}
-      <div class="team-ig" style="margin-top: 0.5rem;">
-        <a href="https://instagram.com/{{ team.instagram }}" target="_blank" style="color: #e1306c; text-decoration: none;">
-          <i class="fab fa-instagram"></i> @{{ team.instagram }}
-        </a>
+      {% if team.logo_path %}
+      <div style="margin-bottom: 1.5rem;">
+        <img src="/media/{{ team.logo_path }}" alt="{{ team.name }} badge" style="width: 120px; height: 120px; object-fit: cover; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
       </div>
       {% endif %}
+      <h1 class="team-name">{{ team.name }}</h1>
+      <div style="margin-top: 1.5rem;">
+        <button class="vote-btn-main vote-btn" data-team-id="{{ team.id }}" data-team-name="{{ team.name }}" style="width: auto; height: auto; padding: 0.8rem 2rem; border-radius: 999px; font-size: 1rem;">
+          <i class="fas fa-heart" style="margin-right: 0.5rem;"></i> <span data-i18n="voting.cta">Vote for this team</span>
+        </button>
+      </div>
     </div>
 
     <div class="team-grid">
-      <!-- Info Kapitan -->
-      <div class="team-card">
-        <h2 class="team-card-title"><i class="fas fa-user-shield"></i> <span data-i18n="team_captain">Kapitan</span></h2>
-        
-        <div class="cap-info-item">
-          <span class="cap-info-label" data-i18n="team_name">Imię i Nazwisko</span>
-          <span class="cap-info-value">{{ team.cap_name }} {{ team.cap_surname }}</span>
+      <div class="team-sidebar">
+        <!-- Info Kapitan -->
+        <div class="team-card" style="margin-bottom: 1.5rem;">
+          <h2 class="team-card-title"><i class="fas fa-user-shield"></i> <span data-i18n="team_captain">Kapitan</span></h2>
+          
+          <div class="cap-info-item">
+            <span class="cap-info-label" data-i18n="team_name">Imię i Nazwisko</span>
+            <span class="cap-info-value">{{ team.cap_name }} {{ team.cap_surname }}</span>
+          </div>
+          
+          <div class="cap-info-item">
+            <span class="cap-info-label" data-i18n="team_email">Email</span>
+            <span class="cap-info-value"><a href="mailto:{{ team.cap_email }}" class="contact-link"><span data-i18n="team_mail_to">Napisz</span> <i class="fas fa-arrow-right"></i></a></span>
+          </div>
         </div>
-        
-        <div class="cap-info-item">
-          <span class="cap-info-label" data-i18n="team_email">Email</span>
-          <span class="cap-info-value"><a href="mailto:{{ team.cap_email }}" class="contact-link"><span data-i18n="team_mail_to">Napisz</span> <i class="fas fa-arrow-right"></i></a></span>
-        </div>
-        
-        {% if team.cap_phone %}
-        <div class="cap-info-item">
-          <span class="cap-info-label" data-i18n="team_phone">Telefon</span>
-          <span class="cap-info-value"><a href="tel:{{ team.cap_phone }}" class="contact-link"><span data-i18n="team_call">Zadzwoń</span> <i class="fas fa-arrow-right"></i></a></span>
+
+        <!-- Entrance Song -->
+        {% if team.entrance_url %}
+        <div class="team-card">
+          <h2 class="team-card-title"><i class="fas fa-music"></i> Entrance Song</h2>
+          <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1rem; padding: 0.8rem; background: rgba(0,0,0,0.3); border-radius: 8px;">
+            {% if team.entrance_artwork_url %}
+            <img src="{{ team.entrance_artwork_url }}" alt="Artwork" style="width: 50px; height: 50px; border-radius: 6px;">
+            {% else %}
+            <div style="width: 50px; height: 50px; border-radius: 6px; background: #333; display: flex; align-items: center; justify-content: center;"><i class="fas fa-music" style="color: #666;"></i></div>
+            {% endif %}
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ team.entrance_title }}</div>
+              <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ team.entrance_artist }}</div>
+            </div>
+          </div>
+          <div style="margin-top: 1rem;">
+            <a href="{{ team.entrance_url }}" target="_blank" class="contact-link"><i class="fab fa-soundcloud"></i> Listen on SoundCloud</a>
+          </div>
         </div>
         {% endif %}
       </div>

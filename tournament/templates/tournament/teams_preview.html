@@ -61,7 +61,7 @@
             </div>
             <div class="sp-team-list__body">
               <strong>{{ t.name }}</strong>
-              <span>{{ t.league_level }}</span>
+              <span>{{ t.group_name|default:'Registered team' }}</span>
             </div>
             <span class="sp-team-list__meta">{{ t.group_name|default:'Open' }}</span>
           </a>

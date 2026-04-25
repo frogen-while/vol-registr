@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static static_v %}
 
-{% block title %}Tournament Hub — Coming Soon{% endblock %}
+{% block title %}{{ page_title|default:"Match Centre | Pocket Aces Court Cup 2" }}{% endblock %}
 
 {% block extra_head %}
-<meta name="description" content="Tournament Hub opens on April 11, 2026 at 9:00 AM.">
+<meta name="description" content="{{ page_description|default:'Match Centre opens on May 23, 2026 at 09:00 for Pocket Aces Court Cup 2.' }}">
 <link rel="stylesheet" href="{% static_v 'css/arena-editorial.css' %}" />
 <style>
   .cs-stage {
@@ -293,8 +293,8 @@
         </svg>
       </div>
 
-      <h1 class="cs-heading" data-i18n="cs.heading">Coming Soon</h1>
-      <p class="cs-sub" data-i18n="cs.sub">Tournament Hub is being prepared. Standings, schedule, match stats and highlights go live on <strong>April 11 at 9:00&nbsp;AM</strong>.</p>
+      <h1 class="cs-heading" data-i18n="cs.heading">Match Centre Soon</h1>
+      <p class="cs-sub" data-i18n="cs.sub">Match Centre opens on <strong>May 23 at 09:00</strong>. Until then, use the time left to register your team for Pocket Aces Court Cup 2.</p>
 
       <div class="cs-countdown" id="cs-countdown">
         <div class="cs-unit">
@@ -319,49 +319,13 @@
       </div>
 
       <p class="cs-done cs-sub" style="margin-bottom:1.5rem">
-        <strong style="color:var(--brand-blue)" data-i18n="cs.live">The page is now live!</strong> <span data-i18n="cs.reloading">Reloading&hellip;</span>
+        <strong style="color:var(--brand-blue)" data-i18n="cs.live">Match day is here.</strong> <span data-i18n="cs.reloading">See you on court.</span>
       </p>
 
-      {# ── Groups ──────────────────────────────────────── #}
-      <div class="cs-groups">
-        <h2 class="cs-groups__heading" data-i18n="cs.groups_heading">Groups</h2>
-        <div class="cs-groups__grid">
-
-          <div class="cs-group-card">
-            <h3 class="cs-group-card__title">Grupa A</h3>
-            <ul class="cs-group-card__list">
-              <li>Chłopaki nie skaczą</li>
-              <li>Trident V.T</li>
-              <li>Volley Tomaszów</li>
-            </ul>
-          </div>
-
-          <div class="cs-group-card">
-            <h3 class="cs-group-card__title">Grupa B</h3>
-            <ul class="cs-group-card__list">
-              <li>AIR FORCE</li>
-              <li>Third eye nepal</li>
-              <li>Kto Przyszedł Ten Gra</li>
-              <li>PTC Pabianice</li>
-            </ul>
-          </div>
-
-          <div class="cs-group-card">
-            <h3 class="cs-group-card__title">Grupa C</h3>
-            <ul class="cs-group-card__list">
-              <li>MKS Volley Żelazny Opoczno</li>
-              <li>Sharkvolley</li>
-              <li>STM</li>
-            </ul>
-          </div>
-
-        </div>
-      </div>
-
       <div class="cs-actions">
-        <a href="{% url 'roster_update' %}" class="cs-btn">
-          <i class="fas fa-users-cog"></i>
-          <span data-i18n="cs.roster_btn">Update Roster</span>
+        <a href="{% url 'register' %}" class="cs-btn">
+          <i class="fas fa-volleyball-ball"></i>
+          <span data-i18n="cs.roster_btn">Join Tournament</span>
         </a>
       </div>
 
@@ -388,7 +352,6 @@
     var diff = unlock - Date.now();
     if(diff <= 0){
       stage.classList.add('is-unlocked');
-      setTimeout(function(){ location.reload(); }, 3000);
       return;
     }
     var s = Math.floor(diff / 1000);
