@@ -2,7 +2,7 @@ name: Deploy to Server
 
 on:
   push:
-    branches: ["master"]
+    branches: ["court-tour"]
   workflow_dispatch:
 
 jobs:
@@ -23,8 +23,8 @@ jobs:
             PROJECT_DIR="/srv/vol-registr"
 
             cd "$PROJECT_DIR"
-            git fetch --prune origin master
-            git reset --hard origin/master
+            git fetch --prune origin court-tour
+            git reset --hard origin/court-tour
             ASSET_VERSION=$(git rev-parse --short HEAD)
             echo "DEPLOYED_COMMIT=$ASSET_VERSION"
             git --no-pager log -1 --pretty='format:DEPLOYED_SUBJECT=%s%n'
