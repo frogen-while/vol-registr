@@ -394,13 +394,13 @@ def get_match_detail(match_id: int) -> dict | None:
     away_logo = (m.team_b.logo_path or "") if m.team_b else ""
 
     match_dict = {
-        "competition": "Pocket Aces Spring Tournament",
+        "competition": "Pocket Aces Court Cup 2",
         "stage": _stage_label(m.stage, m.group),
         "status": "Final" if m.is_finished else m.get_status_display(),
         "status_raw": m.status,
         "date": m.start_time.strftime("%d %b %Y"),
         "time": m.start_time.strftime("%H:%M"),
-        "venue": "Rzgow, Szkolna 5",
+        "venue": "Strajku Łódzkich Studentów 1981 r. 2, Łódź",
         "court": f"Court {m.court}",
         "scoring": "2:0 = 3 · 2:1 = 2 · 1:2 = 1",
         "home": {"name": home_name, "short": home_short, "logo": home_logo, "sets": m.score_a, "team_id": m.team_a_id},

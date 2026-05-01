@@ -52,6 +52,22 @@
     margin-bottom: clamp(3rem, 6vh, 5rem);
     position: relative;
   }
+
+  .team-header__logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .team-header__logo img {
+    display: block;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
   
   .team-name {
     font-family: var(--font-display);
@@ -63,6 +79,8 @@
     letter-spacing: -0.02em;
     text-shadow: 6px 6px 0px rgba(56, 189, 248, 0.15);
     line-height: 0.9;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
   }
   
   .team-level {
@@ -87,6 +105,10 @@
     padding: 0 1.5rem;
   }
 
+  .team-grid > * {
+    min-width: 0;
+  }
+
   @media (max-width: 991px) {
     .team-grid {
       grid-template-columns: 1fr;
@@ -108,6 +130,7 @@
     border-radius: 12px;
     padding: 2.5rem 2rem;
     box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
   }
 
   .team-card-title {
@@ -167,6 +190,8 @@
     margin-top: 0.5rem;
     border-radius: 8px;
     transition: all 0.3s ease;
+    max-width: 100%;
+    white-space: normal;
   }
 
   .contact-link i {
@@ -241,6 +266,66 @@
     filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
   }
 
+  .team-song-preview {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 0.8rem;
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    min-width: 0;
+  }
+
+  .team-song-preview__art,
+  .team-song-preview__art-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .team-song-preview__art {
+    object-fit: cover;
+  }
+
+  .team-song-preview__art-placeholder {
+    background: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .team-song-preview__art-placeholder i {
+    color: #666;
+  }
+
+  .team-song-preview__meta {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .team-song-preview__title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .team-song-preview__artist {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .team-song-link {
+    justify-content: center;
+    max-width: 100%;
+  }
+
   /* Mobile Overrides */
   @media (max-width: 600px) {
     .team-detail-section {
@@ -256,6 +341,11 @@
 
     .team-name {
       font-size: clamp(2.5rem, 12vw, 4rem);
+    }
+
+    .team-header__logo img {
+      width: 96px;
+      height: 96px;
     }
 
     .team-level {
@@ -299,6 +389,21 @@
     .roster-item:hover {
       transform: translateX(3px);
     }
+
+    .team-song-preview {
+      gap: 0.75rem;
+      padding: 0.75rem;
+    }
+
+    .team-song-preview__title,
+    .team-song-preview__artist {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .team-song-link {
+      width: 100%;
+    }
   }
 
 </style>
@@ -323,8 +428,8 @@
 
     <div class="team-header">
       {% if team.logo_path %}
-      <div style="margin-bottom: 1.5rem;">
-        <img src="/media/{{ team.logo_path }}" alt="{{ team.name }} badge" style="width: 120px; height: 120px; object-fit: cover; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+      <div class="team-header__logo">
+        <img src="/media/{{ team.logo_path }}" alt="{{ team.name }} badge">
       </div>
       {% endif %}
       <h1 class="team-name">{{ team.name }}</h1>
@@ -356,19 +461,19 @@
         {% if team.entrance_url %}
         <div class="team-card">
           <h2 class="team-card-title"><i class="fas fa-music"></i> Entrance Song</h2>
-          <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1rem; padding: 0.8rem; background: rgba(0,0,0,0.3); border-radius: 8px;">
+          <div class="team-song-preview">
             {% if team.entrance_artwork_url %}
-            <img src="{{ team.entrance_artwork_url }}" alt="Artwork" style="width: 50px; height: 50px; border-radius: 6px;">
+            <img src="{{ team.entrance_artwork_url }}" alt="Artwork" class="team-song-preview__art">
             {% else %}
-            <div style="width: 50px; height: 50px; border-radius: 6px; background: #333; display: flex; align-items: center; justify-content: center;"><i class="fas fa-music" style="color: #666;"></i></div>
+            <div class="team-song-preview__art-placeholder"><i class="fas fa-music"></i></div>
             {% endif %}
-            <div style="flex: 1; min-width: 0;">
-              <div style="font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ team.entrance_title }}</div>
-              <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ team.entrance_artist }}</div>
+            <div class="team-song-preview__meta">
+              <div class="team-song-preview__title">{{ team.entrance_title }}</div>
+              <div class="team-song-preview__artist">{{ team.entrance_artist }}</div>
             </div>
           </div>
           <div style="margin-top: 1rem;">
-            <a href="{{ team.entrance_url }}" target="_blank" class="contact-link"><i class="fab fa-soundcloud"></i> Listen on SoundCloud</a>
+            <a href="{{ team.entrance_url }}" target="_blank" class="contact-link team-song-link"><i class="fab fa-soundcloud"></i> Listen on SoundCloud</a>
           </div>
         </div>
         {% endif %}

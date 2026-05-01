@@ -157,7 +157,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ASSET_VERSION = os.environ.get('STATIC_ASSET_VERSION', 'dev-20260425-voting-race')
+STATIC_ASSET_VERSION = os.environ.get('STATIC_ASSET_VERSION', 'dev-20260501-location-title-revert-1')
 STORAGES = {
     'staticfiles': {
         'BACKEND': 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage',

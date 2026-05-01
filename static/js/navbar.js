@@ -9,9 +9,9 @@
     en: {
       // Main page (index.html)
       hero: {
-        label: 'May 23 • 09:00 • Open Court (Boiska UŁ)',
+        label: 'June 6 • 09:00 • Outdoor Court by Dormitory No. 8',
         title: { main: 'POCKET ACES', sub: 'COURT CUP 2' },
-        text: 'Registration is open for Pocket Aces Court Cup 2. Open-air play, 10 teams, first serve at 09:00. Lock your spot before registration closes on May 21 at 00:00.',
+        text: 'Registration is open for Pocket Aces Court Cup 2. Outdoor play, 10 teams, first serve at 09:00. Lock your spot before registration closes on June 3.',
         countdown: {
           label: 'Registration closes in',
           days: 'Days',
@@ -41,15 +41,15 @@
         },
         card2: {
           title: 'Registration',
-          text: 'Registration is live now and only 10 teams make the field. Secure your place before the deadline hits.',
-          list1: 'Deadline: May 21, 00:00',
+          text: 'Registration is live now and only 10 teams make the field. Secure your place before the June 3 deadline.',
+          list1: 'Deadline: June 3',
           list2: 'Entry fee: 150 zł'
         },
         card3: {
-          title: 'Open Air Matchday',
-          text: 'We meet at Open Court (Boiska UŁ) on May 23 at 09:00 for a full open-air tournament day.',
-          list1: 'Open Court (Boiska UŁ)',
-          list2: 'First serve: 09:00'
+          title: 'Outdoor Matchday',
+          text: 'We meet at the outdoor court by Dormitory No. 8 on June 6 at 09:00 for a full tournament day.',
+          list1: 'Court by Dormitory No. 8',
+          list2: 'Arrive 30-60 min early'
         },
         card4: {
           title: 'Weather Policy',
@@ -61,10 +61,10 @@
       deal_lead: 'A compact outdoor event built for teams that want a sharp schedule, clear stakes, and a better matchday atmosphere.',
       location: {
         kicker: 'Venue Details',
-        title: 'Open Court',
-        text: 'Pocket Aces Court Cup 2 is heading to Open Court (Boiska UŁ). Registration is live, so lock in your roster and get ready for the new open-air edition.',
-        info: { label: 'Location', value: 'Open Court (Boiska UŁ)' },
-        date: { label: 'Date', value: 'May 23, 09:00' },
+        title: 'The Venue',
+        text: 'Pocket Aces Court Cup 2 moves to the outdoor court next to Dormitory No. 8 in Łódź. Bring your team 30-60 minutes early for registration and warm-up.',
+        info: { label: 'Location', value: 'Strajku Łódzkich Studentów 1981 r. 2, 91-404 Łódź' },
+        date: { label: 'Date', value: 'June 6, 09:00' },
         link: 'View on Google Maps'
       },
       location_pill1_title: 'Open-Air Setup',
@@ -89,9 +89,9 @@
         heading: 'Registration Timeline',
         lead: 'From sign-up to first serve, these are the four moments that shape the event week.',
         step1: { date: 'Open now', title: 'Now Open', desc: 'Team registration is open. Join now before all 10 spots are taken.' },
-        step2: { date: 'May 21, 00:00', title: 'Registration Closes', desc: 'Final deadline to lock your team into the event.' },
+        step2: { date: 'June 3', title: 'Registration Closes', desc: 'Final deadline to lock your team into the event.' },
         step3: { date: 'After close', title: 'Captain Update', desc: 'Final event details will be sent to registered captains.' },
-        step4: { date: 'May 23, 09:00', title: 'Tournament Day', desc: 'Pocket Aces Court Cup 2 starts at Open Court (Boiska UŁ).' }
+        step4: { date: 'June 6, 09:00', title: 'Tournament Day', desc: 'Pocket Aces Court Cup 2 starts at the outdoor court by Dormitory No. 8.' }
       },
       gallery_page: {
         eyebrow: 'Pocket Aces',
@@ -107,19 +107,19 @@
       faq: {
         title: 'FAQ',
         q1: 'What if a player is under 18?',
-        a1: 'If any player is under 18, a <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026_1.pdf" target="_blank">parental consent form</a> must be filled out and provided at registration.',
+        a1: 'If any player is under 18, a <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026_1.pdf" target="_blank">parental consent form</a> must be sent before the event and brought in paper form on tournament day.',
         q2: "What if our team doesn't have uniforms?",
-        a2: 'Matching uniforms are welcome, but not required. Just make sure your team is clearly identifiable on court.',
+        a2: 'Uniform numbers are not required. Matching shirts are welcome, but the key point is that your team stays easy to identify on court.',
         q3: 'Can we get a refund?',
-        a3: 'Yes, you can get a refund until the end of registration. Just contact support.',
+        a3: 'If the tournament is canceled because the minimum number of teams is not reached, all payments are refunded within 7 days.',
         q4: 'What happens if the weather is bad?',
         a4: 'Because this is an open-air event, the tournament may be postponed in case of bad weather. Registered captains will be informed directly.',
         q5: 'How many players can be on a team?',
-        a5: 'A team can have 6 to 12 players, including substitutes.',
+        a5: 'You need 6 players on court to start a match, and you can register an unlimited number of substitutes.',
         q6: 'Can we change a player after registration?',
-        a6: 'Yes, you can replace a player before the tournament starts by notifying the organizers.',
+        a6: 'Roster changes are accepted only until registration closes on June 3. Once the tournament starts, roster changes are not allowed.',
         q7: 'Where can we find the match schedule?',
-        a7: 'The match schedule will be published on the website and sent to team captains by email a few days before the tournament.',
+        a7: 'The final format depends on the number of registered teams. Captains receive updates directly, and key schedule information will also appear on the website.',
         ask_title: 'Ask a question',
         ask_email_ph: 'Your email',
         ask_question_ph: 'Your question',
@@ -128,7 +128,7 @@
       },
       cs: {
         heading: 'Match Centre Soon',
-        sub: 'Match Centre opens on <strong>May 23 at 09:00</strong>. Until then, use the time left to register your team for Pocket Aces Court Cup 2.',
+        sub: 'Match Centre opens on <strong>June 6 at 09:00</strong>. Until then, use the time left to register your team for Pocket Aces Court Cup 2.',
         days: 'Days',
         hours: 'Hours',
         min: 'Min',
@@ -278,15 +278,15 @@
       reg_step3:     'Roster',
       reg_title:     'Active Registration',
       reg_subtitle:  'Pocket&nbsp;Aces<br>Court&nbsp;Cup&nbsp;2',
-      reg_desc:      'Registration is open for Pocket Aces Court Cup 2. We are taking 10 teams for the new open-air event, so secure your spot before May 21 at 00:00.',
+      reg_desc:      'Registration is open for Pocket Aces Court Cup 2. We are taking 10 teams for the new outdoor event, so secure your spot before June 3.',
       reg_fact1_title: '10 Spots',
       reg_fact1_copy: 'Compact field, quick bracket, and no long wait between meaningful matches.',
-      reg_fact2_title: 'May 21',
-      reg_fact2_copy: 'Registration closes at 00:00, so late roster decisions need to happen now.',
+      reg_fact2_title: 'June 3',
+      reg_fact2_copy: 'Registration closes on June 3, so late roster decisions need to happen now.',
       reg_fact3_title: 'Captain Flow',
       reg_fact3_copy: 'Badge, roster, and contact edits stay open through the team profile link.',
       reg_access_title: 'Need changes later?',
-      reg_access_copy: 'After confirmation, captains can still update the team badge and roster from the profile page without breaking the registration flow.',
+      reg_access_copy: 'After confirmation, captains can still update the team badge and roster from the profile page until registration closes on June 3.',
       reg_access_cta: 'Open captain profile',
       reg_identity:  'Team Details',
       reg_team_name: 'Team Name',
@@ -311,7 +311,7 @@
       reg_media:     'Badge & Entrance Song',
       reg_roster:    'Team Roster',
       reg_hint:      'Minimum 6 players required',
-      reg_note:      '<strong>Important:</strong><br>Captain must be listed as one of the players below.<br><br>This event is played outdoors, so in case of bad weather the tournament may be postponed and captains will be notified directly.',
+      reg_note:      '<strong>Important:</strong><br>Captain must be listed as one of the players below.<br><br>Finish roster edits before June 3. This event is played outdoors, so in case of bad weather the tournament may be postponed and captains will be notified directly.',
       reg_first:     'First Name',
       reg_last:      'Last Name',
       reg_jersey:    '#',
@@ -325,14 +325,14 @@
       reg_logo_skip: 'Optional. You can also add this later.',
       reg_logo_remove: 'Remove badge',
       reg_choose_file: 'Choose File',
-      reg_terms:     'I have read and accept the <a href="/static/assets/documents/Regulations_english.pdf" target="_blank">tournament regulations</a>',
+      reg_terms:     'I have read and accept the <a href="/static/assets/documents/Regulations_english_czerwec.pdf" target="_blank">tournament regulations</a>',
       reg_age:       'All players are 18 years of age or older',
         reg_parental:  'If any player is under 18, a <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026_1.pdf" target="_blank">parental consent form</a> must be filled out and provided at registration.',
       reg_photo:     'I consent to photos/videos being taken during the event',
-      reg_payment:   'I understand the entry fee is <strong>150 zł</strong> and payment details will be sent by email',
+      reg_payment:   'I understand the entry fee is <strong>150 zł</strong> and payment details plus the payment deadline will be sent by email',
       reg_submit:    'Join Tournament',
       reg_success:   'Registration Sent!',
-      reg_success_txt: 'Your team has been submitted for Pocket Aces Court Cup 2. Payment instructions will be sent to your email address shortly.',
+      reg_success_txt: 'Your team has been submitted for Pocket Aces Court Cup 2. Payment details and the deadline will be sent to your email address shortly.',
       // Validation
       err_team_name: 'Team name is required.',
       err_league:    'Please select a league level.',
@@ -580,9 +580,9 @@
     pl: {
       // Main page (index.html)
       hero: {
-        label: '23 maja • 09:00 • Open Court (Boiska UŁ)',
+        label: '6 czerwca • 09:00 • Boisko przy akademiku nr 8',
         title: { main: 'POCKET ACES', sub: 'COURT CUP 2' },
-        text: 'Rejestracja na Pocket Aces Court Cup 2 jest otwarta. Gramy na otwartym boisku, limit to 10 drużyn, a pierwszy gwizdek o 09:00. Zapisz ekipę przed końcem rejestracji 21.05 o 00:00.',
+        text: 'Rejestracja na Pocket Aces Court Cup 2 jest otwarta. Gramy na zewnętrznym boisku, limit to 10 drużyn, a pierwszy gwizdek o 09:00. Zapisz ekipę przed końcem rejestracji 3 czerwca.',
         countdown: {
           label: 'Koniec rejestracji za',
           days: 'Dni',
@@ -613,14 +613,14 @@
         card2: {
           title: 'Rejestracja',
           text: 'Zapisy trwają i tylko 10 drużyn wejdzie do turnieju. Zabezpiecz miejsce, zanim minie deadline.',
-          list1: 'Deadline: 21.05, 00:00',
+          list1: 'Deadline: 3 czerwca',
           list2: 'Wpisowe: 150 zł'
         },
         card3: {
           title: 'Dzień turnieju open air',
-          text: 'Spotykamy się 23 maja o 09:00 na Open Court (Boiska UŁ) na cały dzień grania pod gołym niebem.',
-          list1: 'Open Court (Boiska UŁ)',
-          list2: 'Start: 09:00'
+          text: 'Spotykamy się 6 czerwca o 09:00 na zewnętrznym boisku przy akademiku nr 8 na cały dzień grania.',
+          list1: 'Boisko przy akademiku nr 8',
+          list2: 'Przyjazd 30-60 min wcześniej'
         },
         card4: {
           title: 'Pogoda',
@@ -631,10 +631,10 @@
       },
       deal_lead: 'Kompaktowy turniej open-air dla ekip, które chcą czytelnego rytmu dnia, jasnej stawki i lepszej atmosfery meczowej.',
       location: {
-        title: 'Open Court',
-        text: 'Pocket Aces Court Cup 2 gramy na Open Court (Boiska UŁ). Rejestracja trwa, więc wpisz skład i przygotuj drużynę na nowe wydanie open-air.',
-        info: { label: 'Lokalizacja', value: 'Open Court (Boiska UŁ)' },
-        date: { label: 'Data', value: '23 maja, 09:00' },
+        title: 'Obiekt',
+        text: 'Pocket Aces Court Cup 2 gramy na zewnętrznym boisku przy akademiku nr 8 w Łodzi. Przyjedź z drużyną 30-60 minut wcześniej na rejestrację i rozgrzewkę.',
+        info: { label: 'Lokalizacja', value: 'Strajku Łódzkich Studentów 1981 r. 2, 91-404 Łódź' },
+        date: { label: 'Data', value: '6 czerwca, 09:00' },
         link: 'Zobacz na Google Maps'
       },
       location_pill1_title: 'Open-Air Setup',
@@ -658,27 +658,27 @@
       road: {
         heading: 'Harmonogram zapisów',
         step1: { date: 'Teraz', title: 'Zapisy otwarte', desc: 'Rejestracja drużyn trwa. Dołącz zanim zniknie 10 miejsc.' },
-        step2: { date: '21.05, 00:00', title: 'Koniec rejestracji', desc: 'Ostateczny termin na zgłoszenie drużyny do turnieju.' },
+        step2: { date: '3 czerwca', title: 'Koniec rejestracji', desc: 'Ostateczny termin na zgłoszenie drużyny do turnieju.' },
         step3: { date: 'Po zamknięciu', title: 'Info dla kapitanów', desc: 'Szczegóły organizacyjne wydarzenia trafią do zapisanych kapitanów.' },
-        step4: { date: '23.05, 09:00', title: 'Dzień turnieju', desc: 'Pocket Aces Court Cup 2 startuje na Open Court (Boiska UŁ).' }
+        step4: { date: '06.06, 09:00', title: 'Dzień turnieju', desc: 'Pocket Aces Court Cup 2 startuje na boisku przy akademiku nr 8.' }
       },
       // FAQ page
       faq: {
         title: 'FAQ',
         q1: 'Co jeśli zawodnik ma mniej niż 18 lat?',
-        a1: 'Jeśli którykolwiek z zawodników ma mniej niż 18 lat, należy wypełnić <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026_1.pdf" target="_blank">zgodę rodzica</a> i dostarczyć ją organizatorom.',
+        a1: 'Jeśli którykolwiek z zawodników ma mniej niż 18 lat, należy wysłać <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026_1.pdf" target="_blank">zgodę rodzica</a> przed wydarzeniem i dostarczyć ją w wersji papierowej w dniu turnieju.',
         q2: 'Co jeśli drużyna nie ma strojów?',
-        a2: 'Jednolite stroje są mile widziane, ale nie są wymagane. Ważne, żeby drużyna była czytelnie zorganizowana na boisku.',
+        a2: 'Numery na koszulkach nie są wymagane. Jednolite stroje są mile widziane, ale najważniejsze jest to, żeby drużynę dało się łatwo rozpoznać na boisku.',
         q3: 'Czy można otrzymać zwrot opłaty?',
-        a3: 'Tak, zwrot jest możliwy do końca rejestracji. Skontaktuj się z organizatorami.',
+        a3: 'Jeśli turniej zostanie odwołany z powodu zbyt małej liczby drużyn, wszystkie wpłaty są zwracane w ciągu 7 dni.',
         q4: 'Co jeśli pogoda będzie zła?',
         a4: 'Ponieważ to wydarzenie open-air, turniej może zostać przełożony w przypadku złej pogody. Zarejestrowani kapitanowie dostaną informację bezpośrednio.',
         q5: 'Ilu zawodników może być w drużynie?',
-        a5: 'Drużyna może liczyć od 6 do 12 zawodników, w tym rezerwowych.',
+        a5: 'Do rozpoczęcia meczu potrzebujesz 6 zawodników na boisku, a rezerwowych możesz zgłosić bez limitu.',
         q6: 'Czy można zmienić zawodnika po rejestracji?',
-        a6: 'Tak, można wymienić zawodnika przed turniejem, informując organizatorów.',
+        a6: 'Zmiany w składzie są akceptowane tylko do końca rejestracji 3 czerwca. Po starcie turnieju nie można już zmieniać rosteru.',
         q7: 'Gdzie znajdziemy harmonogram meczów?',
-        a7: 'Harmonogram zostanie opublikowany na stronie i wysłany kapitanom drużyn e-mailem kilka dni przed turniejem.',
+        a7: 'Ostateczny format zależy od liczby zgłoszonych drużyn. Kapitanowie dostaną aktualizacje bezpośrednio, a najważniejsze informacje o harmonogramie pojawią się też na stronie.',
         ask_title: 'Zadaj pytanie',
         ask_email_ph: 'Twój email',
         ask_question_ph: 'Twoje pytanie',
@@ -687,7 +687,7 @@
       },
       cs: {
         heading: 'Match Centre wkrótce',
-        sub: 'Match Centre rusza <strong>23 maja o 09:00</strong>. Do tego czasu wykorzystaj odliczanie, żeby zapisać drużynę na Pocket Aces Court Cup 2.',
+        sub: 'Match Centre rusza <strong>6 czerwca o 09:00</strong>. Do tego czasu wykorzystaj odliczanie, żeby zapisać drużynę na Pocket Aces Court Cup 2.',
         days: 'Dni',
         hours: 'Godz',
         min: 'Min',
@@ -822,9 +822,9 @@
       nav_roster:    'Profil druzyny',
       nav_register:  'Zapisz się',
       hero: {
-        label: '23 maja • 09:00 • Open Court (Boiska UŁ)',
+        label: '6 czerwca • 09:00 • Boisko przy akademiku nr 8',
         title: { main: 'POCKET ACES', sub: 'COURT CUP 2' },
-        text: 'Rejestracja na Pocket Aces Court Cup 2 jest otwarta. Gramy na zewnątrz, bierzemy 10 drużyn, a pierwszy gwizdek jest o 09:00. Zajmij miejsce przed zamknięciem zapisów 21 maja o 00:00.',
+        text: 'Rejestracja na Pocket Aces Court Cup 2 jest otwarta. Gramy na zewnątrz, bierzemy 10 drużyn, a pierwszy gwizdek jest o 09:00. Zajmij miejsce przed zamknięciem zapisów 3 czerwca.',
         countdown: {
           label: 'Koniec rejestracji za',
           days: 'Dni',
@@ -839,19 +839,19 @@
       },
       location: {
         kicker: 'Szczegóły obiektu',
-        title: 'Open Court',
-        text: 'Pocket Aces Court Cup 2 przenosi się na Open Court (Boiska UŁ). Rejestracja trwa, więc zamknij skład i przygotuj się na nową edycję open-air.',
-        info: { label: 'Lokalizacja', value: 'Open Court (Boiska UŁ)' },
-        date: { label: 'Data', value: '23 maja, 09:00' },
+        title: 'Obiekt',
+        text: 'Pocket Aces Court Cup 2 przenosi się na zewnętrzne boisko przy akademiku nr 8 w Łodzi. Przyjedź 30-60 minut wcześniej na rejestrację i rozgrzewkę.',
+        info: { label: 'Lokalizacja', value: 'Strajku Łódzkich Studentów 1981 r. 2, 91-404 Łódź' },
+        date: { label: 'Data', value: '6 czerwca, 09:00' },
         link: 'Zobacz w Google Maps'
       },
       road: {
         heading: 'Timeline Rejestracji',
         lead: 'Od zapisu do pierwszego gwizdka: te cztery momenty budują cały tydzien turniejowy.',
         step1: { date: 'Otwarte teraz', title: 'Zapisy Otwarte', desc: 'Zapisy sa otwarte. Dolacz zanim zajmie sie wszystkie 10 miejsc.' },
-        step2: { date: '21 maja, 00:00', title: 'Koniec Rejestracji', desc: 'Ostateczny termin, by zamknac sklad i wejsc do wydarzenia.' },
+        step2: { date: '3 czerwca', title: 'Koniec Rejestracji', desc: 'Ostateczny termin, by zamknac sklad i wejsc do wydarzenia.' },
         step3: { date: 'Po zamknieciu', title: 'Info dla Kapitanow', desc: 'Finalne informacje organizacyjne trafia bezposrednio do zapisanych kapitanow.' },
-        step4: { date: '23 maja, 09:00', title: 'Dzien Turnieju', desc: 'Pocket Aces Court Cup 2 startuje na Open Court (Boiska UŁ).' }
+        step4: { date: '6 czerwca, 09:00', title: 'Dzien Turnieju', desc: 'Pocket Aces Court Cup 2 startuje na boisku przy akademiku nr 8.' }
       },
       gallery_page: {
         eyebrow: 'Pocket Aces',
@@ -879,15 +879,15 @@
       reg_step3:     'Skład',
       reg_title:     'Aktywna Rejestracja',
       reg_subtitle:  'Pocket&nbsp;Aces<br>Court&nbsp;Cup&nbsp;2',
-      reg_desc:      'Rejestracja na Pocket Aces Court Cup 2 jest otwarta. Bierzemy 10 drużyn na nowe wydarzenie open-air, więc zapisz skład przed 21.05 o 00:00.',
+      reg_desc:      'Rejestracja na Pocket Aces Court Cup 2 jest otwarta. Bierzemy 10 drużyn na nowe wydarzenie outdoorowe, więc zapisz skład przed 3 czerwca.',
       reg_fact1_title: '10 Miejsc',
       reg_fact1_copy: 'Kompaktowa stawka, szybka drabinka i bez długiego czekania między ważnymi meczami.',
-      reg_fact2_title: '21 Maja',
-      reg_fact2_copy: 'Rejestracja zamyka się o 00:00, więc decyzje o składzie trzeba domknąć teraz.',
+      reg_fact2_title: '3 Czerwca',
+      reg_fact2_copy: 'Rejestracja zamyka się 3 czerwca, więc decyzje o składzie trzeba domknąć teraz.',
       reg_fact3_title: 'Captain Flow',
       reg_fact3_copy: 'Herb, skład i dane kontaktowe dalej można poprawiać z poziomu profilu drużyny.',
       reg_access_title: 'Chcesz coś zmienić później?',
-      reg_access_copy: 'Po zapisaniu drużyny kapitan nadal może zaktualizować herb i skład w profilu, bez potrzeby ponownej rejestracji.',
+      reg_access_copy: 'Po zapisaniu drużyny kapitan nadal może zaktualizować herb i skład w profilu do końca rejestracji 3 czerwca.',
       reg_access_cta: 'Otwórz profil kapitana',
       reg_identity:  'Dane drużyny',
       reg_team_name: 'Nazwa Drużyny',
@@ -912,7 +912,7 @@
       reg_media:     'Herb i piosenka wejścia',
       reg_roster:    'Skład Drużyny',
       reg_hint:      'Minimum 6 zawodników',
-      reg_note:      '<strong>Ważne:</strong><br>Kapitan musi być wpisany jako jeden z zawodników poniżej.<br><br>Turniej gramy na zewnątrz, więc w przypadku złej pogody wydarzenie może zostać przełożone, a kapitanowie dostaną informację bezpośrednio.',
+      reg_note:      '<strong>Ważne:</strong><br>Kapitan musi być wpisany jako jeden z zawodników poniżej.<br><br>Zakończ zmiany w składzie do 3 czerwca. Turniej gramy na zewnątrz, więc w przypadku złej pogody wydarzenie może zostać przełożone, a kapitanowie dostaną informację bezpośrednio.',
       reg_first:     'Imię',
       reg_last:      'Nazwisko',
       reg_jersey:    '#',
@@ -926,14 +926,14 @@
       reg_logo_skip: 'Opcjonalne. Mozesz dodac je pozniej.',
       reg_logo_remove: 'Usun herb',
       reg_choose_file: 'Wybierz plik',
-      reg_terms:     'Przeczytałem i akceptuję <a href="/static/assets/documents/Regulations_polish.pdf" target="_blank">regulamin turnieju</a>',
+      reg_terms:     'Przeczytałem i akceptuję <a href="/static/assets/documents/Regulations_polish%20czerwec%20.pdf" target="_blank">regulamin turnieju</a>',
       reg_age:       'Wszyscy zawodnicy mają ukończone 18 lat',
         reg_parental:  'Jeśli którykolwiek z zawodników ma mniej niż 18 lat, należy wypełnić <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026_1.pdf" target="_blank">zgodę rodzica</a> i dostarczyć ją organizatorom.',
       reg_photo:     'Wyrażam zgodę na zdjęcia/filmy podczas wydarzenia',
-      reg_payment:   'Rozumiem, że wpisowe wynosi <strong>150 zł</strong>, a szczegóły płatności zostaną przesłane e-mailem',
+      reg_payment:   'Rozumiem, że wpisowe wynosi <strong>150 zł</strong>, a szczegóły płatności wraz z terminem zostaną przesłane e-mailem',
       reg_submit:    'Zapisz się',
       reg_success:   'Zgłoszenie wysłane!',
-      reg_success_txt: 'Twoja drużyna została zgłoszona do Pocket Aces Court Cup 2. Instrukcje płatności zostaną wysłane na Twój adres e-mail.',
+      reg_success_txt: 'Twoja drużyna została zgłoszona do Pocket Aces Court Cup 2. Szczegóły płatności i termin zostaną wysłane na Twój adres e-mail.',
       // Validation
       err_team_name: 'Nazwa drużyny jest wymagana.',
       err_league:    'Wybierz poziom ligi.',
@@ -1182,10 +1182,10 @@
 
   const MOBILE_TEXT_OVERRIDES = {
     en: {
-      'hero.text': 'Official Pocket Aces tournament with pro organization and top-level competition.'
+      'hero.text': 'Registration is open for Pocket Aces Court Cup 2. Outdoor play, 10 teams, first serve at 09:00. Lock your spot before registration closes on June 3.'
     },
     pl: {
-      'hero.text': 'Oficjalny turniej Pocket Aces z profesjonalną organizacją i mocną rywalizacją.'
+      'hero.text': 'Rejestracja na Pocket Aces Court Cup 2 jest otwarta. Gramy na zewnątrz, limit to 10 drużyn, a pierwszy gwizdek o 09:00. Zapisz ekipę przed końcem rejestracji 3 czerwca.'
     }
   };
 

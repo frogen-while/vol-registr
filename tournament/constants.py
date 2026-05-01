@@ -10,7 +10,7 @@ MAX_TOURNAMENT_SLOTS = 10
 
 # ── Registration Gate ───────────────────────────────────
 REGISTRATION_CLOSED = False
-REGISTRATION_DEADLINE_ISO = "2026-05-21T00:00:00+02:00"
+REGISTRATION_DEADLINE_ISO = "2026-06-03T23:59:00+02:00"
 
 # ── Payment Status ───────────────────────────────────────
 PAYMENT_WAITING = 0
@@ -50,7 +50,7 @@ EMAIL_MAX_LENGTH = 100
 PHONE_MAX_LENGTH = 20
 
 # ── Feature Toggles ─────────────────────────────────────
-FAN_VOTING_ENABLED = True
+FAN_VOTING_ENABLED = False
 LOGO_PATH_MAX_LENGTH = 255
 GROUP_NAME_MAX_LENGTH = 10
 

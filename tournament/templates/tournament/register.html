@@ -299,12 +299,14 @@
     padding: 1rem;
     border-radius: 8px;
     margin-bottom: 1.5rem;
+    overflow: hidden;
   }
 
   .reg-song-card__inner {
     display: flex;
     align-items: center;
     gap: 1rem;
+    min-width: 0;
   }
 
   .reg-song-card__art {
@@ -658,6 +660,11 @@
       border-radius: 1.35rem;
     }
 
+    .reg-brand__title {
+      font-size: clamp(2.35rem, 10.8vw, 3.4rem);
+      line-height: 0.9;
+    }
+
     .reg-brand__facts {
       grid-template-columns: 1fr;
     }
@@ -674,6 +681,59 @@
 
     .reg-logo-preview__remove {
       width: 100%;
+    }
+
+    .reg-song-card {
+      padding: 0.85rem;
+    }
+
+    .reg-song-card__inner {
+      display: grid;
+      grid-template-columns: 3.25rem minmax(0, 1fr);
+      gap: 0.75rem;
+      align-items: start;
+    }
+
+    .reg-song-card__art {
+      width: 3.25rem;
+      height: 3.25rem;
+    }
+
+    .reg-song-card__title,
+    .reg-song-card__artist {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    #removeScSongBtn {
+      grid-column: 1 / -1;
+      width: 100% !important;
+      justify-content: center;
+      padding: 0.65rem 0.9rem !important;
+    }
+
+    #step2 .reg-actions,
+    #step3 .reg-actions {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: stretch;
+      gap: 0.65rem;
+    }
+
+    #step2 .reg-actions .reg-btn--back,
+    #step3 .reg-actions .reg-btn--back {
+      width: auto;
+      white-space: nowrap;
+      padding-inline: 1rem;
+    }
+
+    #step2 .reg-actions .reg-btn--next,
+    #step3 .reg-actions .reg-btn--submit {
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+      margin-left: 0;
+      justify-content: center;
     }
   }
 </style>
@@ -699,11 +759,11 @@
       </h1>
       <p class="reg-brand__desc" data-i18n="reg_desc">
         Registration is open for Pocket Aces Court Cup 2.
-        We are taking 10 teams for the new open-air event, so secure your spot before May 21 at 00:00.
+        We are taking 10 teams for the new outdoor event, so secure your spot before June 3.
       </p>
       <div class="reg-brand__meta" aria-hidden="true">
         <span class="reg-brand__meta-chip" data-i18n="reg_fact1_title">10 Spots</span>
-        <span class="reg-brand__meta-chip" data-i18n="reg_fact2_title">May 21</span>
+        <span class="reg-brand__meta-chip" data-i18n="reg_fact2_title">June 3</span>
         <span class="reg-brand__meta-chip" data-i18n="reg_fact3_title">Captain Flow</span>
       </div>
     </div>
@@ -711,7 +771,7 @@
     <div class="reg-brand__panel reg-layout__access">
       <div>
         <span class="reg-brand__panel-kicker" data-i18n="reg_access_title">Need changes later?</span>
-        <p class="reg-brand__panel-copy" data-i18n="reg_access_copy">After confirmation, captains can still update the team badge and roster from the profile page without breaking the registration flow.</p>
+        <p class="reg-brand__panel-copy" data-i18n="reg_access_copy">After confirmation, captains can still update the team badge and roster from the profile page until registration closes on June 3.</p>
       </div>
       <a class="reg-brand__link" href="/roster/" data-i18n="reg_access_cta">Open captain profile</a>
     </div>
@@ -862,7 +922,7 @@
       <div class="reg-panel reg-panel--hidden" id="step3">
         <h3 class="reg-panel__title" data-i18n="reg_roster">Team Roster</h3>
         <p class="reg-panel__hint" data-i18n="reg_hint">Minimum 6 players required</p>
-        <p class="reg-panel__note" data-i18n="reg_note">Captain must be listed as one of the players below. This event is played outdoors, so in case of bad weather the tournament may be postponed and captains will be notified directly.</p>
+        <p class="reg-panel__note" data-i18n="reg_note">Captain must be listed as one of the players below. Finish roster edits before June 3. This event is played outdoors, so in case of bad weather the tournament may be postponed and captains will be notified directly.</p>
 
         <div class="roster-list" id="rosterList">
           <!-- Players 1–6 (required) -->
@@ -886,7 +946,7 @@
           <label class="reg-check">
             <input type="checkbox" id="chkTerms" required>
             <span class="reg-check__box"></span>
-            <span data-i18n="reg_terms">I have read and accept the tournament regulations</span>
+            <span data-i18n="reg_terms">I have read and accept the <a href="/static/assets/documents/Regulations_english_czerwec.pdf" target="_blank">tournament regulations</a></span>
           </label>
           <label class="reg-check">
             <input type="checkbox" id="chkPhoto">
@@ -896,7 +956,7 @@
           <label class="reg-check">
             <input type="checkbox" id="chkPayment" required>
             <span class="reg-check__box"></span>
-            <span data-i18n="reg_payment">I understand the entry fee is <strong>150 zł</strong> and payment details will be sent by email</span>
+            <span data-i18n="reg_payment">I understand the entry fee is <strong>150 zł</strong> and payment details plus the payment deadline will be sent by email</span>
           </label>
         </div>
         <span class="reg-error" id="err-checks"></span>
@@ -917,7 +977,7 @@
         <div class="reg-success__icon">✓</div>
         <h3 class="reg-success__title" data-i18n="reg_success">Registration Sent!</h3>
         <p class="reg-success__text" data-i18n="reg_success_txt">
-          Your team has been submitted for Pocket Aces Court Cup 2. Payment instructions will be sent to your email address shortly.
+          Your team has been submitted for Pocket Aces Court Cup 2. Payment details and the deadline will be sent to your email address shortly.
         </p>
       </div>
 

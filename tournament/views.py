@@ -404,8 +404,8 @@ def tournament_hub(request):
     """Match Centre placeholder page until event start."""
     context = {
         "page_title": "Match Centre | Pocket Aces Court Cup 2",
-        "page_description": "Match Centre opens on May 23, 2026 at 09:00 for Pocket Aces Court Cup 2.",
-        "unlock_iso": "2026-05-23T09:00:00+02:00",
+        "page_description": "Match Centre opens on June 6, 2026 at 09:00 for Pocket Aces Court Cup 2.",
+        "unlock_iso": "2026-06-06T09:00:00+02:00",
     }
     return render(request, "tournament/match_coming_soon.html", context)
 
@@ -639,6 +639,11 @@ def api_vote_team(request):
     """
     JSON endpoint: vote for a team with email confirmation.
     """
+    from .constants import FAN_VOTING_ENABLED
+
+    if not FAN_VOTING_ENABLED:
+        return JsonResponse({'success': False, 'error': 'Fan voting is currently disabled.'}, status=403)
+
     try:
         data = json.loads(request.body)
         email = data.get('email', '').strip().lower()

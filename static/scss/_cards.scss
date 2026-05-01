@@ -475,9 +475,13 @@
 
   // Show front face immediately (no GSAP flip on mobile)
   .flip-card {
-    transform: rotateY(180deg);
+    transform: none !important;
+  }
+  .flip-card-back {
+    display: none !important;
   }
   .flip-card-front {
+    transform: none !important;
     gap: 1.3rem;
     padding: 1.3rem 1.1rem;
   }
