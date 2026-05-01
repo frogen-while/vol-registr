@@ -567,7 +567,8 @@ body {
   display: block;
   line-height: 1.05;
   white-space: normal;
-  word-break: break-word;
+  word-break: normal;
+  overflow-wrap: normal;
   transform: translateY(100%);
   color: transparent;
   background-clip: text;
@@ -579,7 +580,14 @@ body {
     font-size: 5rem;
     line-height: 1.15;
     white-space: normal;
-    word-break: break-word;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+}
+@media (max-width: 420px) {
+  .hero-title__main {
+    font-size: 4.35rem;
+    line-height: 1.08;
   }
 }
 
