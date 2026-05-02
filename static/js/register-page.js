@@ -587,6 +587,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function setPreviewAvailability(isAvailable) {
+    if (!scPlayPreviewBtn) return;
+    scPlayPreviewBtn.disabled = !isAvailable;
+    scPlayPreviewBtn.style.opacity = isAvailable ? '1' : '0.45';
+    scPlayPreviewBtn.style.cursor = isAvailable ? 'pointer' : 'not-allowed';
+    scPlayPreviewBtn.title = isAvailable ? 'Preview the selected 15-second clip' : 'Preview is temporarily unavailable';
+    if (!isAvailable) {
+      resetPreviewButton();
+      updatePreviewProgress(0);
+    }
+  }
+
   function updatePreviewProgress(progressMs = 0) {
     const clipMs = clipLengthSeconds * 1000;
     const clamped = Math.max(0, Math.min(progressMs, clipMs));
@@ -766,6 +778,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (scLoading) scLoading.style.display = 'block';
     if (scEditorArea) scEditorArea.style.display = 'none';
+    setPreviewAvailability(false);
     setSearchStatus(`Loading ${result.title || 'track'}...`);
 
     try {
@@ -780,10 +793,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const widget = await ensureScWidget();
     if (!widget) {
-      setScError('SoundCloud widget is unavailable right now.');
+      if (scLoading) scLoading.style.display = 'none';
+      if (scEditorArea) scEditorArea.style.display = 'block';
+      setScError('Preview is temporarily unavailable, but you can still choose the track and set the clip start time.');
+      setSearchStatus(`Loaded ${result.title || 'track'}. Drag the 15-second window and confirm the clip.`);
+      updateCropperPosition();
+      updatePreviewProgress(0);
       if (scLoading) scLoading.style.display = 'none';
       return;
     }
+
+    setPreviewAvailability(true);
 
     if (window.SC?.Widget?.Events?.READY) {
       widget.unbind(window.SC.Widget.Events.READY);
@@ -957,6 +977,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (scPlayPreviewBtn) {
     scPlayPreviewBtn.addEventListener('click', async () => {
+      if (scPlayPreviewBtn.disabled) return;
       if (!currentSoundResult) return;
 
       const widget = await ensureScWidget();
