@@ -349,10 +349,10 @@
         heading: 'Dlaczego warto',
         card1: {
           title: 'Nagrody',
-          text: 'Na podium czekają puchary i medale. Bez nagród pobocznych, bez zbędnych dodatków, liczy się walka o czołowe miejsca.',
-          list1: 'Puchary dla zwycięzców',
-          list2: 'Medale dla czołowych drużyn',
-          list3: 'Jednodniowa walka o trofeum'
+          text: 'Na koniec czekają puchary i medale — wszystko rozstrzyga się na boisku w walce o najwyższe miejsca. Kibice mogą głosować na najlepszą drużynę na stronie, a zespół z największą liczbą głosów otrzyma specjalne nagrody.',
+          list1: 'Puchary i medale',
+          list2: 'Głosowanie kibiców',
+          list3: 'Specjalne nagrody'
         },
         card2: {
           title: 'Rejestracja',
