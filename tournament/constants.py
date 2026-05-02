@@ -6,7 +6,7 @@ so they can be changed in one place.
 """
 
 # ── Slot / Capacity ─────────────────────────────────────
-MAX_TOURNAMENT_SLOTS = 10
+MAX_TOURNAMENT_SLOTS = 8
 
 # ── Registration Gate ───────────────────────────────────
 REGISTRATION_CLOSED = False

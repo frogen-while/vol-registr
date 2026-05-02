@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ─── Hero Intro Timeline ────────────────────────
     initHeroIntro(CFG.hero);
-    initCountdown();
 
     // ─── Card Modal (desktop only) ────────────────────
     if (!isMobileView) {
@@ -45,55 +44,39 @@ document.addEventListener('DOMContentLoaded', () => {
 // ═══════════════════════════════════════════════════════
 
 /**
- * Initialize the registration countdown timer.
- */
-function initCountdown() {
-    const countdownEl = document.getElementById('heroCountdown');
-    if (!countdownEl) return;
-    
-    const deadlineStr = countdownEl.dataset.deadline;
-    if (!deadlineStr) return;
-    
-    const deadline = new Date(deadlineStr).getTime();
-    
-    const daysEl = document.getElementById('cdDays');
-    const hoursEl = document.getElementById('cdHours');
-    const minutesEl = document.getElementById('cdMinutes');
-    const secondsEl = document.getElementById('cdSeconds');
-    
-    function updateTimer() {
-        const now = new Date().getTime();
-        const distance = deadline - now;
-        
-        if (distance < 0) {
-            daysEl.textContent = "00";
-            hoursEl.textContent = "00";
-            minutesEl.textContent = "00";
-            secondsEl.textContent = "00";
-            return;
-        }
-        
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        
-        daysEl.textContent = days.toString().padStart(2, '0');
-        hoursEl.textContent = hours.toString().padStart(2, '0');
-        minutesEl.textContent = minutes.toString().padStart(2, '0');
-        secondsEl.textContent = seconds.toString().padStart(2, '0');
-    }
-    
-    updateTimer();
-    setInterval(updateTimer, 1000);
-}
-
-/**
  * Build the intro GSAP timeline for the hero section.
  * @param {object} cfg - hero timings from APP_CONFIG.
  */
 function initHeroIntro(cfg) {
     const tl = gsap.timeline();
+    const introStage = document.querySelector('.hero-title__stage--intro');
+    const finalStage = document.querySelector('.hero-title__stage--final');
+    const introLines = document.querySelectorAll('.hero-title__stage--intro .hero-title__line');
+    const finalLines = document.querySelectorAll('.hero-title__stage--final .hero-title__line');
+
+    window.setTimeout(() => {
+        if (introStage) {
+            introStage.style.opacity = '0';
+            introStage.style.transform = 'translateX(-12%)';
+            introStage.style.animation = 'none';
+        }
+
+        introLines.forEach((line) => {
+            line.style.animation = 'none';
+        });
+
+        if (finalStage) {
+            finalStage.style.opacity = '1';
+            finalStage.style.transform = 'translateX(0)';
+            finalStage.style.animation = 'none';
+        }
+
+        finalLines.forEach((line) => {
+            line.style.opacity = '1';
+            line.style.transform = 'translateX(0)';
+            line.style.animation = 'none';
+        });
+    }, 3400);
 
     // Logo
     tl.to('.hero-logo', {
@@ -102,23 +85,15 @@ function initHeroIntro(cfg) {
         ease: cfg.logo.ease,
     });
 
-    // Title lines (staggered)
-    tl.to('.hero-title > *', {
-        y: 0, opacity: 1,
-        duration: cfg.title.duration,
-        stagger: cfg.title.stagger,
-        ease: cfg.title.ease,
-    }, '-=0.5');
-
     // Date / location label
     tl.to('.hero-label', {
         y: 0, opacity: 1,
         duration: cfg.label.duration,
         ease: cfg.label.ease,
-    }, '-=1');
+    }, '+=0.35');
 
-    // Subtitle, countdown, price, counter, CTA
-    tl.to(['.hero-text', '.hero-countdown', '.hero-price', '.hero-counter', '.hero-btn-container'], {
+    // Subtitle, price, counter, CTA
+    tl.to(['.hero-text', '.hero-price', '.hero-counter', '.hero-btn-container'], {
         y: 0, opacity: 1,
         duration: cfg.text.duration,
         stagger: cfg.text.stagger,

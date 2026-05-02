@@ -403,8 +403,8 @@ def index(request):
 def tournament_hub(request):
     """Match Centre placeholder page until event start."""
     context = {
-        "page_title": "Match Centre | Pocket Aces Court Cup 2",
-        "page_description": "Match Centre opens on June 6, 2026 at 09:00 for Pocket Aces Court Cup 2.",
+        "page_title": "Match Centre | Pocket Aces Lumumby Cup 2",
+        "page_description": "Match Centre opens on June 6, 2026 at 09:00 for Pocket Aces Lumumby Cup 2.",
         "unlock_iso": "2026-06-06T09:00:00+02:00",
     }
     return render(request, "tournament/match_coming_soon.html", context)
@@ -477,8 +477,8 @@ def tournament_gallery(request):
         "matches_with_media": matches_with_media,
         "team_filter": team_filter,
         "match_filter": match_filter,
-        "page_title": "Gallery | Pocket Aces Court Cup 2",
-        "page_description": "Photos and video highlights from Pocket Aces Court Cup 2.",
+        "page_title": "Gallery | Pocket Aces Lumumby Cup 2",
+        "page_description": "Photos and video highlights from Pocket Aces Lumumby Cup 2.",
     })
 
 
@@ -566,9 +566,9 @@ def api_register_team(request):
             team.save(update_fields=["blik_number"])
 
             if lang == 'pl':
-                subject = "Pocket Aces Court Cup 2 - Instrukcje platnosci"
+                subject = "Pocket Aces Lumumby Cup 2 - Instrukcje platnosci"
                 message = (
-                    f"Dziekujemy za rejestracje druzyny {team.name} na Pocket Aces Court Cup 2.\n\n"
+                    f"Dziekujemy za rejestracje druzyny {team.name} na Pocket Aces Lumumby Cup 2.\n\n"
                     "Aby dokonczyc rejestracje, prosimy o oplate wpisowego 150 zl na ponizszy numer BLIK:\n"
                     f"BLIK: {blik}\n"
                     f"TytuÅ‚: {team.name}\n\n"
@@ -577,12 +577,12 @@ def api_register_team(request):
                     "Pocket Aces Sports Club\n"
                 )
             else:
-                subject = "Pocket Aces Court Cup 2 - Payment Instructions"
+                subject = "Pocket Aces Lumumby Cup 2 - Payment Instructions"
                 message = (
-                    f"Thank you for registering {team.name} for Pocket Aces Court Cup 2.\n\n"
+                    f"Thank you for registering {team.name} for Pocket Aces Lumumby Cup 2.\n\n"
                     "To complete your registration, please send the 150 zl entry fee to the following BLIK number:\n"
                     f"BLIK: {blik}\n"
-                    f"Title: Pocket Aces Court Cup 2 - {team.name}\n\n"
+                    f"Title: Pocket Aces Lumumby Cup 2 - {team.name}\n\n"
                     "If you have any questions, reply to this email.\n\n"
                     "See you on the court!\n\n"
                     "Pocket Aces Sports Club\n"
@@ -668,7 +668,7 @@ def api_vote_team(request):
         confirm_url = request.build_absolute_uri(reverse('vote_confirm', args=[vote.token]))
         
         send_mail(
-            subject='Confirm your vote - Pocket Aces Court Cup 2',
+            subject='Confirm your vote - Pocket Aces Lumumby Cup 2',
             message=f'Click the link below to confirm your vote for {team.name}:\n\n{confirm_url}',
             from_email=settings.DEFAULT_FROM_EMAIL, 
             recipient_list=[email], 
@@ -763,24 +763,24 @@ def roster_update_view(request):
 
                     # Build email in the user's language
                     if ui_lang == "pl":
-                        email_subject = "Pocket Aces Court Cup 2 - Dostep do profilu druzyny"
+                        email_subject = "Pocket Aces Lumumby Cup 2 - Dostep do profilu druzyny"
                         email_body = (
                             f"Czesc {team.cap_name},\n\n"
                             f"Otworz ten link, aby zarzadzac profilem druzyny \"{team.name}\":\n"
                             f"{access_url}\n\n"
                             f"Jesli wolisz wpisac kod recznie, uzyj: {code}\n\n"
                             "Po zalogowaniu mozesz edytowac sklad, dane kapitana i logo.\n\n"
-                            "- Pocket Aces Court Cup 2"
+                            "- Pocket Aces Lumumby Cup 2"
                         )
                     else:
-                        email_subject = "Pocket Aces Court Cup 2 - Team Profile Access"
+                        email_subject = "Pocket Aces Lumumby Cup 2 - Team Profile Access"
                         email_body = (
                             f"Hi {team.cap_name},\n\n"
                             f"Open this link to manage team \"{team.name}\":\n"
                             f"{access_url}\n\n"
                             f"If you prefer the manual code flow, use: {code}\n\n"
                             "Once inside, you can edit the roster, captain details, and logo.\n\n"
-                            "- Pocket Aces Court Cup 2"
+                            "- Pocket Aces Lumumby Cup 2"
                         )
 
                     try:

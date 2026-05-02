@@ -1,12 +1,7 @@
 """Team CRUD, status workflow, batch actions, roster codes, drawer, pipeline."""
 
-import os
 import random
-import uuid
-import urllib.request
-import urllib.error
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Count, Q
@@ -16,52 +11,7 @@ from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 
 from ..admin_forms import AdminTeamForm, PlayerInlineFormSet
-
-_ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"}
-
-
-def _save_team_logo(team, upload_file=None, logo_url=None):
-    """Save a team logo from file upload or URL. Returns the relative media path."""
-    dest_dir = os.path.join(settings.MEDIA_ROOT, "team_logos")
-    os.makedirs(dest_dir, exist_ok=True)
-
-    if upload_file:
-        ext = os.path.splitext(upload_file.name)[1].lower()
-        if ext not in _ALLOWED_EXTENSIONS:
-            raise ValueError(f"Unsupported file type: {ext}")
-        filename = f"{uuid.uuid4().hex[:12]}{ext}"
-        filepath = os.path.join(dest_dir, filename)
-        with open(filepath, "wb") as f:
-            for chunk in upload_file.chunks():
-                f.write(chunk)
-        team.logo_path = f"team_logos/{filename}"
-        team.save(update_fields=["logo_path"])
-        return
-
-    if logo_url:
-        req = urllib.request.Request(logo_url, headers={"User-Agent": "Mozilla/5.0"})
-        resp = urllib.request.urlopen(req, timeout=10)  # noqa: S310
-        content_type = resp.headers.get("Content-Type", "")
-        ext_map = {
-            "image/jpeg": ".jpg", "image/png": ".png",
-            "image/gif": ".gif", "image/webp": ".webp",
-            "image/svg+xml": ".svg",
-        }
-        ext = ext_map.get(content_type.split(";")[0].strip(), "")
-        if not ext:
-            url_ext = os.path.splitext(logo_url.split("?")[0])[1].lower()
-            ext = url_ext if url_ext in _ALLOWED_EXTENSIONS else ".png"
-        filename = f"{uuid.uuid4().hex[:12]}{ext}"
-        filepath = os.path.join(dest_dir, filename)
-        with open(filepath, "wb") as f:
-            while True:
-                chunk = resp.read(8192)
-                if not chunk:
-                    break
-                f.write(chunk)
-        team.logo_path = f"team_logos/{filename}"
-        team.save(update_fields=["logo_path"])
-        return
+from ..logo_utils import save_team_logo
 from ..constants import (
     PAYMENT_STATUS_CHOICES,
     ROSTER_CODE_LENGTH,
@@ -196,7 +146,7 @@ def team_create_view(request):
             formset.save()
             # Handle logo upload / URL
             try:
-                _save_team_logo(
+                save_team_logo(
                     team,
                     upload_file=form.cleaned_data.get("logo_upload"),
                     logo_url=form.cleaned_data.get("logo_url"),
@@ -230,7 +180,7 @@ def team_edit_view(request, pk):
             formset.save()
             # Handle logo upload / URL
             try:
-                _save_team_logo(
+                save_team_logo(
                     team,
                     upload_file=form.cleaned_data.get("logo_upload"),
                     logo_url=form.cleaned_data.get("logo_url"),

@@ -33,10 +33,6 @@
         .hero-btn-container {
             max-width: 31rem;
         }
-
-        .hero-countdown {
-            width: min(100%, 35rem);
-        }
     }
 
     @media (min-width: 1360px) {
@@ -51,28 +47,123 @@
         }
     }
 
-    .hero-countdown {
+    .hero-title {
         position: relative;
+        display: inline-grid;
+        margin: 0;
+    }
+
+    .hero-title__stage {
+        display: grid;
+        grid-template-rows: auto auto;
+        gap: clamp(0.12rem, 0.7vw, 0.5rem);
+        width: max-content;
+    }
+
+    .hero-title__stage--intro {
+        position: absolute;
+        inset: 0 auto auto 0;
+        z-index: 2;
+        pointer-events: none;
+        animation: hero-stage-out 0.7s cubic-bezier(0.64, 0, 0.78, 0) 1.9s forwards;
+    }
+
+    .hero-title__stage--final {
         opacity: 0;
-        transform: translateY(1rem);
-        margin-top: 1rem;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
+        transform: translateX(14%);
+        animation: hero-stage-settle 0.88s cubic-bezier(0.22, 1, 0.36, 1) 2.2s forwards;
     }
 
-    .countdown-label {
-        font-size: 0.85rem;
-        color: rgba(238, 246, 251, 0.7);
+    .hero-mobile-facts {
+        display: none;
+    }
+
+    .hero-title__line {
+        display: block;
+        font-size: clamp(4.25rem, 10.8vw, 12.8rem);
+        font-weight: 900;
+        letter-spacing: -0.08em;
+        line-height: 0.84;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        font-family: var(--font-display);
+        white-space: nowrap;
+        background: linear-gradient(135deg, #f8fdff 0%, #49c0ff 42%, #eef6fb 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 30px rgba(73, 192, 255, 0.14);
+        will-change: transform, opacity;
     }
 
-    .countdown-tiles {
-        display: flex;
-        gap: 1.5rem;
+    .hero-title__stage--intro .hero-title__line:first-child {
+        opacity: 0;
+        transform: translateX(-16%);
+        animation: hero-line-in-left 0.82s cubic-bezier(0.22, 1, 0.36, 1) 0.06s forwards;
+    }
+
+    .hero-title__stage--intro .hero-title__line:last-child {
+        opacity: 0;
+        transform: translateX(16%);
+        animation: hero-line-in-right 0.82s cubic-bezier(0.22, 1, 0.36, 1) 0.22s forwards;
+    }
+
+    .hero-title__stage--final .hero-title__line:first-child {
+        opacity: 0;
+        transform: translateX(16%);
+        animation: hero-line-in-right 0.82s cubic-bezier(0.22, 1, 0.36, 1) 2.2s forwards;
+    }
+
+    .hero-title__stage--final .hero-title__line:last-child {
+        opacity: 0;
+        transform: translateX(16%);
+        animation: hero-line-in-right 0.82s cubic-bezier(0.22, 1, 0.36, 1) 2.36s forwards;
+    }
+
+    @keyframes hero-line-in-left {
+        from {
+            opacity: 0;
+            transform: translateX(-16%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes hero-line-in-right {
+        from {
+            opacity: 0;
+            transform: translateX(16%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes hero-stage-out {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateX(-12%);
+        }
+    }
+
+    @keyframes hero-stage-settle {
+        from {
+            opacity: 0;
+            transform: translateX(14%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
 
     .hero-stats-row {
@@ -179,26 +270,6 @@
         }
     }
 
-    .countdown-tile {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .cd-val {
-        font-size: 2.5rem;
-        line-height: 1;
-        font-family: var(--font-display);
-        color: #fff;
-        text-shadow: 0 0 10px rgba(73, 192, 255, 0.3);
-    }
-
-    .cd-lbl {
-        font-size: 0.75rem;
-        color: rgba(238, 246, 251, 0.5);
-        margin-top: 0.2rem;
-        text-transform: uppercase;
-    }
-
     body {
         background:
             radial-gradient(circle at 16% 14%, rgba(73, 192, 255, 0.07), transparent 30%),
@@ -287,7 +358,173 @@
         background: transparent !important;
     }
 
+    .perspective-section--cards > .container::before,
+    .perspective-section--cards > .container::after {
+        content: none;
+    }
+
     @media (max-width: 767.98px) {
+        .hero-title__stage {
+            gap: 0.18rem;
+        }
+
+        .hero,
+        .hero-content {
+            min-height: 100svh;
+            min-height: 100vh;
+        }
+
+        .hero-content {
+            padding: 4.8rem 1rem 1.35rem;
+        }
+
+        .hero__left {
+            width: 100%;
+            max-width: none;
+            gap: 0.85rem;
+            min-height: calc(100svh - 6.15rem);
+            min-height: calc(100vh - 6.15rem);
+            justify-content: flex-start;
+        }
+
+        .hero-player-container {
+            display: none;
+        }
+
+        .hero-label {
+            max-width: 15.75rem;
+            line-height: 1.32;
+        }
+
+        .hero-title {
+            width: 100%;
+        }
+
+        .hero-title__stage {
+            width: 100%;
+        }
+
+        .hero-title__line {
+            font-size: clamp(3.8rem, 17.6vw, 5.8rem);
+            line-height: 0.88;
+        }
+
+        .hero-text {
+            max-width: none;
+            font-size: 0.92rem;
+            line-height: 1.58;
+        }
+
+        .hero-mobile-facts {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.55rem;
+            margin-top: 0.2rem;
+        }
+
+        .hero-mobile-fact {
+            min-width: 0;
+            padding: 0.65rem 0.55rem 0.7rem;
+            border-radius: 0.95rem;
+            border: 1px solid rgba(73, 192, 255, 0.12);
+            background: linear-gradient(145deg, rgba(8, 23, 38, 0.84), rgba(12, 28, 44, 0.96));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 10px 22px rgba(2, 6, 23, 0.16);
+            text-align: center;
+        }
+
+        .hero-mobile-fact__value {
+            display: block;
+            font-size: 1rem;
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            color: #eef6fb;
+            line-height: 1;
+        }
+
+        .hero-mobile-fact__label {
+            display: block;
+            margin-top: 0.28rem;
+            font-size: 0.56rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(196, 216, 231, 0.68);
+            line-height: 1.25;
+        }
+
+        .hero-btn-container {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.8rem;
+            width: 100%;
+            max-width: none;
+            margin-top: 1rem;
+        }
+
+        .hero-stats-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            align-items: end;
+            gap: 0.7rem 0.85rem;
+            width: 100%;
+        }
+
+        .hero-price {
+            min-width: 0;
+        }
+
+        .hero-price__value {
+            font-size: clamp(1.7rem, 9.2vw, 2.2rem);
+        }
+
+        .hero-price__label {
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+
+        .hero-stats-divider {
+            display: none;
+        }
+
+        .rt-link-numbers {
+            width: 100%;
+            justify-content: flex-end;
+        }
+
+        .rt-link-numbers > span {
+            display: block;
+            text-align: right;
+        }
+
+        .rt-link__current {
+            font-size: clamp(1.9rem, 11vw, 2.6rem);
+        }
+
+        .rt-link__total {
+            font-size: clamp(1.05rem, 6vw, 1.5rem);
+        }
+
+        .hero-counter-label {
+            font-size: 0.68rem;
+            letter-spacing: 0.05em;
+        }
+
+        .rt-link-text {
+            width: 100%;
+        }
+
+        .rt-link__text {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-cta,
+        .btn-cta--closed {
+            width: 100%;
+            max-width: none;
+            justify-content: center;
+        }
+
         .perspective-section > .container {
             padding: 2rem 1rem 2.2rem;
             border-radius: 1.5rem;
@@ -712,6 +949,161 @@
         font-size: 0.98rem;
     }
 
+    .venue-block {
+        position: relative;
+        display: grid;
+        gap: 1rem;
+    }
+
+    .venue-block::after {
+        content: '';
+        position: absolute;
+        top: 1.5rem;
+        right: 6%;
+        width: min(34vw, 24rem);
+        height: min(26vw, 18rem);
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(228, 21, 97, 0.12), transparent 70%);
+        filter: blur(24px);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .venue-block > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .venue-hero,
+    .venue-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1.45rem;
+        border: 1px solid rgba(228, 21, 97, 0.16);
+        background: #0f172a;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.04),
+            0 18px 38px rgba(2, 6, 23, 0.16),
+            0 0 22px rgba(228, 21, 97, 0.06);
+        transition: transform 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease;
+    }
+
+    .venue-hero:hover,
+    .venue-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(228, 21, 97, 0.24);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.04),
+            0 22px 40px rgba(2, 6, 23, 0.18),
+            0 0 28px rgba(228, 21, 97, 0.08);
+    }
+
+    .venue-hero {
+        min-height: clamp(18rem, 42vw, 23rem);
+    }
+
+    .venue-card {
+        min-height: clamp(12rem, 22vw, 15rem);
+    }
+
+    .venue-hero > img,
+    .venue-card > img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        filter: brightness(0.78) saturate(0.94);
+        transition: transform 0.65s ease, filter 0.65s ease;
+    }
+
+    .venue-hero:hover > img,
+    .venue-card:hover > img {
+        transform: scale(1.04);
+        filter: saturate(1.05);
+    }
+
+    .venue-hero::after,
+    .venue-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(to top, rgba(4, 12, 22, 0.88), rgba(4, 12, 22, 0.28) 42%, rgba(4, 12, 22, 0.08) 68%),
+            radial-gradient(circle at top right, rgba(228, 21, 97, 0.12), transparent 34%),
+            radial-gradient(circle at bottom left, rgba(73, 192, 255, 0.10), transparent 38%);
+        pointer-events: none;
+    }
+
+    .venue-hero__content {
+        position: absolute;
+        left: clamp(1rem, 3vw, 2rem);
+        right: clamp(1rem, 3vw, 2rem);
+        bottom: clamp(1rem, 3vw, 1.8rem);
+        display: grid;
+        gap: 0.9rem;
+        max-width: min(34rem, 72%);
+        z-index: 2;
+    }
+
+    .venue-hero__content .section-heading {
+        margin-bottom: 0;
+        text-align: left;
+    }
+
+    .venue-hero__content .divider {
+        margin: 0;
+        width: 3.3rem;
+    }
+
+    .venue-hero__index,
+    .venue-card__index {
+        display: inline-flex;
+        align-items: center;
+        font-family: var(--font-display);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.86);
+        text-shadow: 0 6px 18px rgba(2, 6, 23, 0.55);
+    }
+
+    .venue-hero__index:empty,
+    .venue-card__index:empty,
+    .venue-card__title:empty {
+        display: none;
+    }
+
+    .venue-grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .venue-grid > .venue-card {
+        grid-column: span 6;
+    }
+
+    .venue-card__overlay {
+        position: absolute;
+        inset: auto 1rem 1rem 1rem;
+        display: grid;
+        gap: 0.25rem;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .venue-card__title {
+        max-width: 18ch;
+        font-family: var(--font-display);
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #fff;
+        text-shadow: 0 6px 18px rgba(2, 6, 23, 0.55);
+    }
+
     .arena-gallery {
         display: grid;
         grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -848,6 +1240,23 @@
         .arena-gallery {
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 0.95rem;
+        }
+
+        .venue-hero {
+            min-height: clamp(16rem, 52vw, 21rem);
+        }
+
+        .venue-hero__content {
+            max-width: min(30rem, calc(100% - 2rem));
+        }
+
+        .venue-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .venue-grid > .venue-card {
+            grid-column: auto;
+            min-height: clamp(11rem, 34vw, 14rem);
         }
 
         .arena-shell::after {
@@ -1197,6 +1606,32 @@
 
         .location__info-item {
             padding-top: 0.8rem;
+        }
+
+        .venue-hero {
+            min-height: clamp(16rem, 72vw, 20rem);
+        }
+
+        .venue-hero__content {
+            left: 1rem;
+            right: 1rem;
+            bottom: 1rem;
+            max-width: none;
+            gap: 0.7rem;
+        }
+
+        .venue-hero__content .arena-note {
+            margin: 0;
+            font-size: 0.94rem;
+        }
+
+        .venue-grid {
+            grid-template-columns: 1fr;
+            gap: 0.9rem;
+        }
+
+        .venue-grid > .venue-card {
+            min-height: clamp(11rem, 54vw, 14rem);
         }
 
         .venue-card__overlay {
@@ -1919,21 +2354,32 @@
             </div>
 
             <h1 class="hero-title">
-                <div class="hero-title__main" data-i18n="hero.title.main">POCKET ACES</div><br>
-                <span class="hero-title__sub" data-i18n="hero.title.sub">COURT CUP 2</span>
+                <span class="hero-title__stage hero-title__stage--final">
+                    <span class="hero-title__line" data-i18n="hero.title.final_top">LUMUMBY</span>
+                    <span class="hero-title__line" data-i18n="hero.title.final_bottom">CUP 2</span>
+                </span>
+                <span class="hero-title__stage hero-title__stage--intro" aria-hidden="true">
+                    <span class="hero-title__line" data-i18n="hero.title.intro_top">POCKET</span>
+                    <span class="hero-title__line" data-i18n="hero.title.intro_bottom">ACES</span>
+                </span>
             </h1>
 
             <p class="hero-text" data-i18n="hero.text">
-                Registration is open for Pocket Aces Court Cup 2. Outdoor play, 10 teams, first serve at 09:00. Lock your spot before registration closes on June 3.
+                Registration is open for Pocket Aces Lumumby Cup 2. Outdoor play, 8 teams, first serve at 09:00. Lock your spot before registration closes on June 3.
             </p>
 
-            <div class="hero-countdown" id="heroCountdown" data-deadline="{{ registration_deadline }}">
-                <span class="countdown-label" data-i18n="hero.countdown.label">Registration closes in</span>
-                <div class="countdown-tiles">
-                    <div class="countdown-tile"><span class="cd-val" id="cdDays">00</span><span class="cd-lbl" data-i18n="hero.countdown.days">Days</span></div>
-                    <div class="countdown-tile"><span class="cd-val" id="cdHours">00</span><span class="cd-lbl" data-i18n="hero.countdown.hours">Hours</span></div>
-                    <div class="countdown-tile"><span class="cd-val" id="cdMinutes">00</span><span class="cd-lbl" data-i18n="hero.countdown.mins">Mins</span></div>
-                    <div class="countdown-tile"><span class="cd-val" id="cdSeconds">00</span><span class="cd-lbl" data-i18n="hero.countdown.secs">Secs</span></div>
+            <div class="hero-mobile-facts" aria-hidden="true">
+                <div class="hero-mobile-fact">
+                    <span class="hero-mobile-fact__value">06.06</span>
+                    <span class="hero-mobile-fact__label" data-i18n="hero.mobile_fact1">Tournament Day</span>
+                </div>
+                <div class="hero-mobile-fact">
+                    <span class="hero-mobile-fact__value">8</span>
+                    <span class="hero-mobile-fact__label" data-i18n="hero.mobile_fact2">Team Limit</span>
+                </div>
+                <div class="hero-mobile-fact">
+                    <span class="hero-mobile-fact__value">OPEN AIR</span>
+                    <span class="hero-mobile-fact__label" data-i18n="hero.mobile_fact3">Outdoor Court</span>
                 </div>
             </div>
 
@@ -1985,7 +2431,7 @@
             <button id="registeredTeamsModalClose" class="rt-modal__close">&times;</button>
             <div class="rt-modal__header">
                 <h2 class="rt-modal__title" data-i18n="registered.modal_title">Zarejestrowane Drużyny</h2>
-                <div class="rt-modal__subtitle" data-i18n="registered.modal_subtitle">Pocket Aces Court Cup 2</div>
+                <div class="rt-modal__subtitle" data-i18n="registered.modal_subtitle">Pocket Aces Lumumby Cup 2</div>
             </div>
             
             <div class="rt-modal__teams-list">
@@ -2085,7 +2531,7 @@
 {% endif %}
 
 <!-- The Stakes Section (Cards Flip) -->
-<section class="perspective-section">
+<section class="perspective-section perspective-section--cards">
     <div class="container">
         <h2 class="section-heading" data-i18n="deal.heading">Why Register</h2>
         <p class="deal-lead" data-i18n="deal_lead">A compact outdoor event built for teams that want a sharp schedule, clear stakes, and a better matchday atmosphere.</p>
@@ -2160,7 +2606,7 @@
                         <h3 class="card-front__title" data-i18n="deal.card2.title">Registration</h3>
                         <div class="divider"></div>
                         <p class="card-front__text" data-i18n="deal.card2.text">
-                            Registration is live now and only 10 teams make the field. Secure your place before the June 3 deadline.
+                            Registration is live now and only 8 teams make the field. Secure your place before the June 3 deadline.
                         </p>
                         <ul class="card-front__list">
                             <li data-i18n="deal.card2.list1">Deadline: June 3</li>
@@ -2360,7 +2806,7 @@
                     <h3 class="road-item__title" data-i18n="road.step1.title">Registration Live</h3>
                 </div>
                 <div class="road-item__marker"></div>
-                <div class="road-item__desc" data-i18n="road.step1.desc">Team registration is open. Join now before all 10 spots are taken.</div>
+                <div class="road-item__desc" data-i18n="road.step1.desc">Team registration is open. Join now before all 8 spots are taken.</div>
             </div>
             <div class="road-item">
                 <div class="road-item__meta">
@@ -2384,7 +2830,7 @@
                     <h3 class="road-item__title" data-i18n="road.step4.title">Tournament Day</h3>
                 </div>
                 <div class="road-item__marker"></div>
-                <div class="road-item__desc" data-i18n="road.step4.desc">Pocket Aces Court Cup 2 starts at the outdoor court by Dormitory No. 8.</div>
+                <div class="road-item__desc" data-i18n="road.step4.desc">Pocket Aces Lumumby Cup 2 starts at the outdoor court by Dormitory No. 8.</div>
             </div>
         </div>
     </div>
