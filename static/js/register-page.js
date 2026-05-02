@@ -455,8 +455,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const clipLengthSeconds = 15;
 
-  if (scHiddenWidget && window.SC && window.SC.Widget) {
-    scWidget = window.SC.Widget(scHiddenWidget);
+  let scWidgetInitPromise = null;
+
+  function initScWidget() {
+    if (scWidget || !scHiddenWidget) return scWidget;
+    if (!window.SC || typeof window.SC.Widget !== 'function') return null;
+
+    try {
+      scWidget = window.SC.Widget(scHiddenWidget);
+      return scWidget;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function ensureScWidget() {
+    const readyWidget = initScWidget();
+    if (readyWidget) return Promise.resolve(readyWidget);
+    if (scWidgetInitPromise) return scWidgetInitPromise;
+
+    scWidgetInitPromise = new Promise((resolve) => {
+      let attempts = 0;
+      const maxAttempts = 20;
+
+      const tryInit = () => {
+        const widget = initScWidget();
+        if (widget) {
+          resolve(widget);
+          return;
+        }
+
+        attempts += 1;
+        if (attempts >= maxAttempts) {
+          resolve(null);
+          return;
+        }
+
+        window.setTimeout(tryInit, 250);
+      };
+
+      tryInit();
+    });
+
+    return scWidgetInitPromise;
   }
 
   function formatTime(totalSeconds) {
@@ -511,6 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!scCropModal) return;
     scCropModal.style.display = 'flex';
     setScError('');
+    void ensureScWidget();
     if (scSearchInput) scSearchInput.focus();
   }
 
@@ -673,20 +715,21 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (!scWidget) {
+    const widget = await ensureScWidget();
+    if (!widget) {
       setScError('SoundCloud widget is unavailable right now.');
       if (scLoading) scLoading.style.display = 'none';
       return;
     }
 
     if (window.SC?.Widget?.Events?.READY) {
-      scWidget.unbind(window.SC.Widget.Events.READY);
-      scWidget.unbind(window.SC.Widget.Events.PLAY_PROGRESS);
-      scWidget.unbind(window.SC.Widget.Events.PLAY);
-      scWidget.unbind(window.SC.Widget.Events.PAUSE);
+      widget.unbind(window.SC.Widget.Events.READY);
+      widget.unbind(window.SC.Widget.Events.PLAY_PROGRESS);
+      widget.unbind(window.SC.Widget.Events.PLAY);
+      widget.unbind(window.SC.Widget.Events.PAUSE);
     }
 
-    scWidget.bind(window.SC.Widget.Events.READY, () => {
+    widget.bind(window.SC.Widget.Events.READY, () => {
       if (scLoading) scLoading.style.display = 'none';
       if (scEditorArea) scEditorArea.style.display = 'block';
       setSearchStatus(`Loaded ${result.title || 'track'}. Drag the 15-second window and preview it on the right.`);
@@ -694,16 +737,16 @@ document.addEventListener('DOMContentLoaded', () => {
       updatePreviewProgress(0);
     });
 
-    scWidget.bind(window.SC.Widget.Events.PLAY, () => {
+    widget.bind(window.SC.Widget.Events.PLAY, () => {
       isScPlaying = true;
     });
 
-    scWidget.bind(window.SC.Widget.Events.PAUSE, () => {
+    widget.bind(window.SC.Widget.Events.PAUSE, () => {
       isScPlaying = false;
       resetPreviewButton();
     });
 
-    scWidget.bind(window.SC.Widget.Events.PLAY_PROGRESS, (event) => {
+    widget.bind(window.SC.Widget.Events.PLAY_PROGRESS, (event) => {
       const elapsedMs = Math.max(0, (event?.currentPosition || 0) - (currentStartSeconds * 1000));
       updatePreviewProgress(elapsedMs);
       if (elapsedMs >= clipLengthSeconds * 1000) {
@@ -711,7 +754,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    scWidget.load(result.url, {
+    widget.load(result.url, {
       auto_play: false,
       show_comments: false,
       show_user: false,
@@ -850,17 +893,23 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', updateCropperPosition);
 
   if (scPlayPreviewBtn) {
-    scPlayPreviewBtn.addEventListener('click', () => {
-      if (!scWidget || !currentSoundResult) return;
+    scPlayPreviewBtn.addEventListener('click', async () => {
+      if (!currentSoundResult) return;
 
-      scWidget.isPaused((paused) => {
+      const widget = await ensureScWidget();
+      if (!widget) {
+        setScError('SoundCloud widget is unavailable right now.');
+        return;
+      }
+
+      widget.isPaused((paused) => {
         if (!paused) {
           stopScPreview();
           return;
         }
 
-        scWidget.seekTo(currentStartSeconds * 1000);
-        scWidget.play();
+        widget.seekTo(currentStartSeconds * 1000);
+        widget.play();
         scPlayPreviewBtn.innerHTML = '<i class="fas fa-pause"></i>';
         updatePreviewProgress(0);
       });

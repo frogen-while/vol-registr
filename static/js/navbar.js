@@ -35,10 +35,10 @@
         heading: 'Why Register',
         card1: {
           title: 'Prizes',
-          text: 'The podium plays for cups and medals. No side awards, no filler, just a clean race for the top spots.',
-          list1: 'Cups for the winners',
-          list2: 'Medals for top teams',
-          list3: 'One-day trophy chase'
+          text: 'At the end, cups and medals are on the line, and everything is decided on the court in the fight for the top places. Fans can vote for the best team on the site, and the team with the most votes will receive special prizes.',
+          list1: 'Cups and medals',
+          list2: 'Fan voting on the site',
+          list3: 'Special prizes for the winners'
         },
         card2: {
           title: 'Registration',

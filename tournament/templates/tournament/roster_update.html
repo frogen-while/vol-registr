@@ -977,8 +977,49 @@ document.addEventListener('DOMContentLoaded', function () {
   const entranceSourceInput = document.getElementById('entranceSource');
   const entranceStartSecondsInput = document.getElementById('entranceStartSeconds');
 
-  if (scHiddenWidget && window.SC && window.SC.Widget) {
-    scWidget = window.SC.Widget(scHiddenWidget);
+  let scWidgetInitPromise = null;
+
+  function initScWidget() {
+    if (scWidget || !scHiddenWidget) return scWidget;
+    if (!window.SC || typeof window.SC.Widget !== 'function') return null;
+
+    try {
+      scWidget = window.SC.Widget(scHiddenWidget);
+      return scWidget;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function ensureScWidget() {
+    const readyWidget = initScWidget();
+    if (readyWidget) return Promise.resolve(readyWidget);
+    if (scWidgetInitPromise) return scWidgetInitPromise;
+
+    scWidgetInitPromise = new Promise(function (resolve) {
+      var attempts = 0;
+      var maxAttempts = 20;
+
+      function tryInit() {
+        var widget = initScWidget();
+        if (widget) {
+          resolve(widget);
+          return;
+        }
+
+        attempts += 1;
+        if (attempts >= maxAttempts) {
+          resolve(null);
+          return;
+        }
+
+        window.setTimeout(tryInit, 250);
+      }
+
+      tryInit();
+    });
+
+    return scWidgetInitPromise;
   }
 
   function formatTime(totalSeconds) {
@@ -1028,6 +1069,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!scCropModal) return;
     scCropModal.style.display = 'flex';
     setScError('');
+    void ensureScWidget();
     if (scSearchInput) scSearchInput.focus();
   }
 
@@ -1141,20 +1183,21 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    if (!scWidget) {
+    const widget = await ensureScWidget();
+    if (!widget) {
       setScError('SoundCloud widget is unavailable right now.');
       if (scLoading) scLoading.style.display = 'none';
       return;
     }
 
     if (window.SC?.Widget?.Events?.READY) {
-      scWidget.unbind(window.SC.Widget.Events.READY);
-      scWidget.unbind(window.SC.Widget.Events.PLAY_PROGRESS);
-      scWidget.unbind(window.SC.Widget.Events.PLAY);
-      scWidget.unbind(window.SC.Widget.Events.PAUSE);
+      widget.unbind(window.SC.Widget.Events.READY);
+      widget.unbind(window.SC.Widget.Events.PLAY_PROGRESS);
+      widget.unbind(window.SC.Widget.Events.PLAY);
+      widget.unbind(window.SC.Widget.Events.PAUSE);
     }
 
-    scWidget.bind(window.SC.Widget.Events.READY, () => {
+    widget.bind(window.SC.Widget.Events.READY, () => {
       if (scLoading) scLoading.style.display = 'none';
       if (scEditorArea) scEditorArea.style.display = 'block';
       setSearchStatus(`Loaded ${result.title || 'track'}. Drag the window and preview.`);
@@ -1162,22 +1205,22 @@ document.addEventListener('DOMContentLoaded', function () {
       updatePreviewProgress(0);
     });
 
-    scWidget.bind(window.SC.Widget.Events.PLAY, () => {
+    widget.bind(window.SC.Widget.Events.PLAY, () => {
       isScPlaying = true;
     });
 
-    scWidget.bind(window.SC.Widget.Events.PAUSE, () => {
+    widget.bind(window.SC.Widget.Events.PAUSE, () => {
       isScPlaying = false;
       resetPreviewButton();
     });
 
-    scWidget.bind(window.SC.Widget.Events.PLAY_PROGRESS, (event) => {
+    widget.bind(window.SC.Widget.Events.PLAY_PROGRESS, (event) => {
       const elapsedMs = Math.max(0, (event?.currentPosition || 0) - (currentStartSeconds * 1000));
       updatePreviewProgress(elapsedMs);
       if (elapsedMs >= clipLengthSeconds * 1000) stopScPreview();
     });
 
-    scWidget.load(result.url, { auto_play: false, show_comments: false, show_user: false, show_reposts: false, visual: false });
+    widget.load(result.url, { auto_play: false, show_comments: false, show_user: false, show_reposts: false, visual: false });
   }
 
   function renderSearchResults(results) {
@@ -1261,12 +1304,19 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('resize', updateCropperPosition);
 
   if (scPlayPreviewBtn) {
-    scPlayPreviewBtn.addEventListener('click', () => {
-      if (!scWidget || !currentSoundResult) return;
-      scWidget.isPaused((paused) => {
+    scPlayPreviewBtn.addEventListener('click', async () => {
+      if (!currentSoundResult) return;
+
+      const widget = await ensureScWidget();
+      if (!widget) {
+        setScError('SoundCloud widget is unavailable right now.');
+        return;
+      }
+
+      widget.isPaused((paused) => {
         if (!paused) { stopScPreview(); return; }
-        scWidget.seekTo(currentStartSeconds * 1000);
-        scWidget.play();
+        widget.seekTo(currentStartSeconds * 1000);
+        widget.play();
         scPlayPreviewBtn.innerHTML = '<i class="fas fa-pause"></i>';
         updatePreviewProgress(0);
       });

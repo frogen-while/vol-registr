@@ -5,7 +5,9 @@ def privacy_policy_en(request):
 
 import json
 import logging
+from pathlib import Path
 import re
+from types import SimpleNamespace
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -16,6 +18,7 @@ from django.db import transaction
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.templatetags.static import static as static_url
 from django.core.mail import send_mail
 from django.urls import reverse
 
@@ -36,6 +39,8 @@ from .services import get_available_slots, register_team
 logger = logging.getLogger(__name__)
 
 SOUNDCLOUD_CLIENT_ID: str | None = None
+PREV_TOUR_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+PREV_TOUR_VIDEO_EXTENSIONS = {".mov", ".mp4", ".m4v"}
 
 ROSTER_ACCESS_SALT = "tournament.roster-access"
 ROSTER_ACCESS_MAX_AGE = 60 * 60 * 24 * 3
@@ -92,19 +97,79 @@ def _get_soundcloud_client_id() -> str:
         Request("https://soundcloud.com/search/sounds?q=music", headers={"User-Agent": user_agent}),
         timeout=15,
     ).read().decode("utf-8", "ignore")
-    hydration_match = re.search(r"__sc_hydration\s*=\s*(\[.*?\]);", html, re.S)
-    if not hydration_match:
-        raise RuntimeError("SoundCloud hydration payload not found")
 
-    hydration_payload = json.loads(hydration_match.group(1))
-    for item in hydration_payload:
-        if item.get("hydratable") == "apiClient":
-            client_id = item.get("data", {}).get("id")
-            if client_id:
-                SOUNDCLOUD_CLIENT_ID = client_id
-                return client_id
+    def extract_client_id(source: str) -> str | None:
+        hydration_match = re.search(r"__sc_hydration\s*=\s*(\[.*?\]);", source, re.S)
+        if hydration_match:
+            hydration_payload = json.loads(hydration_match.group(1))
+            for item in hydration_payload:
+                if item.get("hydratable") == "apiClient":
+                    client_id = item.get("data", {}).get("id")
+                    if client_id:
+                        return client_id
+
+        for pattern in (
+            r'client_id["\']?\s*[:=]\s*["\']([A-Za-z0-9]{16,})["\']',
+            r'clientId["\']?\s*[:=]\s*["\']([A-Za-z0-9]{16,})["\']',
+        ):
+            match = re.search(pattern, source)
+            if match:
+                return match.group(1)
+        return None
+
+    client_id = extract_client_id(html)
+    if client_id:
+        SOUNDCLOUD_CLIENT_ID = client_id
+        return client_id
+
+    asset_urls = list(dict.fromkeys(re.findall(r"https://a-v2\.sndcdn\.com/assets/[^\"']+\.js", html)))
+    for asset_url in asset_urls[:8]:
+        try:
+            asset_source = urlopen(Request(asset_url, headers={"User-Agent": user_agent}), timeout=15).read().decode("utf-8", "ignore")
+        except Exception:
+            continue
+
+        client_id = extract_client_id(asset_source)
+        if client_id:
+            SOUNDCLOUD_CLIENT_ID = client_id
+            return client_id
 
     raise RuntimeError("SoundCloud client id not found")
+
+
+def _build_prev_tour_static_media(existing_photo_ids: set[str], existing_video_ids: set[str]) -> tuple[list[SimpleNamespace], list[SimpleNamespace]]:
+    """Expose bundled previous tournament assets even when the gallery tables are empty."""
+    prev_tour_dir = Path(settings.BASE_DIR) / "static" / "assets" / "prev-tour"
+    if not prev_tour_dir.exists():
+        return [], []
+
+    fallback_photos: list[SimpleNamespace] = []
+    fallback_videos: list[SimpleNamespace] = []
+
+    for asset_path in sorted(prev_tour_dir.iterdir(), key=lambda path: path.name.lower()):
+        if not asset_path.is_file():
+            continue
+
+        extension = asset_path.suffix.lower()
+        drive_file_id = f"local_prev_{asset_path.name}"
+        drive_url = static_url(f"assets/prev-tour/{asset_path.name}")
+
+        if extension in PREV_TOUR_IMAGE_EXTENSIONS and drive_file_id not in existing_photo_ids:
+            fallback_photos.append(SimpleNamespace(
+                drive_file_id=drive_file_id,
+                drive_url=drive_url,
+                thumbnail_url=drive_url,
+                title=f"Previous Tournament - {asset_path.name}",
+            ))
+        elif extension in PREV_TOUR_VIDEO_EXTENSIONS and drive_file_id not in existing_video_ids:
+            fallback_videos.append(SimpleNamespace(
+                drive_file_id=drive_file_id,
+                drive_url=drive_url,
+                thumbnail_url="",
+                title=f"Previous Tournament Video - {asset_path.name}",
+            ))
+
+    return fallback_photos, fallback_videos
 
 
 def _fetch_soundcloud_search_results(query: str, limit: int = 10) -> list[dict]:
@@ -452,8 +517,16 @@ def tournament_gallery(request):
     current_photos = photos.exclude(tournament_tag='prev-tour')
     current_videos = videos.exclude(tournament_tag='prev-tour')
     
-    prev_photos = photos.filter(tournament_tag='prev-tour')
-    prev_videos = videos.filter(tournament_tag='prev-tour')
+    prev_photos = list(photos.filter(tournament_tag='prev-tour'))
+    prev_videos = list(videos.filter(tournament_tag='prev-tour'))
+
+    if not team_filter and not match_filter:
+        fallback_prev_photos, fallback_prev_videos = _build_prev_tour_static_media(
+            {photo.drive_file_id for photo in prev_photos},
+            {video.drive_file_id for video in prev_videos},
+        )
+        prev_photos.extend(fallback_prev_photos)
+        prev_videos.extend(fallback_prev_videos)
 
     # Build filter options
     teams_with_media = (
