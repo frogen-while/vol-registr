@@ -9,18 +9,22 @@ TIMEOUT="${TIMEOUT:-120}"
 PIDFILE="${PIDFILE:-gunicorn.pid}"
 LOGFILE="${LOGFILE:-gunicorn.log}"
 VENV_GUNICORN="${VENV_GUNICORN:-.venv/bin/gunicorn}"
+STATIC_ASSET_VERSION="${STATIC_ASSET_VERSION:-}"
 
 echo "Starting gunicorn: $APP_MODULE on $BIND_ADDR"
+if [ -n "$STATIC_ASSET_VERSION" ]; then
+  echo "Starting with STATIC_ASSET_VERSION=$STATIC_ASSET_VERSION"
+fi
 
 if command -v setsid >/dev/null 2>&1; then
-  setsid "$VENV_GUNICORN" "$APP_MODULE" \
+  env STATIC_ASSET_VERSION="$STATIC_ASSET_VERSION" setsid "$VENV_GUNICORN" "$APP_MODULE" \
     --bind "$BIND_ADDR" \
     --workers "$WORKERS" \
     --timeout "$TIMEOUT" \
     --pid "$PIDFILE" \
     > "$LOGFILE" 2>&1 < /dev/null &
 else
-  nohup "$VENV_GUNICORN" "$APP_MODULE" \
+  env STATIC_ASSET_VERSION="$STATIC_ASSET_VERSION" nohup "$VENV_GUNICORN" "$APP_MODULE" \
     --bind "$BIND_ADDR" \
     --workers "$WORKERS" \
     --timeout "$TIMEOUT" \

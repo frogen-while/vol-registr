@@ -19,7 +19,7 @@ jobs:
           script_stop: true
           script: |
             set -e
-            echo "DEPLOY_SCRIPT_V5"
+            echo "DEPLOY_SCRIPT_V6"
             PROJECT_DIR="/srv/vol-registr"
 
             cd "$PROJECT_DIR"
@@ -37,6 +37,7 @@ jobs:
             VENV_DIR=".venv" \
             REQUIREMENTS_FILE="requirements.txt" \
             PYTHON_BIN="python3" \
+            STATIC_ASSET_VERSION="$ASSET_VERSION" \
             MANAGE_PY="manage.py" \
             sh scripts/deploy-app.sh
 
@@ -57,5 +58,15 @@ jobs:
             echo "HEALTHCHECK_HTTP_CODE=$HTTP_CODE"
             if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 500 ]; then
               echo "Health-check failed with HTTP code $HTTP_CODE"
+              tail -n 80 gunicorn.log || true
               exit 1
             fi
+
+            HOME_HTML=$(curl -fsS http://127.0.0.1:8001)
+            if ! printf '%s' "$HOME_HTML" | grep -F "?v=$ASSET_VERSION" >/dev/null; then
+              echo "Error: deployed homepage is not serving the new STATIC_ASSET_VERSION=$ASSET_VERSION"
+              tail -n 80 gunicorn.log || true
+              exit 1
+            fi
+
+            echo "HTML_VERSION_CHECK=ok"

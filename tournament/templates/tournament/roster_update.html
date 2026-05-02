@@ -977,7 +977,48 @@ document.addEventListener('DOMContentLoaded', function () {
   const entranceSourceInput = document.getElementById('entranceSource');
   const entranceStartSecondsInput = document.getElementById('entranceStartSeconds');
 
+  let scScriptLoadPromise = null;
   let scWidgetInitPromise = null;
+
+  function ensureScScript() {
+    if (window.SC && typeof window.SC.Widget === 'function') {
+      return Promise.resolve();
+    }
+
+    if (scScriptLoadPromise) {
+      return scScriptLoadPromise;
+    }
+
+    scScriptLoadPromise = new Promise(function (resolve, reject) {
+      var existingScript = document.querySelector('script[src="https://w.soundcloud.com/player/api.js"]');
+
+      function handleLoad() { resolve(); }
+      function handleError() { reject(new Error('SoundCloud player API failed to load')); }
+
+      if (existingScript) {
+        existingScript.addEventListener('load', handleLoad, { once: true });
+        existingScript.addEventListener('error', handleError, { once: true });
+        window.setTimeout(function () {
+          if (window.SC && typeof window.SC.Widget === 'function') {
+            resolve();
+          }
+        }, 0);
+        return;
+      }
+
+      var script = document.createElement('script');
+      script.src = 'https://w.soundcloud.com/player/api.js';
+      script.async = true;
+      script.addEventListener('load', handleLoad, { once: true });
+      script.addEventListener('error', handleError, { once: true });
+      document.head.appendChild(script);
+    }).catch(function (error) {
+      scScriptLoadPromise = null;
+      throw error;
+    });
+
+    return scScriptLoadPromise;
+  }
 
   function initScWidget() {
     if (scWidget || !scHiddenWidget) return scWidget;
@@ -996,28 +1037,35 @@ document.addEventListener('DOMContentLoaded', function () {
     if (readyWidget) return Promise.resolve(readyWidget);
     if (scWidgetInitPromise) return scWidgetInitPromise;
 
-    scWidgetInitPromise = new Promise(function (resolve) {
-      var attempts = 0;
-      var maxAttempts = 20;
+    scWidgetInitPromise = ensureScScript()
+      .catch(function () { return null; })
+      .then(function () {
+        return new Promise(function (resolve) {
+          var attempts = 0;
+          var maxAttempts = 20;
 
-      function tryInit() {
-        var widget = initScWidget();
-        if (widget) {
-          resolve(widget);
-          return;
-        }
+          function tryInit() {
+            var widget = initScWidget();
+            if (widget) {
+              resolve(widget);
+              return;
+            }
 
-        attempts += 1;
-        if (attempts >= maxAttempts) {
-          resolve(null);
-          return;
-        }
+            attempts += 1;
+            if (attempts >= maxAttempts) {
+              resolve(null);
+              return;
+            }
 
-        window.setTimeout(tryInit, 250);
-      }
+            window.setTimeout(tryInit, 250);
+          }
 
-      tryInit();
-    });
+          tryInit();
+        });
+      })
+      .finally(function () {
+        scWidgetInitPromise = null;
+      });
 
     return scWidgetInitPromise;
   }

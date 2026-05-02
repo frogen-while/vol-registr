@@ -455,7 +455,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const clipLengthSeconds = 15;
 
+  let scScriptLoadPromise = null;
   let scWidgetInitPromise = null;
+
+  function ensureScScript() {
+    if (window.SC && typeof window.SC.Widget === 'function') {
+      return Promise.resolve();
+    }
+
+    if (scScriptLoadPromise) {
+      return scScriptLoadPromise;
+    }
+
+    scScriptLoadPromise = new Promise((resolve, reject) => {
+      const existingScript = document.querySelector('script[src="https://w.soundcloud.com/player/api.js"]');
+
+      const handleLoad = () => resolve();
+      const handleError = () => reject(new Error('SoundCloud player API failed to load'));
+
+      if (existingScript) {
+        existingScript.addEventListener('load', handleLoad, { once: true });
+        existingScript.addEventListener('error', handleError, { once: true });
+        window.setTimeout(() => {
+          if (window.SC && typeof window.SC.Widget === 'function') {
+            resolve();
+          }
+        }, 0);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://w.soundcloud.com/player/api.js';
+      script.async = true;
+      script.addEventListener('load', handleLoad, { once: true });
+      script.addEventListener('error', handleError, { once: true });
+      document.head.appendChild(script);
+    }).catch((error) => {
+      scScriptLoadPromise = null;
+      throw error;
+    });
+
+    return scScriptLoadPromise;
+  }
 
   function initScWidget() {
     if (scWidget || !scHiddenWidget) return scWidget;
@@ -474,28 +515,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (readyWidget) return Promise.resolve(readyWidget);
     if (scWidgetInitPromise) return scWidgetInitPromise;
 
-    scWidgetInitPromise = new Promise((resolve) => {
-      let attempts = 0;
-      const maxAttempts = 20;
+    scWidgetInitPromise = ensureScScript()
+      .catch(() => null)
+      .then(() => new Promise((resolve) => {
+        let attempts = 0;
+        const maxAttempts = 20;
 
-      const tryInit = () => {
-        const widget = initScWidget();
-        if (widget) {
-          resolve(widget);
-          return;
-        }
+        const tryInit = () => {
+          const widget = initScWidget();
+          if (widget) {
+            resolve(widget);
+            return;
+          }
 
-        attempts += 1;
-        if (attempts >= maxAttempts) {
-          resolve(null);
-          return;
-        }
+          attempts += 1;
+          if (attempts >= maxAttempts) {
+            resolve(null);
+            return;
+          }
 
-        window.setTimeout(tryInit, 250);
-      };
+          window.setTimeout(tryInit, 250);
+        };
 
-      tryInit();
-    });
+        tryInit();
+      }))
+      .finally(() => {
+        scWidgetInitPromise = null;
+      });
 
     return scWidgetInitPromise;
   }

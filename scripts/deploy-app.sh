@@ -8,6 +8,7 @@ PYTHON_BIN="${PYTHON_BIN:-python3}"
 MANAGE_PY="${MANAGE_PY:-manage.py}"
 PIP_BIN="$VENV_DIR/bin/pip"
 PYTHON_VENV_BIN="$VENV_DIR/bin/python"
+STATIC_ASSET_VERSION="${STATIC_ASSET_VERSION:-}"
 
 echo "Preparing virtual environment in $VENV_DIR"
 "$PYTHON_BIN" -m venv "$VENV_DIR"
@@ -17,5 +18,9 @@ echo "Preparing virtual environment in $VENV_DIR"
 "$PIP_BIN" install gunicorn
 
 echo "Running Django migrations and collectstatic"
-"$PYTHON_VENV_BIN" "$MANAGE_PY" migrate
-"$PYTHON_VENV_BIN" "$MANAGE_PY" collectstatic --noinput
+if [ -n "$STATIC_ASSET_VERSION" ]; then
+	echo "Using STATIC_ASSET_VERSION=$STATIC_ASSET_VERSION during deploy tasks"
+fi
+
+STATIC_ASSET_VERSION="$STATIC_ASSET_VERSION" "$PYTHON_VENV_BIN" "$MANAGE_PY" migrate
+STATIC_ASSET_VERSION="$STATIC_ASSET_VERSION" "$PYTHON_VENV_BIN" "$MANAGE_PY" collectstatic --noinput
