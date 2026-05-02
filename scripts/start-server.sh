@@ -11,6 +11,10 @@ LOGFILE="${LOGFILE:-gunicorn.log}"
 VENV_GUNICORN="${VENV_GUNICORN:-.venv/bin/gunicorn}"
 STATIC_ASSET_VERSION="${STATIC_ASSET_VERSION:-}"
 
+if [ -z "$STATIC_ASSET_VERSION" ] && command -v git >/dev/null 2>&1; then
+  STATIC_ASSET_VERSION=$(git rev-parse --short HEAD 2>/dev/null || true)
+fi
+
 echo "Starting gunicorn: $APP_MODULE on $BIND_ADDR"
 if [ -n "$STATIC_ASSET_VERSION" ]; then
   echo "Starting with STATIC_ASSET_VERSION=$STATIC_ASSET_VERSION"

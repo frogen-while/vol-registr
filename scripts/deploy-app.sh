@@ -10,6 +10,10 @@ PIP_BIN="$VENV_DIR/bin/pip"
 PYTHON_VENV_BIN="$VENV_DIR/bin/python"
 STATIC_ASSET_VERSION="${STATIC_ASSET_VERSION:-}"
 
+if [ -z "$STATIC_ASSET_VERSION" ] && command -v git >/dev/null 2>&1; then
+	STATIC_ASSET_VERSION=$(git rev-parse --short HEAD 2>/dev/null || true)
+fi
+
 echo "Preparing virtual environment in $VENV_DIR"
 "$PYTHON_BIN" -m venv "$VENV_DIR"
 

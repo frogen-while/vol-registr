@@ -458,6 +458,30 @@ document.addEventListener('DOMContentLoaded', () => {
   let scScriptLoadPromise = null;
   let scWidgetInitPromise = null;
 
+  function waitForScApiReady() {
+    return new Promise((resolve, reject) => {
+      let attempts = 0;
+      const maxAttempts = 40;
+
+      const checkReady = () => {
+        if (window.SC && typeof window.SC.Widget === 'function') {
+          resolve();
+          return;
+        }
+
+        attempts += 1;
+        if (attempts >= maxAttempts) {
+          reject(new Error('SoundCloud player API did not become ready in time'));
+          return;
+        }
+
+        window.setTimeout(checkReady, 200);
+      };
+
+      checkReady();
+    });
+  }
+
   function ensureScScript() {
     if (window.SC && typeof window.SC.Widget === 'function') {
       return Promise.resolve();
@@ -469,27 +493,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     scScriptLoadPromise = new Promise((resolve, reject) => {
       const existingScript = document.querySelector('script[src="https://w.soundcloud.com/player/api.js"]');
-
-      const handleLoad = () => resolve();
       const handleError = () => reject(new Error('SoundCloud player API failed to load'));
 
       if (existingScript) {
-        existingScript.addEventListener('load', handleLoad, { once: true });
         existingScript.addEventListener('error', handleError, { once: true });
-        window.setTimeout(() => {
-          if (window.SC && typeof window.SC.Widget === 'function') {
-            resolve();
-          }
-        }, 0);
+        waitForScApiReady().then(resolve).catch(reject);
         return;
       }
 
       const script = document.createElement('script');
       script.src = 'https://w.soundcloud.com/player/api.js';
       script.async = true;
-      script.addEventListener('load', handleLoad, { once: true });
       script.addEventListener('error', handleError, { once: true });
       document.head.appendChild(script);
+      waitForScApiReady().then(resolve).catch(reject);
     }).catch((error) => {
       scScriptLoadPromise = null;
       throw error;

@@ -770,7 +770,6 @@
   </div>
 </div>
 
-<script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   function getTranslations() {
@@ -980,6 +979,30 @@ document.addEventListener('DOMContentLoaded', function () {
   let scScriptLoadPromise = null;
   let scWidgetInitPromise = null;
 
+  function waitForScApiReady() {
+    return new Promise(function (resolve, reject) {
+      var attempts = 0;
+      var maxAttempts = 40;
+
+      function checkReady() {
+        if (window.SC && typeof window.SC.Widget === 'function') {
+          resolve();
+          return;
+        }
+
+        attempts += 1;
+        if (attempts >= maxAttempts) {
+          reject(new Error('SoundCloud player API did not become ready in time'));
+          return;
+        }
+
+        window.setTimeout(checkReady, 200);
+      }
+
+      checkReady();
+    });
+  }
+
   function ensureScScript() {
     if (window.SC && typeof window.SC.Widget === 'function') {
       return Promise.resolve();
@@ -992,26 +1015,20 @@ document.addEventListener('DOMContentLoaded', function () {
     scScriptLoadPromise = new Promise(function (resolve, reject) {
       var existingScript = document.querySelector('script[src="https://w.soundcloud.com/player/api.js"]');
 
-      function handleLoad() { resolve(); }
       function handleError() { reject(new Error('SoundCloud player API failed to load')); }
 
       if (existingScript) {
-        existingScript.addEventListener('load', handleLoad, { once: true });
         existingScript.addEventListener('error', handleError, { once: true });
-        window.setTimeout(function () {
-          if (window.SC && typeof window.SC.Widget === 'function') {
-            resolve();
-          }
-        }, 0);
+        waitForScApiReady().then(resolve).catch(reject);
         return;
       }
 
       var script = document.createElement('script');
       script.src = 'https://w.soundcloud.com/player/api.js';
       script.async = true;
-      script.addEventListener('load', handleLoad, { once: true });
       script.addEventListener('error', handleError, { once: true });
       document.head.appendChild(script);
+      waitForScApiReady().then(resolve).catch(reject);
     }).catch(function (error) {
       scScriptLoadPromise = null;
       throw error;
