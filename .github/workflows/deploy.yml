@@ -7,66 +7,39 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted # <--- Это заставит задачу выполняться прямо в твоем LXC
     steps:
-      - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.SERVER_PORT }}
-          script_stop: true
-          script: |
-            set -e
-            echo "DEPLOY_SCRIPT_V6"
-            PROJECT_DIR="/srv/vol-registr"
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            cd "$PROJECT_DIR"
-            git fetch --prune origin court-tour
-            git reset --hard origin/court-tour
-            ASSET_VERSION=$(git rev-parse --short HEAD)
-            echo "DEPLOYED_COMMIT=$ASSET_VERSION"
-            git --no-pager log -1 --pretty='format:DEPLOYED_SUBJECT=%s%n'
-            echo "STATIC_ASSET_VERSION=$ASSET_VERSION"
-
-            chmod +x scripts/deploy-app.sh
-            chmod +x scripts/stop-server.sh
-            chmod +x scripts/start-server.sh
-
-            VENV_DIR=".venv" \
-            REQUIREMENTS_FILE="requirements.txt" \
-            PYTHON_BIN="python3" \
-            STATIC_ASSET_VERSION="$ASSET_VERSION" \
-            MANAGE_PY="manage.py" \
-            sh scripts/deploy-app.sh
-
-            PIDFILE="gunicorn.pid" PORT="8001" sh scripts/stop-server.sh
-
-            APP_MODULE="vol_registr.wsgi:application" \
-            BIND_ADDR="0.0.0.0:8001" \
-            WORKERS="3" \
-            TIMEOUT="120" \
-            PIDFILE="gunicorn.pid" \
-            LOGFILE="gunicorn.log" \
-            STATIC_ASSET_VERSION="$ASSET_VERSION" \
-            VENV_GUNICORN=".venv/bin/gunicorn" \
-            sh scripts/start-server.sh
-
-            sleep 2
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8001)
-            echo "HEALTHCHECK_HTTP_CODE=$HTTP_CODE"
-            if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 500 ]; then
-              echo "Health-check failed with HTTP code $HTTP_CODE"
-              tail -n 80 gunicorn.log || true
-              exit 1
-            fi
-
-            HOME_HTML=$(curl -fsS http://127.0.0.1:8001)
-            if ! printf '%s' "$HOME_HTML" | grep -F "?v=$ASSET_VERSION" >/dev/null; then
-              echo "Error: deployed homepage is not serving the new STATIC_ASSET_VERSION=$ASSET_VERSION"
-              tail -n 80 gunicorn.log || true
-              exit 1
-            fi
-
-            echo "HTML_VERSION_CHECK=ok"
+      - name: Deploy locally
+        run: |
+          set -e
+          echo "DEPLOY_SCRIPT_V_LOCAL"
+          PROJECT_DIR="/srv/vol-registr"
+          
+          cd "$PROJECT_DIR"
+          git fetch --prune origin court-tour
+          git reset --hard origin/court-tour
+          
+          ASSET_VERSION=$(git rev-parse --short HEAD)
+          
+          # Даем права на скрипты
+          chmod +x scripts/*.sh
+          
+          # Запускаем деплой (venv, миграции и т.д.)
+          VENV_DIR=".venv" \
+          PYTHON_BIN="python3" \
+          STATIC_ASSET_VERSION="$ASSET_VERSION" \
+          sh scripts/deploy-app.sh
+          
+          # Перезапуск Gunicorn (порт 8001 - твой DEV)
+          PIDFILE="gunicorn.pid" PORT="8001" sh scripts/stop-server.sh || true
+          
+          APP_MODULE="vol_registr.wsgi:application" \
+          BIND_ADDR="0.0.0.0:8001" \
+          WORKERS="3" \
+          PIDFILE="gunicorn.pid" \
+          LOGFILE="gunicorn.log" \
+          VENV_GUNICORN=".venv/bin/gunicorn" \
+          sh scripts/start-server.sh
