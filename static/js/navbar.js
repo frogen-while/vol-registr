@@ -16,7 +16,7 @@
           final_top: 'LUMUMBY',
           final_bottom: 'CUP 2'
         },
-        text: 'Registration is open for Pocket Aces Lumumby Cup 2. Outdoor play, 8 teams, first serve at 09:00. Lock your spot before registration closes on June 3.',
+        text: 'Registration is open for Pocket Aces Court cup 2. Outdoor play, 8 teams, first serve at 09:00. Lock your spot before registration closes on June 3.',
         mobile_fact1: 'Tournament Day',
         mobile_fact2: 'Team Limit',
         mobile_fact3: 'Outdoor Court',
@@ -63,7 +63,7 @@
       location: {
         kicker: 'Venue Details',
         title: 'The Venue',
-        text: 'Pocket Aces Lumumby Cup 2 moves to the outdoor court next to Dormitory No. 8 in Łódź. Bring your team 30-60 minutes early for registration and warm-up.',
+        text: 'Pocket Aces Court cup 2 moves to the outdoor court next to Dormitory No. 8 in Łódź. Bring your team 30-60 minutes early for registration and warm-up.',
         info: { label: 'Location', value: 'Strajku Łódzkich Studentów 1981 r. 2, 91-404 Łódź' },
         date: { label: 'Date', value: 'June 6, 09:00' },
         link: 'View on Google Maps'
@@ -77,7 +77,7 @@
       registered: {
         cta: 'See teams ->',
         modal_title: 'Registered Teams',
-        modal_subtitle: 'Pocket Aces Lumumby Cup 2',
+        modal_subtitle: 'Pocket Aces Court cup 2',
         col_team: 'Team',
         col_captain: 'Captain',
         col_level: 'Level',
@@ -92,23 +92,23 @@
         step1: { date: 'Open now', title: 'Now Open', desc: 'Team registration is open. Join now before all 8 spots are taken.' },
         step2: { date: 'June 3', title: 'Registration Closes', desc: 'Final deadline to lock your team into the event.' },
         step3: { date: 'After close', title: 'Captain Update', desc: 'Final event details will be sent to registered captains.' },
-        step4: { date: 'June 6, 09:00', title: 'Tournament Day', desc: 'Pocket Aces Lumumby Cup 2 starts at the outdoor court by Dormitory No. 8.' }
+        step4: { date: 'June 6, 09:00', title: 'Tournament Day', desc: 'Pocket Aces Court cup 2 starts at the outdoor court by Dormitory No. 8.' }
       },
       gallery_page: {
         eyebrow: 'Pocket Aces',
         title: 'Gallery',
-        subtitle: 'Photos and video highlights from Pocket Aces Lumumby Cup 2.',
+        subtitle: 'Photos and video highlights from Pocket Aces Court cup 2.',
         photos_title: 'Photos',
         videos_title: 'Video Highlights',
         prev_title: 'Previous Tournament',
         prev_subtitle: 'Media Archive',
-        empty: 'Gallery will be updated once Pocket Aces Lumumby Cup 2 starts.'
+        empty: 'Gallery will be updated once Pocket Aces Court cup 2 starts.'
       },
       // FAQ page
       faq: {
         title: 'FAQ',
         q1: 'What if a player is under 18?',
-        a1: 'If any player is under 18, a <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026_1.pdf" target="_blank">parental consent form</a> must be sent before the event and brought in paper form on tournament day.',
+        a1: 'If any player is under 18, a <a href="/static/assets/documents/ZGODA_RODZICA.pdf" target="_blank">parental consent form</a> must be sent before the event and brought in paper form on tournament day.',
         q2: "What if our team doesn't have uniforms?",
         a2: 'Uniform numbers are not required. Matching shirts are welcome, but the key point is that your team stays easy to identify on court.',
         q3: 'Can we get a refund?',
@@ -129,7 +129,7 @@
       },
       cs: {
         heading: 'Match Centre Soon',
-        sub: 'Match Centre opens on <strong>June 6 at 09:00</strong>. Until then, use the time left to register your team for Pocket Aces Lumumby Cup 2.',
+        sub: 'Match Centre opens on <strong>June 6 at 09:00</strong>. Until then, use the time left to register your team for Pocket Aces Court cup 2.',
         days: 'Days',
         hours: 'Hours',
         min: 'Min',
@@ -240,7 +240,7 @@
       reg_step3:     'Roster',
       reg_title:     'Active Registration',
       reg_subtitle:  'Lumumby<br>Cup&nbsp;2',
-      reg_desc:      'Registration is open for Pocket Aces Lumumby Cup 2. We are taking 8 teams for the new outdoor event, so secure your spot before June 3.',
+      reg_desc:      'Registration is open for Pocket Aces Court cup 2. We are taking 8 teams for the new outdoor event, so secure your spot before June 3.',
       reg_fact1_title: '8 Spots',
       reg_fact1_copy: 'Compact field, quick bracket, and no long wait between meaningful matches.',
       reg_fact2_title: 'June 3',
@@ -289,12 +289,12 @@
       reg_choose_file: 'Choose File',
       reg_terms:     'I have read and accept the <a href="/static/assets/documents/Regulations_english_czerwec.pdf" target="_blank">tournament regulations</a>',
       reg_age:       'All players are 18 years of age or older',
-        reg_parental:  'If any player is under 18, a <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026_1.pdf" target="_blank">parental consent form</a> must be filled out and provided at registration.',
+        reg_parental:  'If any player is under 18, a <a href="/static/assets/documents/ZGODA_RODZICA.pdf" target="_blank">parental consent form</a> must be filled out and provided at registration.',
       reg_photo:     'I consent to photos/videos being taken during the event',
       reg_payment:   'I understand the entry fee is <strong>150 zł</strong> and payment details plus the payment deadline will be sent by email',
       reg_submit:    'Join Tournament',
       reg_success:   'Registration Sent!',
-      reg_success_txt: 'Your team has been submitted for Pocket Aces Lumumby Cup 2. Payment details and the deadline will be sent to your email address shortly.',
+      reg_success_txt: 'Your team has been submitted for Pocket Aces Court cup 2. Payment details and the deadline will be sent to your email address shortly.',
       // Validation
       err_team_name: 'Team name is required.',
       err_league:    'Please select a league level.',
@@ -330,7 +330,7 @@
           final_top: 'LUMUMBY',
           final_bottom: 'CUP 2'
         },
-        text: 'Rejestracja na Pocket Aces Lumumby Cup 2 jest otwarta. Gramy na zewnętrznym boisku, limit to 8 drużyn, a pierwszy gwizdek o 09:00. Zapisz ekipę przed końcem rejestracji 3 czerwca.',
+        text: 'Rejestracja na Pocket Aces Court cup 2 jest otwarta. Gramy na zewnętrznym boisku, limit to 8 drużyn, a pierwszy gwizdek o 09:00. Zapisz ekipę przed końcem rejestracji 3 czerwca.',
         mobile_fact1: 'Dzień Turnieju',
         mobile_fact2: 'Limit Drużyn',
         mobile_fact3: 'Boisko Outdoor',
@@ -377,7 +377,7 @@
       location: {
         kicker: 'Szczegóły obiektu',
         title: 'Obiekt',
-        text: 'Pocket Aces Lumumby Cup 2 gramy na zewnętrznym boisku przy akademiku nr 8 w Łodzi. Przyjedź z drużyną 30-60 minut wcześniej na rejestrację i rozgrzewkę.',
+        text: 'Pocket Aces Court cup 2 gramy na zewnętrznym boisku przy akademiku nr 8 w Łodzi. Przyjedź z drużyną 30-60 minut wcześniej na rejestrację i rozgrzewkę.',
         info: { label: 'Lokalizacja', value: 'Strajku Łódzkich Studentów 1981 r. 2, 91-404 Łódź' },
         date: { label: 'Data', value: '6 czerwca, 09:00' },
         link: 'Zobacz na Google Maps'
@@ -391,7 +391,7 @@
       registered: {
         cta: 'Zobacz drużyny ->',
         modal_title: 'Zarejestrowane Drużyny',
-        modal_subtitle: 'Pocket Aces Lumumby Cup 2',
+        modal_subtitle: 'Pocket Aces Court cup 2',
         col_team: 'Drużyna',
         col_captain: 'Kapitan',
         col_level: 'Poziom',
@@ -406,13 +406,13 @@
         step1: { date: 'Teraz', title: 'Zapisy otwarte', desc: 'Rejestracja drużyn trwa. Dołącz zanim zniknie 8 miejsc.' },
         step2: { date: '3 czerwca', title: 'Koniec rejestracji', desc: 'Ostateczny termin na zgłoszenie drużyny do turnieju.' },
         step3: { date: 'Po zamknięciu', title: 'Info dla kapitanów', desc: 'Szczegóły organizacyjne wydarzenia trafią do zapisanych kapitanów.' },
-        step4: { date: '06.06, 09:00', title: 'Dzień turnieju', desc: 'Pocket Aces Lumumby Cup 2 startuje na boisku przy akademiku nr 8.' }
+        step4: { date: '06.06, 09:00', title: 'Dzień turnieju', desc: 'Pocket Aces Court cup 2 startuje na boisku przy akademiku nr 8.' }
       },
       // FAQ page
       faq: {
         title: 'FAQ',
         q1: 'Co jeśli zawodnik ma mniej niż 18 lat?',
-        a1: 'Jeśli którykolwiek z zawodników ma mniej niż 18 lat, należy wysłać <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026_1.pdf" target="_blank">zgodę rodzica</a> przed wydarzeniem i dostarczyć ją w wersji papierowej w dniu turnieju.',
+        a1: 'Jeśli którykolwiek z zawodników ma mniej niż 18 lat, należy wysłać <a href="/static/assets/documents/ZGODA_RODZICA.pdf" target="_blank">zgodę rodzica</a> przed wydarzeniem i dostarczyć ją w wersji papierowej w dniu turnieju.',
         q2: 'Co jeśli drużyna nie ma strojów?',
         a2: 'Numery na koszulkach nie są wymagane. Jednolite stroje są mile widziane, ale najważniejsze jest to, żeby drużynę dało się łatwo rozpoznać na boisku.',
         q3: 'Czy można otrzymać zwrot opłaty?',
@@ -433,7 +433,7 @@
       },
       cs: {
         heading: 'Match Centre wkrótce',
-        sub: 'Match Centre rusza <strong>6 czerwca o 09:00</strong>. Do tego czasu wykorzystaj odliczanie, żeby zapisać drużynę na Pocket Aces Lumumby Cup 2.',
+        sub: 'Match Centre rusza <strong>6 czerwca o 09:00</strong>. Do tego czasu wykorzystaj odliczanie, żeby zapisać drużynę na Pocket Aces Court cup 2.',
         days: 'Dni',
         hours: 'Godz',
         min: 'Min',
@@ -531,12 +531,12 @@
       gallery_page: {
         eyebrow: 'Pocket Aces',
         title: 'Galeria',
-        subtitle: 'Zdjęcia i skróty wideo z Pocket Aces Lumumby Cup 2.',
+        subtitle: 'Zdjęcia i skróty wideo z Pocket Aces Court cup 2.',
         photos_title: 'Zdjęcia',
         videos_title: 'Skróty Wideo',
         prev_title: 'Poprzedni Turniej',
         prev_subtitle: 'Archiwum Mediów',
-        empty: 'Galeria zostanie zaktualizowana po rozpoczęciu Pocket Aces Lumumby Cup 2.'
+        empty: 'Galeria zostanie zaktualizowana po rozpoczęciu Pocket Aces Court cup 2.'
       },
       nav: {
         tournament_hub: 'Centrum turnieju',
@@ -554,7 +554,7 @@
       reg_step3:     'Skład',
       reg_title:     'Aktywna Rejestracja',
       reg_subtitle:  'Lumumby<br>Cup&nbsp;2',
-      reg_desc:      'Rejestracja na Pocket Aces Lumumby Cup 2 jest otwarta. Bierzemy 8 drużyn na nowe wydarzenie outdoorowe, więc zapisz skład przed 3 czerwca.',
+      reg_desc:      'Rejestracja na Pocket Aces Court cup 2 jest otwarta. Bierzemy 8 drużyn na nowe wydarzenie outdoorowe, więc zapisz skład przed 3 czerwca.',
       reg_fact1_title: '8 Miejsc',
       reg_fact1_copy: 'Kompaktowa stawka, szybka drabinka i bez długiego czekania między ważnymi meczami.',
       reg_fact2_title: '3 Czerwca',
@@ -603,12 +603,12 @@
       reg_choose_file: 'Wybierz plik',
       reg_terms:     'Przeczytałem i akceptuję <a href="/static/assets/documents/Regulations_polish%20czerwec%20.pdf" target="_blank">regulamin turnieju</a>',
       reg_age:       'Wszyscy zawodnicy mają ukończone 18 lat',
-        reg_parental:  'Jeśli którykolwiek z zawodników ma mniej niż 18 lat, należy wypełnić <a href="/static/assets/documents/ZGODA_RODZICA_Pocket_Aces_12_04_2026_1.pdf" target="_blank">zgodę rodzica</a> i dostarczyć ją organizatorom.',
+        reg_parental:  'Jeśli którykolwiek z zawodników ma mniej niż 18 lat, należy wypełnić <a href="/static/assets/documents/ZGODA_RODZICA.pdf" target="_blank">zgodę rodzica</a> i dostarczyć ją organizatorom.',
       reg_photo:     'Wyrażam zgodę na zdjęcia/filmy podczas wydarzenia',
       reg_payment:   'Rozumiem, że wpisowe wynosi <strong>150 zł</strong>, a szczegóły płatności wraz z terminem zostaną przesłane e-mailem',
       reg_submit:    'Zapisz się',
       reg_success:   'Zgłoszenie wysłane!',
-      reg_success_txt: 'Twoja drużyna została zgłoszona do Pocket Aces Lumumby Cup 2. Szczegóły płatności i termin zostaną wysłane na Twój adres e-mail.',
+      reg_success_txt: 'Twoja drużyna została zgłoszona do Pocket Aces Court cup 2. Szczegóły płatności i termin zostaną wysłane na Twój adres e-mail.',
       // Validation
       err_team_name: 'Nazwa drużyny jest wymagana.',
       err_league:    'Wybierz poziom ligi.',
@@ -638,10 +638,10 @@
 
   const MOBILE_TEXT_OVERRIDES = {
     en: {
-      'hero.text': 'Registration is open for Pocket Aces Lumumby Cup 2. Outdoor play, 8 teams, first serve at 09:00. Lock your spot before registration closes on June 3.'
+      'hero.text': 'Registration is open for Pocket Aces Court cup 2. Outdoor play, 8 teams, first serve at 09:00. Lock your spot before registration closes on June 3.'
     },
     pl: {
-      'hero.text': 'Rejestracja na Pocket Aces Lumumby Cup 2 jest otwarta. Gramy na zewnątrz, limit to 8 drużyn, a pierwszy gwizdek o 09:00. Zapisz ekipę przed końcem rejestracji 3 czerwca.'
+      'hero.text': 'Rejestracja na Pocket Aces Court cup 2 jest otwarta. Gramy na zewnątrz, limit to 8 drużyn, a pierwszy gwizdek o 09:00. Zapisz ekipę przed końcem rejestracji 3 czerwca.'
     }
   };
 
