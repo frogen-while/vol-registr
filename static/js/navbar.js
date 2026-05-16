@@ -13,7 +13,7 @@
         title: {
           intro_top: 'POCKET',
           intro_bottom: 'ACES',
-          final_top: 'LUMUMBY',
+          final_top: 'COURT',
           final_bottom: 'CUP 2'
         },
         text: 'Registration is open for Pocket Aces Court cup 2. Outdoor play, 8 teams, first serve at 09:00. Lock your spot before registration closes on June 3.',
@@ -239,7 +239,7 @@
       reg_step2:     'Media',
       reg_step3:     'Roster',
       reg_title:     'Active Registration',
-      reg_subtitle:  'Lumumby<br>Cup&nbsp;2',
+      reg_subtitle:  'Court<br>Cup&nbsp;2',
       reg_desc:      'Registration is open for Pocket Aces Court cup 2. We are taking 8 teams for the new outdoor event, so secure your spot before June 3.',
       reg_fact1_title: '8 Spots',
       reg_fact1_copy: 'Compact field, quick bracket, and no long wait between meaningful matches.',
@@ -327,7 +327,7 @@
         title: {
           intro_top: 'POCKET',
           intro_bottom: 'ACES',
-          final_top: 'LUMUMBY',
+          final_top: 'COURT',
           final_bottom: 'CUP 2'
         },
         text: 'Rejestracja na Pocket Aces Court cup 2 jest otwarta. Gramy na zewnętrznym boisku, limit to 8 drużyn, a pierwszy gwizdek o 09:00. Zapisz ekipę przed końcem rejestracji 3 czerwca.',
@@ -553,7 +553,7 @@
       reg_step2:     'Media',
       reg_step3:     'Skład',
       reg_title:     'Aktywna Rejestracja',
-      reg_subtitle:  'Lumumby<br>Cup&nbsp;2',
+      reg_subtitle:  'Court<br>Cup&nbsp;2',
       reg_desc:      'Rejestracja na Pocket Aces Court cup 2 jest otwarta. Bierzemy 8 drużyn na nowe wydarzenie outdoorowe, więc zapisz skład przed 3 czerwca.',
       reg_fact1_title: '8 Miejsc',
       reg_fact1_copy: 'Kompaktowa stawka, szybka drabinka i bez długiego czekania między ważnymi meczami.',
